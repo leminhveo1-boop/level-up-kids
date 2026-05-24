@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
+  const [showGuideModal, setShowGuideModal] = useState(false); // Guideline for child
 
   // Redirect if character doesn't exist (no name)
   useEffect(() => {
@@ -208,6 +209,15 @@ export default function DashboardPage() {
             <span className="text-xs animate-flame">🔥</span>
             <span className="text-[9px] font-black text-amber">{streak}N</span>
           </div>
+
+          {/* Guide Button for child */}
+          <button
+            onClick={() => setShowGuideModal(true)}
+            className="flex items-center justify-center p-1.5 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-forest transition-colors text-xs active:scale-90"
+            title="Cẩm nang chiến binh"
+          >
+            📜
+          </button>
         </div>
 
         {/* HERO CARD (Avatar, Level progress bar) */}
@@ -502,6 +512,69 @@ export default function DashboardPage() {
               className="w-full bg-white text-amber-dark font-black text-xs py-3 px-6 rounded-xl border-2 border-white shadow-game-flat hover:bg-amber-light btn-game-transition active:shadow-game-pressed"
             >
               QUÁ TUYỆT VỜI! 🚀
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* GUIDELINES MODAL FOR CHILD */}
+      {showGuideModal && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-white border-4 border-forest rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4 relative max-h-[85vh] overflow-y-auto">
+            <div className="w-16 h-16 bg-forest-light rounded-full border-2 border-forest mx-auto flex items-center justify-center text-3xl shadow">
+              📜
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">Cẩm Nang Chiến Binh Mùa Hè 📜</h3>
+              <p className="text-[10px] text-gray-500">Bí kíp để thăng cấp và nhận những phần quà xịn nhất!</p>
+            </div>
+
+            <div className="text-left space-y-3.5 text-xs text-forest-dark font-medium bg-sand-light p-4 rounded-2xl border border-sand">
+              <div className="space-y-1">
+                <p className="font-black text-forest flex items-center gap-1 text-[11px]">
+                  🎯 1. Làm Nhiệm Vụ Hằng Ngày
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
+                  Hoàn thành các nhiệm vụ bố mẹ giao để nhận **EXP thăng cấp**, **Điểm Tích Lũy ⭐** và **Tiền Vàng 🪙**.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-black text-amber-dark flex items-center gap-1 text-[11px]">
+                  🔥 2. Duy Trì Ngọn Lửa Streak
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
+                  Hoàn thành từ **3 nhiệm vụ mỗi ngày** để duy trì ngọn lửa Streak 🔥. Streak càng cao, lượng Điểm ⭐ nhận được từ nhiệm vụ tiếp theo càng nhiều!
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-black text-terracotta flex items-center gap-1 text-[11px]">
+                  ⚡ 3. Đòn Chí Mạng (Critical Hit)
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
+                  Mỗi khi hoàn thành một nhiệm vụ, dũng sĩ có **15% cơ hội** trúng đòn **Chí Mạng ⚡** giúp nhân đôi lượng Điểm ⭐ nhận được!
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-black text-forest-dark flex items-center gap-1 text-[11px]">
+                  🛒 4. Đổi Quà Tiêu Dùng
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed space-y-1">
+                  • Dùng **Điểm ⭐** để đổi lấy các gói giải trí (thời gian chơi game, TV, xem phim).<br />
+                  • Dùng **Tiền Vàng 🪙** để đổi lấy tiền mặt thật hoặc bỏ heo đất tiết kiệm từ bố mẹ!
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowGuideModal(false)}
+              className="w-full bg-forest text-sand-light font-black text-xs py-3 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+            >
+              CON ĐÃ HIỂU, LÊN ĐƯỜNG THÔI! 🚀
             </button>
           </div>
         </div>

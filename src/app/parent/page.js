@@ -60,6 +60,7 @@ export default function ParentDashboard() {
 
   const [newPin, setNewPin] = useState("");
   const [pinChangeSuccess, setPinChangeSuccess] = useState("");
+  const [showParentGuide, setShowParentGuide] = useState(false); // Setup Guide for parent
 
   // Preset task templates for quick selection
   const taskTemplates = [
@@ -252,7 +253,17 @@ export default function ParentDashboard() {
           >
             🌳 Dashboard
           </button>
-          <span className="text-xs font-black text-amber">🔑 PHÒNG QUẢN TRỊ BỐ MẸ</span>
+          
+          <div className="flex items-center gap-2 select-none">
+            <button
+              onClick={() => setShowParentGuide(true)}
+              className="text-[9px] font-black text-forest hover:text-forest-dark bg-forest-accent/40 border border-forest/30 px-2 py-1 rounded-full uppercase tracking-wider transition-all active:scale-95 flex items-center gap-0.5"
+              type="button"
+            >
+              💡 Hướng Dẫn Setup
+            </button>
+            <span className="text-xs font-black text-amber">🔑 PHÒNG QUẢN TRỊ BỐ MẸ</span>
+          </div>
         </div>
 
         {/* 1. CHILD PROGRESS ANALYTICS */}
@@ -794,6 +805,74 @@ export default function ParentDashboard() {
         </div>
 
       </div>
+
+      {/* PARENT SETUP GUIDE MODAL */}
+      {showParentGuide && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-white border-4 border-amber rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4 relative max-h-[85vh] overflow-y-auto">
+            <div className="w-16 h-16 bg-amber-light rounded-full border-2 border-amber mx-auto flex items-center justify-center text-3xl shadow">
+              💡
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">Cẩm Nang Quản Trị Của Bố Mẹ 💡</h3>
+              <p className="text-[10px] text-gray-500">Hướng dẫn thiết lập game hóa để đạt hiệu quả giáo dục tốt nhất!</p>
+            </div>
+
+            <div className="text-left space-y-3.5 text-xs text-forest-dark font-medium bg-sand-light p-4 rounded-2xl border border-sand">
+              <div className="space-y-1.5">
+                <p className="font-black text-forest flex items-center gap-1 text-[11px]">
+                  ⭐ 1. Cân Bằng Ví Kép (Điểm vs Vàng)
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • <strong>Điểm ⭐ (Giải trí):</strong> Hãy cho bé Điểm hào phóng khi hoàn thành bài tập, giữ kỷ luật. Điểm này dùng để bé mua thời gian chơi game, TV, tạo động lực ngắn hạn.
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • <strong>Tiền Vàng 🪙 (Tiền thật):</strong> Chỉ tặng Tiền Vàng giới hạn khi bé giúp đỡ việc nhà thực tế (rửa bát, quét nhà). 10 Vàng = 10k hoặc 20k tiền mặt thật tùy bố mẹ quy ước. Việc này dạy bé giá trị của lao động chân tay.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="font-black text-amber-dark flex items-center gap-1 text-[11px]">
+                  ➕ 2. Cách Tạo Nhiệm Vụ Mới
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • Bố mẹ gõ tên nhiệm vụ hoặc sử dụng <strong>Dropdown Gợi Ý Mẫu</strong> để tự động điền form cực nhanh.<br />
+                  • Có thể tích chọn <strong>Bắt buộc 🔴</strong> nếu đây là việc ngày nào con cũng phải làm (ví dụ: đánh răng, học bài).
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="font-black text-terracotta flex items-center gap-1 text-[11px]">
+                  🎁 3. Thiết Lập Quà Tặng & Duyệt Quà
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • Khi tạo quà, bố mẹ chọn <strong>Ví Thanh Toán</strong> (Ví dụ: Thẻ xem TV đổi bằng Điểm ⭐, Nhận 50k tiền mặt đổi bằng Vàng 🪙).<br />
+                  • Khi con bấm "Đổi quà", bố mẹ sẽ phải nhập mã PIN để duyệt và thực hiện trao quà thực tế cho con ngoài đời.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="font-black text-forest-dark flex items-center gap-1 text-[11px]">
+                  🔄 4. Đặt Lại Ngày Mới (Reset Ngày)
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • Mỗi tối trước khi đi ngủ hoặc sáng sớm, bố mẹ bấm nút <strong>"Giả lập kích hoạt ngày mới"</strong> để làm mới danh sách việc ngày cho con.<br />
+                  • Nếu ngày hôm đó con làm tốt từ 3 việc trở lên, ngọn lửa <strong>Streak 🔥</strong> của con sẽ tăng lên!
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowParentGuide(false)}
+              className="w-full bg-amber text-sand-light font-black text-xs py-3 rounded-xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
+            >
+              TÔI ĐÃ HIỂU, TIẾP TỤC ĐỒNG HÀNH! 🚀
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* BOTTOM TAB NAVIGATION */}
       <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
