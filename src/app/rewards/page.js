@@ -278,7 +278,7 @@ export default function RewardsPage() {
                         : "bg-sky text-white border-sky shadow-game-sky"
                     }`}
                   >
-                    {isAffordable ? "ĐỔI QUÀ 🗝️" : "THIẾU VÀNG 🔒"}
+                    {isAffordable ? "ĐỔI QUÀ 🗝️" : r.currency === "gold" ? "THIẾU VÀNG 🔒" : "THIẾU ĐIỂM 🔒"}
                   </button>
                 </div>
               );

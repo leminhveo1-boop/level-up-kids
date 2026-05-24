@@ -178,6 +178,7 @@ export function GameProvider({ children }) {
         encouragements,
         lastResetDate,
         gold,
+        points, // PHẢI LƯU CẢ POINTS!
       };
       localStorage.setItem("quocbao_game_state", JSON.stringify(data));
     }
