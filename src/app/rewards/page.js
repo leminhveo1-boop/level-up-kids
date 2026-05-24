@@ -15,6 +15,7 @@ export default function RewardsPage() {
     screenTimeLeft,
     isTimerActive,
     gold,
+    points,
   } = useGame();
 
   const [selectedReward, setSelectedReward] = useState(null); // Reward to redeem
@@ -22,6 +23,7 @@ export default function RewardsPage() {
   const [pinInput, setPinInput] = useState(""); // Code to input
   const [errorMessage, setErrorMessage] = useState(""); // Pin error
   const [successMessage, setSuccessMessage] = useState(""); // Success message
+  const [rewardsTab, setRewardsTab] = useState("points"); // "points" or "gold" tab
 
   useEffect(() => {
     if (isLoaded && !charName) {
@@ -54,9 +56,17 @@ export default function RewardsPage() {
   };
 
   const handleRedeemClick = (reward) => {
-    if (gold < reward.cost) {
-      setShortageReward(reward);
-      return;
+    const cost = reward.cost || 50;
+    if (reward.currency === "gold") {
+      if (gold < cost) {
+        setShortageReward(reward);
+        return;
+      }
+    } else {
+      if (points < cost) {
+        setShortageReward(reward);
+        return;
+      }
     }
     handleOpenPinModal(reward);
   };
@@ -86,7 +96,7 @@ export default function RewardsPage() {
       <div className="flex-grow p-5 space-y-6 overflow-y-auto">
         
         {/* Navigation header back button */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <button 
             onClick={() => router.push("/dashboard")}
             className="text-xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider flex items-center gap-1"
@@ -94,10 +104,19 @@ export default function RewardsPage() {
             🌳 Dashboard
           </button>
           
-          {/* Gold Display Header */}
-          <div className="bg-amber-light border border-amber/30 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm select-none animate-float">
-            <span className="text-xs">🪙</span>
-            <span className="text-[10px] font-black text-amber-dark uppercase tracking-wider">{gold} VÀNG HIỆN CÓ</span>
+          {/* Dual Wallet Display */}
+          <div className="flex items-center gap-2 select-none">
+            {/* Points Wallet */}
+            <div className="bg-forest-light/35 border border-forest/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <span className="text-xs">⭐</span>
+              <span className="text-[9px] font-black text-forest-dark">{points} ĐIỂM</span>
+            </div>
+            
+            {/* Gold Wallet */}
+            <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <span className="text-xs">🪙</span>
+              <span className="text-[9px] font-black text-amber-dark">{gold} VÀNG</span>
+            </div>
           </div>
         </div>
 
@@ -134,78 +153,117 @@ export default function RewardsPage() {
           )}
         </div>
 
+        {/* DUAL CURRENCY STORE TAB SWITCHER */}
+        <div className="bg-sand-light border-2 border-sand p-1 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow-inner">
+          <button
+            onClick={() => setRewardsTab("points")}
+            className={`w-1/2 py-3 px-4 rounded-xl border-2 btn-game-transition flex items-center justify-center gap-1.5 ${
+              rewardsTab === "points"
+                ? "bg-forest border-forest text-white shadow-game-forest"
+                : "bg-white border-transparent text-gray-500 hover:text-forest"
+            }`}
+          >
+            <span>🎮</span>
+            <span>ĐỔI GIẢI TRÍ (ĐIỂM ⭐)</span>
+          </button>
+          <button
+            onClick={() => setRewardsTab("gold")}
+            className={`w-1/2 py-3 px-4 rounded-xl border-2 btn-game-transition flex items-center justify-center gap-1.5 ${
+              rewardsTab === "gold"
+                ? "bg-amber border-amber text-white shadow-game-amber"
+                : "bg-white border-transparent text-gray-500 hover:text-amber"
+            }`}
+          >
+            <span>💰</span>
+            <span>ĐỔI TIỀN MẶT (VÀNG 🪙)</span>
+          </button>
+        </div>
+
         {/* REWARDS STORE ITEMS LIST */}
         <div className="space-y-3">
-          <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">🛒 Cửa Hàng Đổi Quà</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">
+              {rewardsTab === "points" ? "🎮 Gói Giải Trí & Đặc Quyền" : "💰 Gói Quy Đổi Tiền Mặt Thật"}
+            </h3>
+            <span className="text-[9px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full uppercase">
+              Ví: {rewardsTab === "points" ? `${points} ⭐` : `${gold} 🪙`}
+            </span>
+          </div>
           
           <div className="space-y-4">
-            {rewards.map((r) => {
-              const isAffordable = gold >= r.cost;
-              
-              // Set up Rarity colors
-              let rarityText = "Thường ⚙️";
-              let rarityBg = "bg-gray-100 text-gray-500 border-gray-200";
-              let cardBorder = "border-sand shadow-game-flat hover:border-sand-dark";
-              
-              if (r.rarity === "rare") {
-                rarityText = "Hiếm 🔷";
-                rarityBg = "bg-blue-50 text-sky border-blue-100";
-                cardBorder = "border-sky-light bg-blue-50/5 shadow-game-sky hover:border-sky";
-              } else if (r.rarity === "epic") {
-                rarityText = "Sử Thi 👑";
-                rarityBg = "bg-amber-50 text-amber border-yellow-100";
-                cardBorder = "border-amber bg-amber-50/5 shadow-game-amber hover:border-amber-dark";
-              } else if (r.rarity === "legendary") {
-                rarityText = "Huyền Thoại ⚡";
-                rarityBg = "bg-rose-50 text-terracotta border-red-100";
-                cardBorder = "border-red-400 bg-red-50/5 shadow-game-terracotta hover:border-red-500 animate-shimmer-red";
-              }
+            {rewards
+              .filter((r) => {
+                const currency = r.currency || "points";
+                return currency === rewardsTab;
+              })
+              .map((r) => {
+                const isAffordable = rewardsTab === "gold" ? gold >= r.cost : points >= r.cost;
+                const costSymbol = rewardsTab === "gold" ? "🪙" : "⭐";
+                
+                // Set up Rarity colors
+                let rarityText = "Thường ⚙️";
+                let rarityBg = "bg-gray-100 text-gray-500 border-gray-200";
+                let cardBorder = "border-sand shadow-game-flat hover:border-sand-dark";
+                
+                if (r.rarity === "rare") {
+                  rarityText = "Hiếm 🔷";
+                  rarityBg = "bg-blue-50 text-sky border-blue-100";
+                  cardBorder = "border-sky-light bg-blue-50/5 shadow-game-sky hover:border-sky";
+                } else if (r.rarity === "epic") {
+                  rarityText = "Sử Thi 👑";
+                  rarityBg = "bg-amber-50 text-amber border-yellow-100";
+                  cardBorder = "border-amber bg-amber-50/5 shadow-game-amber hover:border-amber-dark";
+                } else if (r.rarity === "legendary") {
+                  rarityText = "Huyền Thoại ⚡";
+                  rarityBg = "bg-rose-50 text-terracotta border-red-100";
+                  cardBorder = "border-red-400 bg-red-50/5 shadow-game-terracotta hover:border-red-500 animate-shimmer-red";
+                }
 
-              let badgeText = "Đặc Quyền";
-              let badgeBg = "bg-sand text-gray-500 border-sand";
-              if (r.type === "game_time") {
-                badgeText = "Giờ chơi";
-                badgeBg = "bg-amber-light text-amber border-amber/30";
-              } else if (r.type === "perk") {
-                badgeText = "Món quà";
-                badgeBg = "bg-forest-accent text-forest border-forest/30";
-              } else if (r.type === "card") {
-                badgeText = "Thẻ Phép";
-                badgeBg = "bg-sky-light text-sky border-sky/30";
-              }
+                let badgeText = "Đặc Quyền";
+                let badgeBg = "bg-sand text-gray-500 border-sand";
+                if (r.type === "game_time") {
+                  badgeText = "Giờ chơi";
+                  badgeBg = "bg-amber-light text-amber border-amber/30";
+                } else if (r.type === "perk") {
+                  badgeText = "Món quà";
+                  badgeBg = "bg-forest-accent text-forest border-forest/30";
+                } else if (r.type === "card") {
+                  badgeText = "Thẻ Phép";
+                  badgeBg = "bg-sky-light text-sky border-sky/30";
+                }
 
-              return (
-                <div
-                  key={r.id}
-                  className={`bg-white border-2 rounded-2xl p-4 flex items-center justify-between gap-4 transition-all duration-100 ${cardBorder} ${
-                    !isAffordable ? "opacity-85" : ""
-                  }`}
-                >
-                  {/* Reward Info */}
-                  <div className="flex-grow space-y-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`text-[8.5px] font-black px-2 py-0.5 rounded-full border uppercase ${badgeBg}`}>
-                        {badgeText}
-                      </span>
-                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase ${rarityBg}`}>
-                        {rarityText}
-                      </span>
-                      {r.parentApproved && (
-                        <span className="text-[8px] font-black text-forest flex items-center gap-0.5">
-                          ✓ Đã Duyệt
+                return (
+                  <div
+                    key={r.id}
+                    className={`bg-white border-2 rounded-2xl p-4 flex items-center justify-between gap-4 transition-all duration-100 ${cardBorder} ${
+                      !isAffordable ? "opacity-85" : ""
+                    }`}
+                  >
+                    {/* Reward Info */}
+                    <div className="flex-grow space-y-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`text-[8.5px] font-black px-2 py-0.5 rounded-full border uppercase ${badgeBg}`}>
+                          {badgeText}
                         </span>
-                      )}
+                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase ${rarityBg}`}>
+                          {rarityText}
+                        </span>
+                        {r.parentApproved && (
+                          <span className="text-[8px] font-black text-forest flex items-center gap-0.5">
+                            ✓ Đã Duyệt
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-xs font-black text-forest-dark leading-snug">{r.title}</h4>
+                      
+                      {/* Cost display */}
+                      <div className="flex items-center gap-1 text-[10px] font-extrabold text-amber-dark">
+                        <span>Yêu cầu tích lũy:</span>
+                        <span className="text-xs font-black flex items-center gap-0.5">
+                          {r.cost} {costSymbol}
+                        </span>
+                      </div>
                     </div>
-                    <h4 className="text-xs font-black text-forest-dark leading-snug">{r.title}</h4>
-                    
-                    {/* Cost display */}
-                    <div className="flex items-center gap-1 text-[10px] font-extrabold text-amber-dark">
-                      <span>Cần tích lũy:</span>
-                      <span className="text-xs font-black flex items-center gap-0.5">
-                        {r.cost} 🪙
-                      </span>
-                    </div>
-                  </div>
 
                   {/* Redeem Button */}
                   <button
@@ -284,7 +342,7 @@ export default function RewardsPage() {
         </div>
       )}
 
-      {/* GOLD SHORTAGE MODAL */}
+      {/* DUAL CURRENCY SHORTAGE MODAL */}
       {shortageReward && (
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
           <div 
@@ -292,11 +350,13 @@ export default function RewardsPage() {
           >
             {/* Mascot */}
             <div className="w-16 h-16 bg-rose-50 border-2 border-terracotta rounded-full mx-auto flex items-center justify-center text-3xl shadow">
-              🪙
+              {shortageReward.currency === "gold" ? "🪙" : "⭐"}
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-sm font-black text-terracotta uppercase tracking-wider">Chưa Đủ Tiền Vàng! 🔒</h3>
+              <h3 className="text-sm font-black text-terracotta uppercase tracking-wider">
+                {shortageReward.currency === "gold" ? "Chưa Đủ Tiền Vàng! 🔒" : "Chưa Đủ Điểm Số! 🔒"}
+              </h3>
               <p className="text-[10px] text-gray-500">Quốc Bảo ơi, hãy cố gắng thêm chút nữa nhé!</p>
             </div>
 
@@ -306,21 +366,29 @@ export default function RewardsPage() {
               <div className="flex items-center justify-center gap-4 py-1.5 border-t border-sand mt-2 pt-2">
                 <div className="text-center">
                   <p className="text-[9px] text-gray-400 font-extrabold uppercase">Hiện có</p>
-                  <p className="text-base font-black text-amber-dark">{gold} 🪙</p>
+                  <p className="text-base font-black text-amber-dark">
+                    {shortageReward.currency === "gold" ? `${gold} 🪙` : `${points} ⭐`}
+                  </p>
                 </div>
                 <div className="text-xs text-gray-300 font-black">/</div>
                 <div className="text-center">
                   <p className="text-[9px] text-gray-400 font-extrabold uppercase">Yêu cầu</p>
-                  <p className="text-base font-black text-forest-medium">{shortageReward.cost} 🪙</p>
+                  <p className="text-base font-black text-forest-medium">
+                    {shortageReward.cost} {shortageReward.currency === "gold" ? "🪙" : "⭐"}
+                  </p>
                 </div>
               </div>
               <p className="text-[10px] text-terracotta font-black bg-rose-50 p-2 rounded-xl border border-red-100">
-                Con cần tích lũy thêm {shortageReward.cost - gold} 🪙 Tiền Vàng nữa!
+                Con cần tích lũy thêm {shortageReward.cost - (shortageReward.currency === "gold" ? gold : points)} {shortageReward.currency === "gold" ? "🪙 Tiền Vàng" : "⭐ Điểm"} nữa!
               </p>
             </div>
 
             <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
-              💡 <strong>Bí quyết anh hùng:</strong> Hãy quay lại màn hình phiêu lưu, hoàn thành thêm các nhiệm vụ ngày (hoặc làm thật xuất sắc để trúng <strong>Chí Mạng ⚡ nhân đôi vàng</strong>) nhé!
+              💡 <strong>Bí quyết anh hùng:</strong> Hãy quay lại màn hình phiêu lưu, hoàn thành thêm các nhiệm vụ ngày
+              {shortageReward.currency === "gold" 
+                ? " việc nhà thực tế để kiếm Tiền Vàng của bố mẹ nhé! 💪" 
+                : " học tập và tự rèn luyện (để trúng Chí Mạng ⚡ nhân đôi Điểm) nhé! ⭐"
+              }
             </p>
 
             {/* Actions */}

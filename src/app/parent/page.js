@@ -25,6 +25,8 @@ export default function ParentDashboard() {
     resetDailyTasks,
     gold,
     setGold,
+    points,
+    setPoints,
   } = useGame();
 
   // Authentication Gate State
@@ -32,14 +34,18 @@ export default function ParentDashboard() {
   const [pinEntry, setPinEntry] = useState("");
   const [pinError, setPinError] = useState("");
 
-  // Gold manual adjustments
+  // Gold and Points manual adjustments
   const [goldAdjustAmount, setGoldAdjustAmount] = useState(20);
   const [goldAdjustSuccess, setGoldAdjustSuccess] = useState("");
+  const [pointsAdjustAmount, setPointsAdjustAmount] = useState(50);
+  const [pointsAdjustSuccess, setPointsAdjustSuccess] = useState("");
 
   // CRUD Forms States
   const [taskTitle, setTaskTitle] = useState("");
   const [taskCategory, setTaskCategory] = useState("discipline");
   const [taskExp, setTaskExp] = useState(20);
+  const [taskPoints, setTaskPoints] = useState(20); // default points = exp
+  const [taskGold, setTaskGold] = useState(0); // default gold = 0
   const [taskIsMandatory, setTaskIsMandatory] = useState(false);
 
   const [rewardTitle, setRewardTitle] = useState("");
@@ -47,6 +53,7 @@ export default function ParentDashboard() {
   const [rewardType, setRewardType] = useState("perk");
   const [rewardMinutes, setRewardMinutes] = useState(20);
   const [rewardRarity, setRewardRarity] = useState("rare");
+  const [rewardCurrency, setRewardCurrency] = useState("points"); // default currency points
 
   const [encouragementText, setEncouragementText] = useState("");
   const [messageSuccess, setMessageSuccess] = useState(false);
@@ -85,8 +92,9 @@ export default function ParentDashboard() {
     e.preventDefault();
     if (!taskTitle.trim()) return;
 
-    addCustomTask(taskTitle, taskExp, taskCategory, taskIsMandatory);
+    addCustomTask(taskTitle, taskExp, taskCategory, taskIsMandatory, taskPoints, taskGold);
     setTaskTitle("");
+    setTaskGold(0);
     setTaskIsMandatory(false);
     alert("Đã thêm nhiệm vụ mới thành công! ✅");
   };
@@ -96,7 +104,7 @@ export default function ParentDashboard() {
     e.preventDefault();
     if (!rewardTitle.trim()) return;
 
-    addCustomReward(rewardTitle, rewardCost, rewardType, rewardMinutes, rewardRarity);
+    addCustomReward(rewardTitle, rewardCost, rewardType, rewardMinutes, rewardRarity, rewardCurrency);
     setRewardTitle("");
     alert("Đã thêm phần thưởng mới thành công! ✅");
   };
@@ -112,6 +120,19 @@ export default function ParentDashboard() {
       setGoldAdjustSuccess(`Đã phạt trừ -${goldAdjustAmount} 🪙 Tiền Vàng của Quốc Bảo! ⚠️`);
     }
     setTimeout(() => setGoldAdjustSuccess(""), 3500);
+  };
+
+  // Adjust points manually
+  const handleAdjustPoints = (type) => {
+    if (pointsAdjustAmount <= 0) return;
+    if (type === "add") {
+      setPoints((prev) => prev + pointsAdjustAmount);
+      setPointsAdjustSuccess(`Đã thưởng nóng +${pointsAdjustAmount} ⭐ Điểm Tích Lũy! 🎉`);
+    } else {
+      setPoints((prev) => Math.max(0, prev - pointsAdjustAmount));
+      setPointsAdjustSuccess(`Đã phạt trừ -${pointsAdjustAmount} ⭐ Điểm Tích Lũy! ⚠️`);
+    }
+    setTimeout(() => setPointsAdjustSuccess(""), 3500);
   };
 
   // Send pigeon message
@@ -246,43 +267,76 @@ export default function ParentDashboard() {
             })}
           </div>
 
-          {/* GOLD ADJUSTMENT PANEL FOR PARENT */}
-          <div className="bg-sand-light border-2 border-sand p-3.5 rounded-2xl space-y-3 mt-4">
-            <div className="text-[10px] font-black text-amber-dark uppercase tracking-wider flex items-center gap-1 select-none">
-              <span>🪙</span>
-              <span>Quản Lý Tiền Vàng Của Con</span>
+          {/* DUAL CURRENCY ADJUSTMENT PANEL FOR PARENT */}
+          <div className="bg-sand-light border-2 border-sand p-3.5 rounded-2xl space-y-4 mt-4">
+            <div className="text-[10px] font-black text-forest-dark uppercase tracking-wider flex items-center gap-1 select-none">
+              <span>🔑</span>
+              <span>Bảng Điều Chỉnh Ví Của Con</span>
             </div>
             
-            <div className="flex items-center justify-between bg-white border border-sand px-3 py-2 rounded-xl">
-              <span className="text-[10px] font-bold text-gray-500">Ví hiện tại của Quốc Bảo:</span>
-              <span className="text-xs font-black text-amber-dark flex items-center gap-0.5">{gold} 🪙</span>
+            {/* Points adjustment */}
+            <div className="space-y-2 border-b border-sand pb-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-gray-500 flex items-center gap-0.5">⭐ Điểm Tích Lũy (Giải trí):</span>
+                <span className="font-black text-forest-dark">{points} ⭐</span>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={pointsAdjustAmount}
+                  onChange={(e) => setPointsAdjustAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-1/2 bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={0}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjustPoints("add")}
+                  className="w-1/4 bg-forest text-sand-light font-black text-[9px] py-1.5 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+                >
+                  + THƯỞNG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAdjustPoints("sub")}
+                  className="w-1/4 bg-terracotta text-white font-black text-[9px] py-1.5 rounded-xl border-2 border-terracotta shadow-game-terracotta btn-game-transition active:shadow-game-pressed"
+                >
+                  - PHẠT
+                </button>
+              </div>
+              {pointsAdjustSuccess && <p className="text-[8px] font-bold text-center text-forest animate-pulse">{pointsAdjustSuccess}</p>}
             </div>
 
-            <div className="flex gap-2">
-              <input
-                type="number"
-                value={goldAdjustAmount}
-                onChange={(e) => setGoldAdjustAmount(Math.max(0, parseInt(e.target.value) || 0))}
-                placeholder="Nhập lượng vàng..."
-                className="w-1/2 bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
-                min={0}
-              />
-              <button
-                type="button"
-                onClick={() => handleAdjustGold("add")}
-                className="w-1/4 bg-forest text-sand-light font-black text-[10px] py-2 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
-              >
-                + THƯỞNG
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAdjustGold("sub")}
-                className="w-1/4 bg-terracotta text-white font-black text-[10px] py-2 rounded-xl border-2 border-terracotta shadow-game-terracotta btn-game-transition active:shadow-game-pressed"
-              >
-                - PHẠT
-              </button>
+            {/* Gold adjustment */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-gray-500 flex items-center gap-0.5">🪙 Tiền Vàng (Tiền mặt thật):</span>
+                <span className="font-black text-amber-dark">{gold} 🪙</span>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={goldAdjustAmount}
+                  onChange={(e) => setGoldAdjustAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-1/2 bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={0}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjustGold("add")}
+                  className="w-1/4 bg-forest text-sand-light font-black text-[9px] py-1.5 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+                >
+                  + THƯỞNG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAdjustGold("sub")}
+                  className="w-1/4 bg-terracotta text-white font-black text-[9px] py-1.5 rounded-xl border-2 border-terracotta shadow-game-terracotta btn-game-transition active:shadow-game-pressed"
+                >
+                  - PHẠT
+                </button>
+              </div>
+              {goldAdjustSuccess && <p className="text-[8px] font-bold text-center text-forest animate-pulse">{goldAdjustSuccess}</p>}
             </div>
-            {goldAdjustSuccess && <p className="text-[9px] font-bold text-center text-forest animate-pulse">{goldAdjustSuccess}</p>}
           </div>
         </div>
 
@@ -345,18 +399,45 @@ export default function ParentDashboard() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">EXP Nhận Được</label>
-                <select
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">EXP Thăng Cấp</label>
+                <input
+                  type="number"
                   value={taskExp}
-                  onChange={(e) => setTaskExp(e.target.value)}
-                  className="w-full bg-white border border-sand rounded-xl p-2 text-xs font-bold text-forest-dark focus:outline-none"
-                >
-                  <option value={10}>+10 EXP</option>
-                  <option value={15}>+15 EXP</option>
-                  <option value={20}>+20 EXP (Khuyên Dùng)</option>
-                  <option value={25}>+25 EXP</option>
-                  <option value={30}>+30 EXP</option>
-                </select>
+                  onChange={(e) => {
+                    const val = Math.max(0, parseInt(e.target.value) || 0);
+                    setTaskExp(val);
+                    setTaskPoints(val); // Auto sync for convenience
+                  }}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={0}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Điểm Thử Thách ⭐ (Đổi Giải Trí)</label>
+                <input
+                  type="number"
+                  value={taskPoints}
+                  onChange={(e) => setTaskPoints(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={0}
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Tiền Vàng 🪙 (Đổi Tiền Thật)</label>
+                <input
+                  type="number"
+                  value={taskGold}
+                  onChange={(e) => setTaskGold(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={0}
+                  required
+                />
               </div>
             </div>
 
@@ -480,19 +561,31 @@ export default function ParentDashboard() {
                 </select>
               </div>
 
-              {rewardType === "game_time" && (
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Số Phút Mở Khóa</label>
-                  <input
-                    type="number"
-                    value={rewardMinutes}
-                    onChange={(e) => setRewardMinutes(e.target.value)}
-                    className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
-                    min={5}
-                  />
-                </div>
-              )}
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Ví Thanh Toán</label>
+                <select
+                  value={rewardCurrency}
+                  onChange={(e) => setRewardCurrency(e.target.value)}
+                  className="w-full bg-white border border-sand rounded-xl p-2 text-xs font-bold text-forest-dark focus:outline-none"
+                >
+                  <option value="points">Điểm Tích Lũy ⭐</option>
+                  <option value="gold">Tiền Vàng 🪙</option>
+                </select>
+              </div>
             </div>
+
+            {rewardType === "game_time" && (
+              <div className="space-y-1 text-xs">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Số Phút Mở Khóa</label>
+                <input
+                  type="number"
+                  value={rewardMinutes}
+                  onChange={(e) => setRewardMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
+                  min={5}
+                />
+              </div>
+            )}
 
             <button
               type="submit"

@@ -22,14 +22,15 @@ export default function DashboardPage() {
     encouragements,
     readAllMessages,
     gold,
-    lastGoldGain,
-    setLastGoldGain,
+    points,
+    lastPointsGain,
+    setLastPointsGain,
   } = useGame();
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
-  const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Gold!
+  const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
 
   // Redirect if character doesn't exist (no name)
   useEffect(() => {
@@ -38,27 +39,27 @@ export default function DashboardPage() {
     }
   }, [isLoaded, charName, router]);
 
-  // Listener for Critical Gold Gain
+  // Listener for Critical Points Gain
   useEffect(() => {
-    if (lastGoldGain) {
-      if (lastGoldGain.isCritical) {
+    if (lastPointsGain) {
+      if (lastPointsGain.isCritical) {
         setCriticalToast({
-          amount: lastGoldGain.amount,
-          taskTitle: lastGoldGain.taskTitle,
+          amount: lastPointsGain.amount,
+          taskTitle: lastPointsGain.taskTitle,
         });
         
         // Auto dismiss after 4 seconds
         const timer = setTimeout(() => {
           setCriticalToast(null);
-          setLastGoldGain(null);
+          setLastPointsGain(null);
         }, 4000);
         return () => clearTimeout(timer);
       } else {
         // Just clear normal gains, no big modal needed
-        setLastGoldGain(null);
+        setLastPointsGain(null);
       }
     }
-  }, [lastGoldGain, setLastGoldGain]);
+  }, [lastPointsGain, setLastPointsGain]);
 
   if (!isLoaded) {
     return (
@@ -155,12 +156,12 @@ export default function DashboardPage() {
       {/* Scrollable Main Area */}
       <div className="flex-grow p-5 space-y-5 overflow-y-auto">
         
-        {/* TOP STATUS BAR: Streak, Energy, Gold Wallet, Pigeon Letter */}
-        <div className="flex items-center justify-between gap-2">
+        {/* TOP STATUS BAR: Streak, Energy, Wallet (Points/Gold), Pigeon Letter */}
+        <div className="flex items-center justify-between gap-1 flex-wrap select-none">
           {/* Energy Bar */}
           <div className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
-            <span className="text-xs">❤️</span>
-            <div className="w-10 bg-gray-200 h-2 rounded-full overflow-hidden">
+            <span className="text-[10px]">❤️</span>
+            <div className="w-8 bg-gray-200 h-1.5 rounded-full overflow-hidden">
               <div 
                 className="bg-terracotta h-full transition-all duration-300"
                 style={{ width: `${energy}%` }}
@@ -168,25 +169,34 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Points Wallet */}
+          <div 
+            onClick={() => router.push("/rewards")}
+            className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
+          >
+            <span className="text-xs">⭐</span>
+            <span className="text-[9px] font-black text-forest-dark">{points} ĐIỂM</span>
+          </div>
+
           {/* Gold Wallet */}
           <div 
             onClick={() => router.push("/rewards")}
-            className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95 select-none"
+            className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
           >
             <span className="text-xs animate-bounce">🪙</span>
-            <span className="text-[10px] font-black text-amber-dark">{gold} VÀNG</span>
+            <span className="text-[9px] font-black text-amber-dark">{gold} VÀNG</span>
           </div>
 
           {/* Messages Bird (Carrier Pigeon Alert) */}
           {encouragements.length > 0 && (
             <button
               onClick={() => handleOpenLetter(encouragements[0])}
-              className="relative p-1.5 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
+              className="relative p-1 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
               title="Thư động viên từ bố mẹ!"
             >
-              <span className="text-sm">🕊️</span>
+              <span className="text-xs">🕊️</span>
               {unreadLetters.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-terracotta text-white font-extrabold text-[7px] h-3.5 w-3.5 rounded-full flex items-center justify-center border border-white animate-pulse">
+                <span className="absolute -top-0.5 -right-0.5 bg-terracotta text-white font-extrabold text-[6px] h-3 w-3 rounded-full flex items-center justify-center border border-white animate-pulse">
                   !
                 </span>
               )}
@@ -194,9 +204,9 @@ export default function DashboardPage() {
           )}
 
           {/* Streak Flame */}
-          <div className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
-            <span className="text-sm animate-flame">🔥</span>
-            <span className="text-[10px] font-black text-amber">{streak} NGÀY</span>
+          <div className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
+            <span className="text-xs animate-flame">🔥</span>
+            <span className="text-[9px] font-black text-amber">{streak}N</span>
           </div>
         </div>
 
@@ -411,9 +421,13 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* EXP Reward Tag */}
-                      <div className={`text-right font-black text-xs ${task.completed ? "text-gray-400" : "text-forest"}`}>
-                        +{task.exp} EXP
+                      {/* EXP / Points / Gold Reward Tag */}
+                      <div className="text-right flex flex-col items-end justify-center gap-0.5 font-black text-[9px]">
+                        <span className={task.completed ? "text-gray-400" : "text-forest"}>+{task.exp} EXP</span>
+                        <span className={task.completed ? "text-gray-400" : "text-forest-medium"}>+{task.points !== undefined ? task.points : task.exp} ⭐</span>
+                        {task.gold > 0 && (
+                          <span className={task.completed ? "text-gray-400" : "text-amber-dark"}>+{task.gold} 🪙</span>
+                        )}
                       </div>
                     </button>
                   );
@@ -477,9 +491,9 @@ export default function DashboardPage() {
               <p className="text-xs font-black text-forest-dark truncate px-2">{criticalToast.taskTitle}</p>
               <div className="text-3xl font-black text-amber-dark flex items-center justify-center gap-1.5 py-1">
                 <span>+ {criticalToast.amount}</span>
-                <span className="text-2xl">🪙</span>
+                <span className="text-2xl">⭐</span>
               </div>
-              <p className="text-[9px] text-forest font-bold uppercase tracking-wider">Đã nhân đôi Tiền Vàng và hệ số Streak! 🎉</p>
+              <p className="text-[9px] text-forest font-bold uppercase tracking-wider">Đã nhân đôi Điểm Tích Lũy và nhân hệ số Streak! 🎉</p>
             </div>
 
             {/* Close Button */}
