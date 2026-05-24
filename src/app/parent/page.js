@@ -848,7 +848,7 @@ export default function ParentDashboard() {
                 </p>
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
                   • Khi tạo quà, bố mẹ chọn <strong>Ví Thanh Toán</strong> (Ví dụ: Thẻ xem TV đổi bằng Điểm ⭐, Nhận 50k tiền mặt đổi bằng Vàng 🪙).<br />
-                  • Khi con bấm "Đổi quà", bố mẹ sẽ phải nhập mã PIN để duyệt và thực hiện trao quà thực tế cho con ngoài đời.
+                  • Khi con bấm {"'Đổi quà'"}, bố mẹ sẽ phải nhập mã PIN để duyệt và thực hiện trao quà thực tế cho con ngoài đời.
                 </p>
               </div>
 
@@ -857,7 +857,7 @@ export default function ParentDashboard() {
                   🔄 4. Đặt Lại Ngày Mới (Reset Ngày)
                 </p>
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
-                  • Mỗi tối trước khi đi ngủ hoặc sáng sớm, bố mẹ bấm nút <strong>"Giả lập kích hoạt ngày mới"</strong> để làm mới danh sách việc ngày cho con.<br />
+                  • Mỗi tối trước khi đi ngủ hoặc sáng sớm, bố mẹ bấm nút <strong>{"'Giả lập kích hoạt ngày mới'"}</strong> để làm mới danh sách việc ngày cho con.<br />
                   • Nếu ngày hôm đó con làm tốt từ 3 việc trở lên, ngọn lửa <strong>Streak 🔥</strong> của con sẽ tăng lên!
                 </p>
               </div>
