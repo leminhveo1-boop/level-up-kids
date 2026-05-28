@@ -36,11 +36,11 @@ Làm việc tốt ngoài đời thật (đọc sách, dọn phòng, giúp bố m
 - **⚡ Năng Lượng (Energy)**: Tích lũy từ hoàn thành nhiệm vụ (tối đa 100 ⚡). Dùng để đập đá đào quặng ma thuật!
 - **🪙 Hero Coins**: Tiền tệ đào từ quặng ma thuật, dùng để tích lũy đổi quà lớn ngoài đời.
 
-### 4. Bùa Lợi Hang Đào Mỏ (Mining Buffs) ⛏️
-Hãy hoàn thành thói quen tốt ngoài đời để mở buff đập đá cực mạnh:
-*   *🏃 Tập thể dục:* Kích hoạt **Buff Thể Lực** ➔ 20% cơ hội nổ **Chí mạng x2** nhân đôi Hero Coin!
-*   *📚 Đọc sách:* Kích hoạt **Buff Trí Tuệ** ➔ Tăng tỷ lệ tìm thấy Rương Sử Thi & Rương Thần Thoại!
-*   *🔥 Chuỗi Streak >= 3:* Kích hoạt **Buff May Mắn** ➔ Quặng đá thường sẽ ít đi, nhường chỗ cho quặng bạc và vàng lấp lánh!
+### 4. Ấn Pháp Anh Hùng (Hero Runes) ⛏️
+Hãy hoàn thành thói quen tốt ngoài đời để mở Ấn Pháp đập đá cực mạnh:
+*   *🏃 Tập thể dục:* Kích hoạt **Ấn Pháp Thể Lực** ➔ 20% cơ hội nổ **Cú Đập Sức Mạnh x2** nhân đôi Hero Coin!
+*   *📚 Đọc sách:* Kích hoạt **Ấn Pháp Trí Tuệ** ➔ Kích hoạt Mắt Tinh Anh giúp tăng tỷ lệ tìm thấy Rương Sử Thi & Rương Thần Thoại!
+*   *🔥 Chuỗi Streak >= 3:* Kích hoạt **Ấn Pháp Chuyên Cần** ➔ Kích hoạt Ngọn Lửa Kiên Trì giúp quặng đá thường ít đi, nhường chỗ cho quặng bạc và vàng lấp lánh!
 
 ---
 

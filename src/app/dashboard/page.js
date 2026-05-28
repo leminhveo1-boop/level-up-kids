@@ -25,6 +25,9 @@ export default function DashboardPage() {
     points,
     lastPointsGain,
     setLastPointsGain,
+    pets,
+    activePet,
+    activeMount,
   } = useGame();
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
@@ -32,6 +35,42 @@ export default function DashboardPage() {
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
   const [showGuideModal, setShowGuideModal] = useState(false); // Guideline for child
+
+  const [activeTaskId, setActiveTaskId] = useState(null); // Task currently being actively tracked
+  const [activeTaskStartTime, setActiveTaskStartTime] = useState(0); // Unix start time
+  const [elapsedSeconds, setElapsedSeconds] = useState(0); // Elapsed focus seconds
+
+  // Real-time Active Task Stopwatch Effect
+  useEffect(() => {
+    let interval = null;
+    if (activeTaskId && activeTaskStartTime > 0) {
+      interval = setInterval(() => {
+        setElapsedSeconds(Math.floor((Date.now() - activeTaskStartTime) / 1000));
+      }, 500);
+    } else {
+      setElapsedSeconds(0);
+    }
+    return () => clearInterval(interval);
+  }, [activeTaskId, activeTaskStartTime]);
+
+  const formatStopwatch = (totalSecs) => {
+    const m = Math.floor(totalSecs / 60);
+    const s = totalSecs % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const handleTaskComplete = (taskId) => {
+    if (taskId === activeTaskId) {
+      setActiveTaskId(null);
+      setActiveTaskStartTime(0);
+      setElapsedSeconds(0);
+    }
+    completeTask(taskId);
+  };
+
+  // Companion pet/mount objects
+  const activePetObj = pets?.find((p) => p.id === activePet);
+  const activeMountObj = pets?.find((p) => p.id === activeMount);
 
   // Redirect if character doesn't exist (no name)
   useEffect(() => {
@@ -220,11 +259,27 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* HERO CARD (Avatar, Level progress bar) */}
+        {/* HERO CARD (Avatar, Level progress bar, and Pet/Mount Companion) */}
         <div className={`border-2 p-4 rounded-3xl shadow-game-flat flex items-center gap-4 ${classConfig.bg}`}>
-          {/* Avatar Icon */}
-          <div className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg} border-sand`}>
-            {classConfig.icon}
+          {/* Avatar Icon + Pet Companion */}
+          <div className="relative">
+            <div className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg} border-sand`}>
+              {classConfig.icon}
+            </div>
+            
+            {/* Active Pet companion floating on top-left of Avatar */}
+            {activePetObj && (
+              <div className="absolute -top-2 -left-2 w-8 h-8 bg-white border border-sand rounded-xl flex items-center justify-center text-lg shadow-md animate-float z-10 select-none">
+                {activePetObj.emoji}
+              </div>
+            )}
+
+            {/* Active Mount companion displaying as riding on bottom-right of Avatar */}
+            {activeMountObj && (
+              <div className="absolute -bottom-2 -right-2 w-9 h-9 bg-white border border-sand rounded-xl flex items-center justify-center text-xl shadow-md animate-bounce z-10 select-none" title={`Thú cưỡi: ${activeMountObj.name}`}>
+                {activeMountObj.emoji}
+              </div>
+            )}
           </div>
 
           {/* Hero Name, Title & Level Bar */}
@@ -392,54 +447,124 @@ export default function DashboardPage() {
                     itemStyle = "border-sand opacity-60 line-through bg-gray-50 shadow-none translate-y-[2px]";
                   }
 
-                  return (
-                    <button
-                      key={task.id}
-                      onClick={() => completeTask(task.id)}
-                      className={`w-full text-left bg-white border-2 rounded-2xl p-4 flex items-center justify-between gap-4 btn-game-transition ${itemStyle}`}
-                    >
-                      {/* Checkbox Icon */}
-                      <div className="flex items-center gap-3 flex-grow">
-                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center text-xs font-black transition-colors ${
-                          task.completed 
-                            ? "bg-forest-medium border-forest-medium text-white" 
-                            : "border-sand bg-sand-light text-transparent"
-                        }`}>
-                          ✓
-                        </div>
+                  const isTaskActive = activeTaskId === task.id;
+                  const isAnotherTaskActive = activeTaskId !== null && activeTaskId !== task.id;
 
-                        {/* Title & category tag */}
-                        <div className="space-y-0.5">
-                          <span className={`text-xs font-extrabold ${task.completed ? "text-gray-400" : "text-forest-dark"}`}>
-                            {task.title}
-                          </span>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5">
-                              {emoji} {statText}
+                  return (
+                    <div
+                      key={task.id}
+                      className={`w-full text-left bg-white border-2 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-100 ${itemStyle}`}
+                    >
+                      {/* Top Row: Checkbox, Title, and Rewards */}
+                      <div className="flex items-center justify-between gap-4">
+                        {/* Checkbox Icon & Title info */}
+                        <div className="flex items-center gap-3 flex-grow">
+                          <button
+                            type="button"
+                            onClick={() => handleTaskComplete(task.id)}
+                            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
+                              task.completed 
+                                ? "bg-forest-medium border-forest-medium text-white" 
+                                : "border-sand bg-sand-light text-transparent hover:border-forest"
+                            }`}
+                          >
+                            ✓
+                          </button>
+
+                          {/* Title & category tag */}
+                          <div className="space-y-0.5">
+                            <span className={`text-xs font-extrabold block ${task.completed ? "text-gray-400 line-through" : "text-forest-dark"}`}>
+                              {task.title}
                             </span>
-                            {task.isMandatory && !task.completed && (
-                              <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse">
-                                Bắt buộc 🔴
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
+                                {emoji} {statText}
                               </span>
-                            )}
-                            {task.custom && (
-                              <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase">
-                                Bố mẹ giao 👑
-                              </span>
-                            )}
+                              {task.isMandatory && !task.completed && (
+                                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
+                                  Bắt buộc 🔴
+                                </span>
+                              )}
+                              {task.custom && (
+                                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
+                                  Bố mẹ giao 👑
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+
+                        {/* EXP / Points / Energy Reward Tag */}
+                        <div className="text-right flex flex-col items-end justify-center gap-0.5 font-black text-[9px] select-none">
+                          <span className={task.completed ? "text-gray-400" : "text-forest"}>+{task.exp} EXP</span>
+                          <span className={task.completed ? "text-gray-400" : "text-forest-medium"}>+{task.points !== undefined ? task.points : task.exp} ⭐</span>
+                          {task.energy > 0 && (
+                            <span className={task.completed ? "text-gray-400" : "text-amber-dark"}>+{task.energy} ⚡</span>
+                          )}
+                        </div>
                       </div>
 
-                      {/* EXP / Points / Energy Reward Tag */}
-                      <div className="text-right flex flex-col items-end justify-center gap-0.5 font-black text-[9px]">
-                        <span className={task.completed ? "text-gray-400" : "text-forest"}>+{task.exp} EXP</span>
-                        <span className={task.completed ? "text-gray-400" : "text-forest-medium"}>+{task.points !== undefined ? task.points : task.exp} ⭐</span>
-                        {task.energy > 0 && (
-                          <span className={task.completed ? "text-gray-400" : "text-amber-dark"}>+{task.energy} ⚡</span>
-                        )}
-                      </div>
-                    </button>
+                      {/* Bottom Row: Active Timer Stopwatch Controller */}
+                      {!task.completed && (
+                        <div className="flex items-center justify-between border-t border-sand pt-3 mt-1 select-none">
+                          {isTaskActive ? (
+                            <>
+                              {/* Stopwatch Timer Display */}
+                              <div className="flex items-center gap-2 text-xs font-black text-forest animate-pulse">
+                                <span className="animate-spin text-sm">⏱️</span>
+                                <span className="font-mono text-sm tracking-wider">Tập trung: {formatStopwatch(elapsedSeconds)}</span>
+                              </div>
+                              
+                              {/* Active actions */}
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleTaskComplete(task.id)}
+                                  className="bg-forest text-white text-[9px] font-black px-3 py-2 rounded-xl border border-forest shadow-game-forest active:scale-95 transition-all"
+                                >
+                                  HOÀN THÀNH ✅
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActiveTaskId(null);
+                                    setActiveTaskStartTime(0);
+                                    setElapsedSeconds(0);
+                                  }}
+                                  className="bg-sand-light text-terracotta text-[9px] font-black px-2 py-2 rounded-xl border border-sand hover:bg-rose-50 active:scale-95 transition-all"
+                                >
+                                  HỦY ⏹️
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-[10px] text-gray-400 font-bold">
+                                {isAnotherTaskActive ? "🔒 Đang làm việc khác..." : "💡 Hãy tập trung để làm nhanh hơn"}
+                              </span>
+                              
+                              <button
+                                type="button"
+                                disabled={isAnotherTaskActive}
+                                onClick={() => {
+                                  setActiveTaskId(task.id);
+                                  setActiveTaskStartTime(Date.now());
+                                  setElapsedSeconds(0);
+                                }}
+                                className={`text-[9px] font-black px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 flex items-center gap-1 ${
+                                  isAnotherTaskActive
+                                    ? "bg-gray-50 border-sand text-gray-300 cursor-not-allowed shadow-none"
+                                    : "bg-white border-forest text-forest shadow-game-forest hover:bg-forest hover:text-white"
+                                }`}
+                              >
+                                <span>⏱️</span>
+                                <span>BẮT ĐẦU LÀM</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   );
                 })
             )}
@@ -492,8 +617,8 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-1 text-white">
-              <h3 className="text-lg font-black tracking-widest uppercase animate-pulse">CHÍ MẠNG CRITICAL!</h3>
-              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">Quốc Bảo đã kích hoạt may mắn 🌟</p>
+              <h3 className="text-lg font-black tracking-widest uppercase animate-pulse">ĐIỂM MAY MẮN! 🌟</h3>
+              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">Quốc Bảo đã kích hoạt Cú Đập Sức Mạnh 💥</p>
             </div>
 
             <div className="bg-white border-2 border-amber-dark p-4 rounded-2xl shadow-inner space-y-1">
@@ -551,10 +676,10 @@ export default function DashboardPage() {
 
               <div className="space-y-1">
                 <p className="font-black text-terracotta flex items-center gap-1 text-[11px]">
-                  ⚡ 3. Đòn Chí Mạng (Critical Hit)
+                  ⚡ 3. Điểm May Mắn (Lucky Multiplier)
                 </p>
                 <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
-                  Mỗi khi hoàn thành một nhiệm vụ, dũng sĩ có **15% cơ hội** trúng đòn **Chí Mạng ⚡** giúp nhân đôi lượng Điểm ⭐ nhận được!
+                  Mỗi khi hoàn thành một nhiệm vụ, dũng sĩ có **15% cơ hội** kích hoạt **Điểm May Mắn ⚡** giúp nhân đôi lượng Điểm ⭐ nhận được!
                 </p>
               </div>
 
@@ -568,6 +693,27 @@ export default function DashboardPage() {
                   • Dùng **Điểm ⭐** đổi thời gian chơi TV/game; dùng **Hero Coin 🪙** đổi quà thực tế lớn (kem, Lego)!
                 </p>
               </div>
+
+              <div className="space-y-1">
+                <p className="font-black text-clay flex items-center gap-1 text-[11px]">
+                  🐾 5. Ấp Trứng & Huấn Luyện Thú Cưỡi
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
+                  • **Cách có vật phẩm:** Đập đá đào mỏ, nhờ bố mẹ tặng thưởng, hoặc chủ động **dùng Hero Coin 🪙 mua Trứng (Thường, Sói, Rồng), Thuốc phép & Combo Thức ăn** trong Cửa Hàng 🛒.<br />
+                  • **Ấp thú cưng:** Kết hợp Trứng & Thuốc ấp phép để nở ra Fox, Cat, Sói, Rồng 🦊.<br />
+                  • **Huấn luyện & Ấn Pháp:** Nuôi pet bằng Thức ăn đạt 100% thân mật sẽ tiến hóa thành **Thú Cưỡi khổng lồ 🦖**, giúp tăng **+10% Năng lượng ⚡** khi làm nhiệm vụ ngày và **+5% tỷ lệ nổ Cú Đập Sức Mạnh 🔥** khi đào mỏ!
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-black text-sky flex items-center gap-1 text-[11px]">
+                  🕊️ 6. Bồ Câu Nhận Thư Động Viên
+                </p>
+                <p className="pl-5 text-gray-600 text-[10.5px] leading-relaxed">
+                  • Mỗi ngày bố mẹ sẽ gửi những lời chúc, lời nhắn nhủ viết tay yêu thương từ Phòng Quản Trị.<br />
+                  • Nhấp vào chú chim bồ câu 🕊️ bay lượn ở góc màn hình để mở thư động viên của bố mẹ và nhận niềm vui bất ngờ nhé!
+                </p>
+              </div>
             </div>
 
             <button
@@ -579,6 +725,21 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Floating Carrier Pigeon if there are unread messages */}
+      {unreadLetters.length > 0 && (
+        <button
+          onClick={() => handleOpenLetter(unreadLetters[0])}
+          className="fixed bottom-24 right-6 w-12 h-12 bg-white border-2 border-amber rounded-full shadow-game-amber flex items-center justify-center text-2xl z-40 animate-bounce active:scale-95 transition-transform"
+          type="button"
+          title="Bồ câu đưa thư từ bố mẹ đang đợi con!"
+        >
+          🕊️
+          <span className="absolute -top-1 -right-1 bg-terracotta text-white font-extrabold text-[8px] h-4 w-4 rounded-full flex items-center justify-center border border-white animate-pulse">
+            !
+          </span>
+        </button>
       )}
 
       {/* BOTTOM TAB NAVIGATION (Duolingo style) */}

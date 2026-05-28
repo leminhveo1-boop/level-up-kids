@@ -27,10 +27,10 @@ Khi có Năng Lượng ⚡, hãy ghé thăm tab **Đào Mỏ ⛏️** để bắ
     *   *🔷 Quặng Bạc Hiếm:* Rơi 5 - 10 Coin (tỷ lệ 20%)
     *   *👑 Hũ Vàng Sử Thi:* Rơi 15 - 25 Coin (tỷ lệ 8%)
     *   *⚡ Rương Thần Thoại:* Rơi 50 - 100 Coin kèm pháo hoa siêu cấp (tỷ lệ 2%)!
-*   **Kích hoạt Bùa Lợi (Daily Buffs)** bằng cách hoàn thành thói quen tốt ngoài đời:
-    *   *🏃 Tập thể dục:* Nhận **Buff Thể Lực** ➔ Có 20% cơ hội nổ **Critical Chí Mạng x2** nhân đôi lượng xu nhận được khi đập đá!
-    *   *📚 Đọc sách:* Nhận **Buff Trí Tuệ** ➔ Tăng cơ hội tìm thấy Rương Sử Thi & Thần Thoại!
-    *   *🔥 Ngọn lửa Streak >= 3:* Nhận **Buff May Mắn** ➔ Quặng bạc và vàng sẽ rơi ra nhiều hơn!
+*   **Kích hoạt Ấn Pháp Anh Hùng (Hero Runes)** bằng cách hoàn thành thói quen tốt ngoài đời:
+    *   *🏃 Tập thể dục:* Nhận **Ấn Pháp Thể Lực** ➔ Có 20% cơ hội nổ **Cú Đập Sức Mạnh x2** nhân đôi lượng xu nhận được khi đập đá!
+    *   *📚 Đọc sách:* Nhận **Ấn Pháp Trí Tuệ** ➔ Kích hoạt Mắt Tinh Anh giúp tăng cơ hội tìm thấy Rương Sử Thi & Thần Thoại!
+    *   *🔥 Ngọn lửa Streak >= 3:* Nhận **Ấn Pháp Chuyên Cần** ➔ Kích hoạt Ngọn Lửa Kiên Trì giúp quặng bạc và vàng sẽ rơi ra nhiều hơn!
 
 ---
 

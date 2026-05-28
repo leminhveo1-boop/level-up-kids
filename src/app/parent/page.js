@@ -27,6 +27,14 @@ export default function ParentDashboard() {
     setHeroCoins,
     points,
     setPoints,
+    inventory,
+    setInventory,
+    parentConfig,
+    setParentConfig,
+    screenMinutesUsedToday,
+    setScreenMinutesUsedToday,
+    screenRedeemsThisWeek,
+    setScreenRedeemsThisWeek,
   } = useGame();
 
   // Authentication Gate State
@@ -61,6 +69,67 @@ export default function ParentDashboard() {
   const [newPin, setNewPin] = useState("");
   const [pinChangeSuccess, setPinChangeSuccess] = useState("");
   const [showParentGuide, setShowParentGuide] = useState(false); // Setup Guide for parent
+
+  // Inventory items adjustments
+  const [selectedItemType, setSelectedItemType] = useState("eggs"); // 'eggs', 'potions', 'foods'
+  const [selectedItemKey, setSelectedItemKey] = useState("base"); // base, fire, meat etc
+  const [itemAdjustAmount, setItemAdjustAmount] = useState(1);
+  const [itemAdjustSuccess, setItemAdjustSuccess] = useState("");
+
+  // Reward VND value conversion state (Rule 2)
+  const [rewardVndCost, setRewardVndCost] = useState("");
+
+  // Temporary edit states for config (Rule 5 & parent_setup_rules.md)
+  const [editMaxMinutes, setEditMaxMinutes] = useState(60);
+  const [editMaxRedeems, setEditMaxRedeems] = useState(5);
+  const [editTopVnd, setEditTopVnd] = useState(500000);
+  const [editTopDays, setEditTopDays] = useState(14);
+  const [editRequireMandatory, setEditRequireMandatory] = useState(true);
+  const [editMaxCoins, setEditMaxCoins] = useState(7000);
+  const [configSuccess, setConfigSuccess] = useState("");
+
+  // Populate config fields once loaded
+  useEffect(() => {
+    if (isLoaded && parentConfig) {
+      setEditMaxMinutes(parentConfig.screenMaxMinutesPerDay || 60);
+      setEditMaxRedeems(parentConfig.screenRedeemMaxPerWeek || 5);
+      setEditTopVnd(parentConfig.topRewardMoneyVnd || 500000);
+      setEditTopDays(parentConfig.topRewardEffortDays || 14);
+      setEditRequireMandatory(parentConfig.requireAllMandatory !== false);
+      setEditMaxCoins(parentConfig.maxCoinBalance || 7000);
+    }
+  }, [isLoaded, parentConfig]);
+
+  const handleAdjustItem = () => {
+    if (itemAdjustAmount <= 0) return;
+    
+    setInventory((prev) => {
+      const currentVal = prev[selectedItemType][selectedItemKey] || 0;
+      const newVal = Math.max(0, currentVal + itemAdjustAmount);
+      return {
+        ...prev,
+        [selectedItemType]: {
+          ...prev[selectedItemType],
+          [selectedItemKey]: newVal
+        }
+      };
+    });
+
+    const itemNames = {
+      base: "🥚 Trứng Thường",
+      wolf: "🐺 Trứng Sói",
+      dragon: "🐉 Trứng Rồng",
+      fire: "🔥 Thuốc Lửa",
+      ice: "❄️ Thuốc Băng",
+      magic: "✨ Thuốc Thần Kỳ",
+      meat: "🥩 Thịt Bò",
+      candy: "🍬 Kẹo Ngọt",
+      leaf: "🌿 Lá Cây"
+    };
+
+    setItemAdjustSuccess(`Đã tặng +${itemAdjustAmount} ${itemNames[selectedItemKey]} cho Quốc Bảo! 🎉`);
+    setTimeout(() => setItemAdjustSuccess(""), 3500);
+  };
 
   // Preset task templates for quick selection
   const taskTemplates = [
@@ -134,7 +203,29 @@ export default function ParentDashboard() {
 
     addCustomReward(rewardTitle, rewardCost, rewardType, rewardMinutes, rewardRarity, rewardCurrency);
     setRewardTitle("");
+    setRewardVndCost("");
     alert("Đã thêm phần thưởng mới thành công! ✅");
+  };
+
+  // Save parent config (Rule 5)
+  const handleSaveConfig = (e) => {
+    e.preventDefault();
+    setParentConfig({
+      screenMaxMinutesPerDay: editMaxMinutes,
+      screenRedeemMaxPerWeek: editMaxRedeems,
+      topRewardMoneyVnd: editTopVnd,
+      topRewardEffortDays: editTopDays,
+      requireAllMandatory: editRequireMandatory,
+      maxCoinBalance: editMaxCoins,
+    });
+    setConfigSuccess("Đã lưu thiết lập thành công! ✅");
+    setTimeout(() => setConfigSuccess(""), 3000);
+  };
+
+  // Reset weekly limit count manually
+  const handleResetWeeklyLimits = () => {
+    setScreenRedeemsThisWeek(0);
+    alert("Đã reset số lần đổi giải trí trong tuần của con về 0! ✅");
   };
 
   // Adjust heroCoins manually
@@ -378,7 +469,7 @@ export default function ParentDashboard() {
           </div>
         </div>
 
-        {/* 2. SEND PIGEON ENCOURAGEMENT MESSAGE */}
+        {/* 3. SEND PIGEON ENCOURAGEMENT MESSAGE */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
           <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">🕊️ Thả Bồ Câu Động Viên Con</h3>
           <form onSubmit={handleSendMessage} className="space-y-3">
@@ -402,7 +493,95 @@ export default function ParentDashboard() {
           </form>
         </div>
 
-        {/* 3. CRUD TASK MANAGEMENT PANEL */}
+        {/* INVENTORY MATERIAL ADJUSTMENT PANEL FOR PARENT */}
+        <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
+          <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider text-center">🎒 Tặng Vật Phẩm Thú Cưng Cho Con</h3>
+          
+          <div className="bg-sand-light border-2 border-sand p-3.5 rounded-2xl space-y-3.5">
+            <div className="text-[10px] font-black text-forest-dark uppercase tracking-wider flex items-center gap-1 select-none">
+              <span>🎁</span>
+              <span>Tặng Trứng, Thuốc, Thức ăn đột xuất</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">1. Loại vật phẩm</label>
+                <select
+                  value={selectedItemType}
+                  onChange={(e) => {
+                    const newType = e.target.value;
+                    setSelectedItemType(newType);
+                    // set default key compatible
+                    if (newType === "eggs") setSelectedItemKey("base");
+                    else if (newType === "potions") setSelectedItemKey("fire");
+                    else setSelectedItemKey("meat");
+                  }}
+                  className="w-full bg-white border border-sand rounded-xl p-2 text-xs font-bold text-forest-dark focus:outline-none"
+                >
+                  <option value="eggs">🥚 Trứng Thú Cưng</option>
+                  <option value="potions">🧪 Thuốc Ấp Nguyên Tố</option>
+                  <option value="foods">🥩 Thức Ăn Thú Cưng</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">2. Chi tiết vật phẩm</label>
+                <select
+                  value={selectedItemKey}
+                  onChange={(e) => setSelectedItemKey(e.target.value)}
+                  className="w-full bg-white border border-sand rounded-xl p-2 text-xs font-bold text-forest-dark focus:outline-none"
+                >
+                  {selectedItemType === "eggs" && (
+                    <>
+                      <option value="base">🥚 Trứng Thường (Base)</option>
+                      <option value="wolf">🐺 Trứng Sói (Wolf)</option>
+                      <option value="dragon">🐉 Trứng Rồng (Dragon)</option>
+                    </>
+                  )}
+                  {selectedItemType === "potions" && (
+                    <>
+                      <option value="fire">🔥 Thuốc Lửa (Fire)</option>
+                      <option value="ice">❄️ Thuốc Băng (Ice)</option>
+                      <option value="magic">✨ Thuốc Thần Kỳ (Magic)</option>
+                    </>
+                  )}
+                  {selectedItemType === "foods" && (
+                    <>
+                      <option value="meat">🥩 Thịt Bò (Meat)</option>
+                      <option value="candy">🍬 Kẹo Ngọt (Candy)</option>
+                      <option value="leaf">🌿 Lá Cây (Leaf)</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={itemAdjustAmount}
+                onChange={(e) => setItemAdjustAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-1/2 bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none"
+                min={1}
+              />
+              <button
+                type="button"
+                onClick={handleAdjustItem}
+                className="w-1/2 bg-forest text-sand-light font-black text-xs py-2 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+              >
+                + PHÁT TẶNG 🎁
+              </button>
+            </div>
+
+            {itemAdjustSuccess && (
+              <p className="text-[9px] font-black text-center text-forest animate-pulse pt-1">
+                {itemAdjustSuccess}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* 4. CRUD TASK MANAGEMENT PANEL */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
           <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">🎯 Thiết Lập Nhiệm Vụ Ngày</h3>
           
@@ -434,7 +613,7 @@ export default function ParentDashboard() {
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="🧠 Học Tập / Trí Tuệ">
+                <optgroup label="🧠 Học Tập / Trí Tuệ (Kích Hoạt Ấn Pháp Trí Tuệ 🧠)">
                   {taskTemplates.filter(t => t.category === "intellect").map((t, idx) => (
                     <option key={t.title} value={taskTemplates.indexOf(t)}>
                       {t.icon} {t.title} (EXP: {t.exp} | ⭐: {t.points} | ⚡: {t.energy})
@@ -448,7 +627,7 @@ export default function ParentDashboard() {
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="❤️ Sức Khỏe / Thể Lực">
+                <optgroup label="🏃‍♂️ Sức Khỏe / Thể Lực (Kích Hoạt Ấn Pháp Thể Lực 🏃‍♂️)">
                   {taskTemplates.filter(t => t.category === "strength").map((t, idx) => (
                     <option key={t.title} value={taskTemplates.indexOf(t)}>
                       {t.icon} {t.title} (EXP: {t.exp} | ⭐: {t.points} | ⚡: {t.energy})
@@ -512,8 +691,8 @@ export default function ParentDashboard() {
                   className="w-full bg-white border border-sand rounded-xl p-2 text-xs font-bold text-forest-dark focus:outline-none"
                 >
                   <option value="discipline">⚡ Kỷ luật</option>
-                  <option value="strength">❤️ Thể lực</option>
-                  <option value="intellect">🧠 Trí tuệ</option>
+                  <option value="strength">🏃‍♂️ Thể lực (Kích Hoạt Ấn Pháp Thể Lực)</option>
+                  <option value="intellect">🧠 Trí tuệ (Kích Hoạt Ấn Pháp Trí Tuệ)</option>
                   <option value="creative">🎨 Sáng tạo</option>
                   <option value="help">🤝 Giúp đỡ</option>
                 </select>
@@ -603,7 +782,7 @@ export default function ParentDashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] bg-white border border-sand rounded px-1.5 py-0.5 text-gray-500 font-extrabold uppercase">
-                    {t.category === "discipline" ? "⚡ KL" : t.category === "strength" ? "❤️ TL" : t.category === "intellect" ? "🧠 TT" : t.category === "creative" ? "🎨 ST" : "🤝 GD"}
+                    {t.category === "discipline" ? "⚡ KL" : t.category === "strength" ? "🏃‍♂️ TL" : t.category === "intellect" ? "🧠 TT" : t.category === "creative" ? "🎨 ST" : "🤝 GD"}
                   </span>
                   <button
                     onClick={() => {
@@ -640,17 +819,46 @@ export default function ParentDashboard() {
               required
             />
 
+            {/* Real Money VND conversion field (Rule 2) */}
+            {rewardCurrency === "heroCoins" && (
+              <div className="space-y-1 text-xs">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Giá Tiền Thật (VNĐ)</label>
+                <input
+                  type="number"
+                  value={rewardVndCost}
+                  onChange={(e) => {
+                    const vnd = Math.max(0, parseInt(e.target.value) || 0);
+                    setRewardVndCost(vnd || "");
+                    
+                    // Compute coins based on top reward VND rate
+                    const rate = (parentConfig?.topRewardMoneyVnd || 500000) / (250 * (parentConfig?.topRewardEffortDays || 14));
+                    const computedCoins = Math.round(vnd / rate);
+                    setRewardCost(computedCoins || 0);
+                  }}
+                  placeholder="Nhập giá tiền thật (ví dụ: 30000 VNĐ)..."
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
+                />
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Điểm Quy Đổi</label>
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">
+                  {rewardCurrency === "heroCoins" ? "Coins Quy Đổi 🪙" : "Điểm Quy Đổi ⭐"}
+                </label>
                 <input
                   type="number"
                   value={rewardCost}
-                  onChange={(e) => setRewardCost(e.target.value)}
+                  onChange={(e) => setRewardCost(Math.max(1, parseInt(e.target.value) || 0))}
                   className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
-                  min={10}
+                  min={1}
                   required
                 />
+                {rewardCurrency === "heroCoins" && rewardCost > 0 && (
+                  <p className="text-[7.5px] font-bold text-amber-dark leading-tight select-none">
+                    💡 Quy đổi: ~{rewardCost} 🪙 Hero Coins (Con cần nỗ lực {Math.round(rewardCost / 70 * 10) / 10} ngày đào mỏ)
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1">
@@ -757,6 +965,122 @@ export default function ParentDashboard() {
           </div>
         </div>
 
+        {/* 5. LIMITS & ECONOMY SETTINGS PANEL (parent_setup_rules.md) */}
+        <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
+          <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
+            <span>⚙️</span>
+            <span>Thiết Lập Giới Hạn & Tỷ Giá Kinh Tế</span>
+          </h3>
+
+          <form onSubmit={handleSaveConfig} className="space-y-3.5 bg-sand-light border border-sand p-3.5 rounded-2xl">
+            <div className="text-[10px] font-black text-forest uppercase tracking-wider">⚙️ Cấu Hình Giới Hạn Giải Trí & Ví</div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">TV/iPad Tối Đa (Phút/Ngày)</label>
+                <input
+                  type="number"
+                  value={editMaxMinutes}
+                  onChange={(e) => setEditMaxMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Số Lần Đổi Tối Đa (Tuần)</label>
+                <input
+                  type="number"
+                  value={editMaxRedeems}
+                  onChange={(e) => setEditMaxRedeems(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Ngân Sách Quà Đỉnh (VNĐ)</label>
+                <input
+                  type="number"
+                  value={editTopVnd}
+                  onChange={(e) => setEditTopVnd(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Số Ngày Cày Quà Đỉnh</label>
+                <input
+                  type="number"
+                  value={editTopDays}
+                  onChange={(e) => setEditTopDays(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">Trần Ví Con (Coins)</label>
+                <input
+                  type="number"
+                  value={editMaxCoins}
+                  onChange={(e) => setEditMaxCoins(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full bg-white border border-sand rounded-xl px-3 py-1.5 text-xs font-bold text-forest-dark focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 flex flex-col justify-end">
+                <label className="flex items-center gap-1.5 text-[9px] font-bold text-gray-500 uppercase tracking-wide pb-1 select-none">
+                  <input
+                    type="checkbox"
+                    checked={editRequireMandatory}
+                    onChange={(e) => setEditRequireMandatory(e.target.checked)}
+                    className="rounded text-forest focus:ring-forest"
+                  />
+                  Bắt Buộc Xong Việc 🔴
+                </label>
+              </div>
+            </div>
+
+            {/* Display computed rate preview for parent */}
+            <div className="bg-white p-2.5 rounded-xl border border-sand text-[9px] text-gray-500 leading-normal font-bold space-y-0.5">
+              <p>📊 **Tỷ giá kinh tế hiện tại:** 1 🪙 Hero Coin ≈ {Math.round(editTopVnd / (250 * editTopDays))} VNĐ</p>
+              <p>🔋 **Năng lượng / ngày thực tế tối đa:** 100 ⚡ (con đập tối đa 100 quặng/ngày)</p>
+              <p>⏳ **Tiến trình tuần của con:** Đã đổi {screenRedeemsThisWeek}/{editMaxRedeems} lần tuần này (Đã chơi: {screenMinutesUsedToday} phút hôm nay).</p>
+            </div>
+
+            {/* Smart dynamic recommendation box */}
+            <div className="bg-amber-light/20 border border-amber/30 p-2.5 rounded-xl text-[9px] text-amber-dark leading-relaxed font-bold space-y-1 select-none">
+              <p className="flex items-center gap-1 text-[10px] text-forest-dark uppercase">💡 GỢI Ý THIẾT LẬP THÔNG MINH</p>
+              <p>• **Ví Điểm ⭐ (Giải trí):** Với giới hạn {editMaxMinutes} phút/ngày (tương đương {Math.ceil(editMaxMinutes / 20)} gói 20 phút), bố mẹ nên đặt giá mỗi gói giải trí khoảng **{Math.round(50 / Math.max(1, editMaxMinutes / 20))} ⭐ Điểm**. Con cần làm đủ việc ngày mới đổi được trọn vẹn thời gian chơi.</p>
+              <p>• **Ví Hero Coins 🪙 (Quà thật):** Món quà {editTopVnd.toLocaleString("vi-VN")} VNĐ tương đương {editTopDays} ngày chăm chỉ. Khi tạo các món quà khác (kem, đồ chơi...), bố mẹ chỉ cần điền giá tiền VNĐ thật, game sẽ tự động tính số coins theo tỷ giá **1 Coin ≈ {Math.round(editTopVnd / (250 * editTopDays))} VNĐ**.</p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="w-2/3 bg-forest text-sand-light font-black text-xs py-2.5 px-4 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+              >
+                LƯU THIẾT LẬP ⚙️
+              </button>
+              <button
+                type="button"
+                onClick={handleResetWeeklyLimits}
+                className="w-1/3 bg-amber text-sand-light font-black text-[9px] py-2 px-2 rounded-xl border border-amber-dark hover:bg-amber-dark transition-all shadow-sm"
+              >
+                RESET TUẦN 🔄
+              </button>
+            </div>
+            {configSuccess && <p className="text-[10px] font-bold text-center text-forest">{configSuccess}</p>}
+          </form>
+        </div>
+
         {/* 5. DAILY OVERRIDE RESET & PIN CHANGE CONFIGS */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
           <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">⚙️ Bảng Điều Khiển Hệ Thống</h3>
@@ -828,19 +1152,20 @@ export default function ParentDashboard() {
                   • <strong>Năng Lượng ⚡:</strong> Khi con hoàn thành nhiệm vụ hằng ngày sẽ nhận được Năng Lượng (tối đa 100 ⚡). Năng Lượng dùng để đào mỏ ngẫu nhiên nhận Hero Coin 🪙.
                 </p>
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
-                  • <strong>Bùa Lợi Đào Mỏ:</strong> Con làm thói quen tốt như đọc sách hay thể dục sẽ được buff tăng tỷ lệ đồ quý hoặc nhân đôi coin trong Hang Đào Mỏ!
+                  • <strong>Ấn Pháp Anh Hùng:</strong> Con làm thói quen tốt như đọc sách hay thể dục ngoài đời sẽ kích hoạt Ấn Pháp Trí Tuệ/Thể Lực giúp tăng tỷ lệ tìm rương hiếm hoặc nổ Cú Đập Sức Mạnh x2 xu trong Hang Đào Mỏ!
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <p className="font-black text-amber-dark flex items-center gap-1 text-[11px]">
-                  ⭐ 2. Cân Bằng Ví Kép (Điểm vs Hero Coin)
+                  ⭐ 2. Cân Bằng Ví Kép & Tỷ Giá Đề Xuất
                 </p>
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
-                  • <strong>Điểm ⭐ (Giải trí):</strong> Nhận trực tiếp từ nhiệm vụ, dùng để đổi thời gian chơi game, TV, tạo động lực ngắn hạn cho con.
+                  • <strong>Ví Điểm ⭐ (Neo 1 ngày công = 1 tiếng TV/iPad):</strong> 1 ngày con hoàn thành hết việc sẽ đạt khoảng ~50 Điểm. Bố mẹ nên đặt giá **1 gói giải trí 20 phút = 15 - 20 Điểm ⭐**.
                 </p>
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
-                  • <strong>Hero Coin 🪙 (Quà lớn):</strong> Đào từ quặng ma thuật, dùng để con tích lũy đổi quà lớn ngoài đời thực (kem, đồ chơi, Lego).
+                  • <strong>Ví Hero Coins 🪙 (Quy đổi tiền thật ra nỗ lực):</strong> Neo món quà đỉnh (ví dụ: LEGO 500k VNĐ) tương đương **14 ngày cày cuốc** (~3.500 Coins). Tỷ giá vàng đề xuất: **1 🪙 Hero Coin ≈ 143 VNĐ**.<br />
+                  • **Cách đặt quà:** Bố mẹ chỉ cần điền giá tiền VNĐ thật khi tạo quà, hệ thống sẽ **tự động chia tỷ giá** và điền số coins tương ứng giúp bố mẹ nhàn tênh!
                 </p>
               </div>
 
@@ -861,6 +1186,27 @@ export default function ParentDashboard() {
                 <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
                   • Cuối ngày hoặc sáng sớm, bố mẹ bấm <strong>{"'Giả lập kích hoạt ngày mới'"}</strong> để làm mới việc ngày.<br />
                   • Nếu ngày hôm đó con làm tốt từ 3 việc trở lên, ngọn lửa <strong>Streak 🔥</strong> sẽ tăng và cộng thêm may mắn khi đào mỏ!
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="font-black text-clay flex items-center gap-1 text-[11px]">
+                  🐾 5. Quà Tặng & Cửa Hàng Thú Cưng
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • **Duyệt mua trong Shop:** Con có thể tự tích lũy Hero Coins 🪙 đào mỏ để đổi Trứng hiếm (Sói, Rồng), Thuốc phép & combo Thức ăn trong Cửa Hàng. Bố mẹ nhập mã PIN để xác nhận trao vật phẩm cho con.<br />
+                  • **Phát tặng thủ công:** Bố mẹ sử dụng bảng quà tặng ở cuối Phòng Quản Trị để phát trực tiếp Trứng, Thuốc phép hoặc Thức ăn cho con làm phần thưởng khích lệ.<br />
+                  • **Ấn pháp tiến hóa:** Thú cưng đạt 100% thân mật tiến hóa thành **Thú Cưỡi 🦖**, giúp con hồi thêm **+10% Năng lượng ⚡** khi làm việc tốt ngoài đời và **+5% tỷ lệ nổ Cú Đập Sức Mạnh 🔥** khi đào mỏ!
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="font-black text-sky flex items-center gap-1 text-[11px]">
+                  🕊️ 6. Viết Thư Bồ Câu & Tạo Việc Từ Xa
+                </p>
+                <p className="pl-5 text-gray-600 text-[10px] leading-relaxed">
+                  • **Bồ câu đưa thư:** Soạn tin nhắn yêu thương từ Phòng Quản Trị để chú chim bồ câu pixel 🕊️ ngậm phong thư lấp lánh mang đến thiết bị của con ngay lập tức.<br />
+                  • **Tạo việc từ xa qua Telegram Bot:** Dự án có thể nâng cấp tích hợp cơ sở dữ liệu **Supabase Database** để đồng bộ. Bố mẹ chỉ cần nhắn tin giao việc qua **Telegram Bot** của riêng gia đình (Ví dụ: `/addtask Đọc sách | 30 EXP`), nhiệm vụ sẽ tự động xuất hiện trên màn hình của con ở nhà thời gian thực!
                 </p>
               </div>
             </div>

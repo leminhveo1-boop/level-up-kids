@@ -8,6 +8,14 @@ export default function LandingPage() {
   const router = useRouter();
   const { isLoaded, charName, level, resetEntireGame } = useGame();
 
+  const [isCharacterCreated, setIsCharacterCreated] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsCharacterCreated(localStorage.getItem("quocbao_game_state") !== null);
+    }
+  }, []);
+
   if (!isLoaded) {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
@@ -16,9 +24,6 @@ export default function LandingPage() {
       </div>
     );
   }
-
-  // Check if character is already configured
-  const isCharacterCreated = localStorage.getItem("quocbao_game_state") !== null;
 
   return (
     <div className="flex flex-col flex-grow p-6 relative overflow-hidden">

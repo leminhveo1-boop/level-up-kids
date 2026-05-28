@@ -12,7 +12,7 @@ Hệ thống ví kép tách biệt rõ ràng 2 nguồn tài nguyên nhằm dạy
 
 ### A. Điểm Tích Lũy (Points - ⭐): Động Lực Nội Thân & Giải Trí Ngắn Hạn
 *   **Mục đích**: Được thiết lập để kích thích dopamine của con hằng ngày cho các hoạt động học tập, kỷ luật cá nhân.
-*   **Game hóa tăng cường**: Điểm ⭐ được nhận trực tiếp và có cơ chế **Chí mạng Points ⚡ (Critical x2)** cùng **Chuỗi chuyên cần 🔥 (Streak Multiplier)** để làm việc học trở nên vô cùng hào hứng.
+*   **Game hóa tăng cường**: Điểm ⭐ được nhận trực tiếp và có cơ chế **Điểm May Mắn ⚡ (Lucky Multiplier x2)** cùng **Chuỗi chuyên cần 🔥 (Streak Multiplier)** để làm việc học trở nên vô cùng hào hứng.
 *   **Tiêu dùng**: Điểm ⭐ chỉ dùng để đổi lấy các đặc quyền giải trí ngắn hạn (xem TV, chơi Game, đi xem phim). Con hiểu rằng: *"Mình chăm chỉ học tập, rèn luyện bản thân thì sẽ nhận lại quyền lợi giải trí xứng đáng"*.
 
 ### B. Hero Coin (🪙): Động Lực Thực Tế & Khai Thác Bền Vững (Mining System)

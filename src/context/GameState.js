@@ -6,16 +6,16 @@ import confetti from "canvas-confetti";
 const GameContext = createContext();
 
 const DEFAULT_TASKS = [
-  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 10, energy: 10, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false },
-  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 20, energy: 20, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true },
-  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 20, energy: 15, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
-  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 20, energy: 20, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
-  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 15, energy: 15, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false },
-  { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 15, energy: 15, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false },
-  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 15, energy: 15, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false },
-  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 15, energy: 10, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false },
-  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 15, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false },
-  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 30, energy: 25, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true },
+  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false },
+  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 4, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true },
+  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
+  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
+  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 5, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false },
+  { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 8, energy: 3, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false },
+  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 4, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false },
+  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false },
+  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false },
+  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true },
 ];
 
 const DEFAULT_REWARDS = [
@@ -25,6 +25,13 @@ const DEFAULT_REWARDS = [
   { id: "r3", title: "Bố mẹ dẫn đi xem phim rạp cuối tuần 🍿", cost: 150, currency: "points", type: "perk", value: "movie_tickets", parentApproved: false, rarity: "rare" },
   { id: "r4", title: "Thẻ bài miễn làm 1 nhiệm vụ ngày 🎟️", cost: 100, currency: "points", type: "card", value: "skip_task", parentApproved: false, rarity: "epic" },
   
+  // Vật phẩm Thú Cưng mua bằng Hero Coin 🪙
+  { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 30, currency: "heroCoins", type: "pet_egg", value: "base", parentApproved: false, rarity: "common" },
+  { id: "rp2", title: "Mua 🐺 Trứng Sói Chiến (Ấp sói nguyên tố hiếm)", cost: 80, currency: "heroCoins", type: "pet_egg", value: "wolf", parentApproved: false, rarity: "rare" },
+  { id: "rp3", title: "Mua 🐉 Trứng Rồng Thần (Ấp rồng bay huyền thoại)", cost: 150, currency: "heroCoins", type: "pet_egg", value: "dragon", parentApproved: false, rarity: "legendary" },
+  { id: "rp4", title: "Mua 🧪 Thuốc ấp phép ngẫu nhiên (Lửa, băng, ma thuật)", cost: 40, currency: "heroCoins", type: "pet_potion_random", value: "random", parentApproved: false, rarity: "rare" },
+  { id: "rp5", title: "Mua 🥩 Combo Thức ăn Thần Kỳ (Thịt + Kẹo + Lá)", cost: 30, currency: "heroCoins", type: "pet_food_all", value: "all", parentApproved: false, rarity: "common" },
+
   // Quà thực tế ngoài đời (Dùng Hero Coin 🪙)
   { id: "r5", title: "Một ly kem tươi siêu to khổng lồ 🍨", cost: 100, currency: "heroCoins", type: "perk", value: "ice_cream", parentApproved: false, rarity: "common" },
   { id: "r6", title: "Bố mẹ dẫn đi xem phim rạp cuối tuần 🍿", cost: 300, currency: "heroCoins", type: "perk", value: "movie_night", parentApproved: false, rarity: "rare" },
@@ -58,6 +65,16 @@ export function GameProvider({ children }) {
   const [lastPointsGain, setLastPointsGain] = useState(null); // { amount, isCritical, taskTitle, timestamp }
   const [miningHistory, setMiningHistory] = useState([]); // Lịch sử đào mỏ
 
+  // Pet & Mount states
+  const [inventory, setInventory] = useState({
+    eggs: { base: 0, dragon: 0, wolf: 0 },
+    potions: { fire: 0, ice: 0, magic: 0 },
+    foods: { meat: 0, candy: 0, leaf: 0 }
+  });
+  const [pets, setPets] = useState([]);
+  const [activePet, setActivePet] = useState(null);
+  const [activeMount, setActiveMount] = useState(null);
+
   // Lists state
   const [tasks, setTasks] = useState(DEFAULT_TASKS);
   const [rewards, setRewards] = useState(DEFAULT_REWARDS);
@@ -75,6 +92,18 @@ export function GameProvider({ children }) {
 
   // Automation date states
   const [lastResetDate, setLastResetDate] = useState("");
+
+  // Parent custom configurations and limits tracking (parent_setup_rules.md)
+  const [parentConfig, setParentConfig] = useState({
+    screenMaxMinutesPerDay: 60,
+    screenRedeemMaxPerWeek: 5,
+    topRewardMoneyVnd: 500000,
+    topRewardEffortDays: 14,
+    requireAllMandatory: true,
+    maxCoinBalance: 7000,
+  });
+  const [screenMinutesUsedToday, setScreenMinutesUsedToday] = useState(0);
+  const [screenRedeemsThisWeek, setScreenRedeemsThisWeek] = useState(0);
 
   // Parent controls
   const [parentPin, setParentPin] = useState("1234");
@@ -186,6 +215,27 @@ export function GameProvider({ children }) {
         setHeroCoins(loadedHeroCoins);
         setPoints(data.points || 0);
         setMiningHistory(data.miningHistory || []);
+
+        setParentConfig(data.parentConfig || {
+          screenMaxMinutesPerDay: 60,
+          screenRedeemMaxPerWeek: 5,
+          topRewardMoneyVnd: 500000,
+          topRewardEffortDays: 14,
+          requireAllMandatory: true,
+          maxCoinBalance: 7000,
+        });
+        setScreenMinutesUsedToday(data.screenMinutesUsedToday || 0);
+        setScreenRedeemsThisWeek(data.screenRedeemsThisWeek || 0);
+
+        // Load Pet & Mount systems with auto-healing
+        setInventory(data.inventory || {
+          eggs: { base: 0, dragon: 0, wolf: 0 },
+          potions: { fire: 0, ice: 0, magic: 0 },
+          foods: { meat: 0, candy: 0, leaf: 0 }
+        });
+        setPets(data.pets || []);
+        setActivePet(data.activePet !== undefined ? data.activePet : null);
+        setActiveMount(data.activeMount !== undefined ? data.activeMount : null);
       } catch (e) {
         console.error("Error loading local state", e);
       }
@@ -217,6 +267,13 @@ export function GameProvider({ children }) {
         heroCoins,
         points,
         miningHistory,
+        inventory,
+        pets,
+        activePet,
+        activeMount,
+        parentConfig,
+        screenMinutesUsedToday,
+        screenRedeemsThisWeek,
       };
       localStorage.setItem("quocbao_game_state", JSON.stringify(data));
     }
@@ -242,6 +299,13 @@ export function GameProvider({ children }) {
     heroCoins,
     points,
     miningHistory,
+    inventory,
+    pets,
+    activePet,
+    activeMount,
+    parentConfig,
+    screenMinutesUsedToday,
+    screenRedeemsThisWeek,
   ]);
 
   // Bulletproof Absolute Timer Tick
@@ -330,11 +394,11 @@ export function GameProvider({ children }) {
               basePoints = basePoints * 2;
             }
 
-            // Streak Multiplier for Points
+            // Streak Multiplier for Points (Balanced to prevent inflation)
             let multiplier = 1.0;
-            if (streak >= 7) multiplier = 2.0;
-            else if (streak >= 5) multiplier = 1.5;
-            else if (streak >= 3) multiplier = 1.2;
+            if (streak >= 7) multiplier = 1.5;
+            else if (streak >= 5) multiplier = 1.25;
+            else if (streak >= 3) multiplier = 1.1;
 
             const pointsAdded = Math.ceil(basePoints * multiplier);
             t.earnedPoints = pointsAdded; // Save to revert if unchecked
@@ -347,8 +411,11 @@ export function GameProvider({ children }) {
               timestamp: Date.now(),
             });
 
-            // Energy calculation (Daily energy cap is 100 ⚡)
-            const energyAdded = t.energy || 0;
+            // Energy calculation (Daily energy cap is 100 ⚡, Thú cưỡi activeMount cộng 10% năng lượng)
+            let energyAdded = t.energy || 0;
+            if (activeMount) {
+              energyAdded = Math.ceil(energyAdded * 1.10);
+            }
             t.earnedEnergy = energyAdded;
             if (energyAdded > 0) {
               setEnergy((prev) => Math.min(100, prev + energyAdded));
@@ -439,17 +506,36 @@ export function GameProvider({ children }) {
       return { success: false, message: "Mã PIN của bố mẹ không đúng! ❌" };
     }
 
-    // STRICT PARENT CHECK: Enforce completing ALL mandatory tasks first!
-    const uncompletedMandatoryTasks = tasks.filter((t) => t.isMandatory && !t.completed);
-    if (uncompletedMandatoryTasks.length > 0) {
-      return { 
-        success: false, 
-        message: `Quốc Bảo chưa làm xong các nhiệm vụ BẮT BUỘC hằng ngày! Hãy hoàn thành bài vở và tập thể dục trước nhé! ⚠️` 
-      };
-    }
-
     const reward = rewards.find((r) => r.id === id);
     if (!reward) return { success: false, message: "Phần thưởng không tồn tại! ❌" };
+
+    // STRICT PARENT CHECK: Enforce completing ALL mandatory tasks first if config enabled!
+    if (parentConfig.requireAllMandatory) {
+      const uncompletedMandatoryTasks = tasks.filter((t) => t.isMandatory && !t.completed);
+      if (uncompletedMandatoryTasks.length > 0) {
+        return { 
+          success: false, 
+          message: `Quốc Bảo chưa làm xong các nhiệm vụ BẮT BUỘC hằng ngày! Hãy hoàn thành bài vở và tập thể dục trước nhé! ⚠️` 
+        };
+      }
+    }
+
+    // SCREEN TIME LIMITS CHECK (Rule 1 & Rule 5)
+    if (reward.type === "game_time") {
+      const addedMinutes = reward.value || 20;
+      if (screenMinutesUsedToday + addedMinutes > parentConfig.screenMaxMinutesPerDay) {
+        return {
+          success: false,
+          message: `Đã vượt quá giới hạn giờ giải trí hôm nay! (Đã dùng: ${screenMinutesUsedToday}/${parentConfig.screenMaxMinutesPerDay} phút) ⚠️`
+        };
+      }
+      if (screenRedeemsThisWeek >= parentConfig.screenRedeemMaxPerWeek) {
+        return {
+          success: false,
+          message: `Đã hết lượt đổi giải trí trong tuần này! (Giới hạn: ${parentConfig.screenRedeemMaxPerWeek} lần/tuần) ⚠️`
+        };
+      }
+    }
 
     // Currency gate verification
     if (reward.currency === "heroCoins") {
@@ -478,6 +564,9 @@ export function GameProvider({ children }) {
     );
 
     if (reward.type === "game_time") {
+      setScreenMinutesUsedToday((prev) => prev + reward.value);
+      setScreenRedeemsThisWeek((prev) => prev + 1);
+
       const addedSeconds = reward.value * 60;
       if (isTimerActive && timerEndTime > 0) {
         setTimerEndTime((prev) => prev + addedSeconds * 1000);
@@ -486,6 +575,33 @@ export function GameProvider({ children }) {
         setIsTimerActive(true);
       }
       setScreenTimeLeft((prev) => prev + addedSeconds);
+    } else if (reward.type === "pet_egg") {
+      setInventory((prev) => ({
+        ...prev,
+        eggs: {
+          ...prev.eggs,
+          [reward.value]: prev.eggs[reward.value] + 1,
+        },
+      }));
+    } else if (reward.type === "pet_potion_random") {
+      const potions = ["fire", "ice", "magic"];
+      const rolled = potions[Math.floor(Math.random() * potions.length)];
+      setInventory((prev) => ({
+        ...prev,
+        potions: {
+          ...prev.potions,
+          [rolled]: prev.potions[rolled] + 1,
+        },
+      }));
+    } else if (reward.type === "pet_food_all") {
+      setInventory((prev) => ({
+        ...prev,
+        foods: {
+          meat: prev.foods.meat + 1,
+          candy: prev.foods.candy + 1,
+          leaf: prev.foods.leaf + 1,
+        },
+      }));
     }
 
     confetti({
@@ -507,7 +623,98 @@ export function GameProvider({ children }) {
     setEnergy((prev) => Math.max(0, prev - 1));
     playSound("complete");
 
-    // Calculate Loot Table
+    // Critical Mining chance (20% base if exercise buff is active, and Thú cưỡi activeMount cộng thêm 5%)
+    const activeMountObj = pets.find(p => p.id === activeMount);
+    const hasMountCritBuff = activeMountObj !== undefined;
+    const critChance = 0.20 + (hasMountCritBuff ? 0.05 : 0);
+    const hasExerciseBuff = tasks.some(t => t.category === "strength" && t.completed);
+    const isCriticalMining = (hasExerciseBuff || hasMountCritBuff) && Math.random() < critChance;
+
+    // 15% chance to drop Pet Materials (trứng, thuốc ấp, thức ăn) instead of coins
+    const randDrop = Math.random();
+    if (randDrop < 0.15) {
+      const materialRand = Math.random();
+      let lootType = "common";
+      let title = "";
+      let rarityText = "Nguyên liệu 📦";
+      
+      if (materialRand < 0.46) {
+        // ~7% is Food
+        const foodKeys = ["meat", "candy", "leaf"];
+        const foodEmojis = { meat: "🥩 Thịt Bò", candy: "🍬 Kẹo Ngọt", leaf: "🌿 Lá Cây" };
+        const selectedFood = foodKeys[Math.floor(Math.random() * foodKeys.length)];
+        
+        setInventory(prev => ({
+          ...prev,
+          foods: { ...prev.foods, [selectedFood]: prev.foods[selectedFood] + 1 }
+        }));
+        
+        title = `📦 Nhận 1 Thức ăn: ${foodEmojis[selectedFood]}`;
+        lootType = "rare";
+        rarityText = "Thức Ăn 🥩";
+      } else if (materialRand < 0.80) {
+        // ~5% is Potion
+        const potionKeys = ["fire", "ice", "magic"];
+        const potionEmojis = { fire: "🔥 Thuốc Lửa", ice: "❄️ Thuốc Băng", magic: "✨ Thuốc Thần Kỳ" };
+        const selectedPotion = potionKeys[Math.floor(Math.random() * potionKeys.length)];
+        
+        setInventory(prev => ({
+          ...prev,
+          potions: { ...prev.potions, [selectedPotion]: prev.potions[selectedPotion] + 1 }
+        }));
+        
+        title = `🧪 Nhận 1 Thuốc ấp: ${potionEmojis[selectedPotion]}`;
+        lootType = "epic";
+        rarityText = "Thuốc Ấp 🔥";
+      } else {
+        // ~3% is Egg
+        const eggKeys = ["base", "dragon", "wolf"];
+        const eggEmojis = { base: "🥚 Trứng Thường", dragon: "🐉 Trứng Rồng", wolf: "🐺 Trứng Sói" };
+        const selectedEgg = eggKeys[Math.floor(Math.random() * eggKeys.length)];
+        
+        setInventory(prev => ({
+          ...prev,
+          eggs: { ...prev.eggs, [selectedEgg]: prev.eggs[selectedEgg] + 1 }
+        }));
+        
+        title = `🥚 Nhận 1 Trứng hiếm: ${eggEmojis[selectedEgg]}`;
+        lootType = "legendary";
+        rarityText = "Trứng Thú Cưng 🥚";
+        
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            spread: 50,
+            colors: ["#FFE4E6", "#D97706", "#FBBF24"],
+          });
+        }, 100);
+      }
+
+      const newRecord = {
+        id: "mine_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+        title,
+        coins: 0,
+        rarity: lootType,
+        rarityText,
+        isCritical: isCriticalMining,
+        isMaterial: true,
+        timestamp: Date.now(),
+      };
+
+      setMiningHistory((prev) => [newRecord, ...prev].slice(0, 15));
+
+      return {
+        success: true,
+        lootType,
+        coinReward: 0,
+        rarityText,
+        title,
+        isCritical: isCriticalMining,
+        isMaterial: true
+      };
+    }
+
+    // Default Coin Mining (85% of times)
     const rand = Math.random();
     let lootType = "common";
     let coinReward = 1;
@@ -520,7 +727,6 @@ export function GameProvider({ children }) {
     else if (streak >= 3) luckBonus = 0.04;
 
     // Habit Buffs
-    const hasExerciseBuff = tasks.some(t => t.category === "strength" && t.completed);
     const hasReadingBuff = tasks.some(t => t.category === "intellect" && t.completed);
 
     // Adjust chances
@@ -528,12 +734,9 @@ export function GameProvider({ children }) {
     let goldenChance = 0.08 + luckBonus;
     let silverChance = 0.20;
 
-    // Critical Mining chance (20% if exercise buff is active)
-    const isCriticalMining = hasExerciseBuff && Math.random() < 0.20;
-
     if (rand < legendaryChance) {
       lootType = "legendary";
-      coinReward = Math.floor(Math.random() * 51) + 50; // 50 - 100
+      coinReward = Math.floor(Math.random() * 8) + 8; // 8 - 15 coins
       rarityText = "Huyền Thoại ⚡";
       title = "🌟 RƯƠNG BÁU THẦN THOẠI 🌟";
       setTimeout(() => {
@@ -547,7 +750,7 @@ export function GameProvider({ children }) {
       }, 100);
     } else if (rand < legendaryChance + goldenChance) {
       lootType = "epic";
-      coinReward = Math.floor(Math.random() * 11) + 15; // 15 - 25
+      coinReward = Math.floor(Math.random() * 4) + 4; // 4 - 7 coins
       rarityText = "Sử Thi 👑";
       title = "👑 Hũ Xu Vàng Khổng Lồ 👑";
       setTimeout(() => {
@@ -559,12 +762,12 @@ export function GameProvider({ children }) {
       }, 100);
     } else if (rand < legendaryChance + goldenChance + silverChance) {
       lootType = "rare";
-      coinReward = Math.floor(Math.random() * 6) + 5; // 5 - 10
+      coinReward = Math.floor(Math.random() * 2) + 2; // 2 - 3 coins
       rarityText = "Hiếm 🔷";
       title = "🔷 Quặng Bạc Lấp Lánh 🔷";
     } else {
       lootType = "common";
-      coinReward = Math.floor(Math.random() * 3) + 1; // 1 - 3
+      coinReward = 1; // 1 coin flat to avoid fast inflation
       rarityText = "Thường ⚙️";
       title = "⚙️ Mảnh Đá Nhỏ ⚙️";
     }
@@ -573,8 +776,8 @@ export function GameProvider({ children }) {
       coinReward = coinReward * 2;
     }
 
-    // Add Hero Coins
-    setHeroCoins((prev) => prev + coinReward);
+    // Add Hero Coins with safety cap (Rule 5)
+    setHeroCoins((prev) => Math.min(parentConfig.maxCoinBalance, prev + coinReward));
 
     // Record history
     const newRecord = {
@@ -687,6 +890,9 @@ export function GameProvider({ children }) {
     setEnergy((prev) => Math.min(100, prev + 10)); // Khuyến khích 10 Energy cho ngày mới
     setRewards((prev) => prev.map((r) => ({ ...r, parentApproved: false })));
     
+    // Reset screen time limits for the new day
+    setScreenMinutesUsedToday(0);
+    
     if (bossDefeated) {
       setBossHp(100);
       setBossDefeated(false);
@@ -733,6 +939,154 @@ export function GameProvider({ children }) {
     setEncouragements([
       { id: "e1", text: "Chào mừng Quốc Bảo bước vào Hành trình anh hùng mùa hè! Con sẵn sàng chưa? 🌳", read: false }
     ]);
+    setInventory({
+      eggs: { base: 0, dragon: 0, wolf: 0 },
+      potions: { fire: 0, ice: 0, magic: 0 },
+      foods: { meat: 0, candy: 0, leaf: 0 }
+    });
+    setPets([]);
+    setActivePet(null);
+    setActiveMount(null);
+  };
+
+  // Hatch Pet logic
+  const hatchPet = (eggType, potionType) => {
+    if (inventory.eggs[eggType] < 1 || inventory.potions[potionType] < 1) {
+      return { success: false, message: "Không đủ Trứng hoặc Thuốc ấp! ❌" };
+    }
+
+    // Deduct inventory
+    setInventory((prev) => ({
+      ...prev,
+      eggs: { ...prev.eggs, [eggType]: prev.eggs[eggType] - 1 },
+      potions: { ...prev.potions, [potionType]: prev.potions[potionType] - 1 },
+    }));
+
+    // Calculate hatched pet name and emojis
+    const petMap = {
+      base: {
+        fire: { name: "Cáo Lửa Đỏ", type: "Fox", element: "fire", emoji: "🦊" },
+        ice: { name: "Mèo Tuyết Trắng", type: "Cat", element: "ice", emoji: "🐱" },
+        magic: { name: "Gấu Trúc Ma Thuật", type: "Panda", element: "magic", emoji: "🐼" },
+      },
+      wolf: {
+        fire: { name: "Sói Lửa Hủy Diệt", type: "Wolf", element: "fire", emoji: "🐺" },
+        ice: { name: "Sói Băng Bắc Cực", type: "Wolf", element: "ice", emoji: "🐺" },
+        magic: { name: "Sói Thần Vũ Trụ", type: "Wolf", element: "magic", emoji: "🐺" },
+      },
+      dragon: {
+        fire: { name: "Hỏa Long Vương", type: "Dragon", element: "fire", emoji: "🐉" },
+        ice: { name: "Băng Long Cổ Đại", type: "Dragon", element: "ice", emoji: "🐉" },
+        magic: { name: "Thần Long Tinh Tú", type: "Dragon", element: "magic", emoji: "🐉" },
+      },
+    };
+
+    const petData = petMap[eggType][potionType];
+    const newPet = {
+      id: "pet_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+      name: petData.name,
+      type: petData.type,
+      element: petData.element,
+      emoji: petData.emoji,
+      feedProgress: 0,
+      isMount: false,
+      eggType,
+      potionType,
+    };
+
+    setPets((prev) => [...prev, newPet]);
+    
+    // Set active if none
+    if (!activePet && !activeMount) {
+      setActivePet(newPet.id);
+    }
+
+    setTimeout(() => {
+      playSound("level-up");
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        colors: ["#2E7D32", "#4CAF50", "#D97706"],
+      });
+    }, 100);
+
+    return { success: true, pet: newPet };
+  };
+
+  // Feed Pet logic
+  const feedPet = (petId, foodType) => {
+    if (inventory.foods[foodType] < 1) {
+      return { success: false, message: "Không đủ Thức ăn! ❌" };
+    }
+
+    const pet = pets.find((p) => p.id === petId);
+    if (!pet) return { success: false, message: "Không tìm thấy thú cưng! ❌" };
+    if (pet.feedProgress >= 100) return { success: false, message: "Thú cưng đã đạt cấp tối đa và đang là Thú cưỡi! 💖" };
+
+    // Deduct food
+    setInventory((prev) => ({
+      ...prev,
+      foods: { ...prev.foods, [foodType]: prev.foods[foodType] - 1 },
+    }));
+
+    // Check if favorite food
+    // fire -> meat, ice -> candy, magic -> leaf
+    const favFoodMap = {
+      fire: "meat",
+      ice: "candy",
+      magic: "leaf",
+    };
+
+    const isFavorite = favFoodMap[pet.element] === foodType;
+    const gain = isFavorite ? 25 : 10;
+    const nextProgress = Math.min(100, pet.feedProgress + gain);
+    const becameMount = nextProgress >= 100 && !pet.isMount;
+
+    setPets((prev) =>
+      prev.map((p) => {
+        if (p.id === petId) {
+          return {
+            ...p,
+            feedProgress: nextProgress,
+            isMount: p.isMount || nextProgress >= 100,
+          };
+        }
+        return p;
+      })
+    );
+
+    playSound("complete");
+
+    if (becameMount) {
+      setTimeout(() => {
+        playSound("level-up");
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          colors: ["#FFE4E6", "#D97706", "#FBBF24"],
+        });
+      }, 100);
+      return { success: true, message: `Thú cưng ${pet.name} đã tiến hóa thành THÚ CƯỠI khổng lồ oai phong! 🦖🌟`, evolved: true };
+    }
+
+    return { 
+      success: true, 
+      message: `Đã cho ${pet.name} ăn ${foodType === "meat" ? "Thịt Bò 🥩" : foodType === "candy" ? "Kẹo Ngọt 🍬" : "Lá Cây 🌿"}! Thân mật +${gain}% ${isFavorite ? "🔥 (Món khoái khẩu!)" : "🌸"}`
+    };
+  };
+
+  // Set active companion (type: 'pet' or 'mount')
+  const setActiveCompanion = (type, id) => {
+    if (type === "pet") {
+      setActivePet(id);
+      setActiveMount(null);
+    } else if (type === "mount") {
+      setActiveMount(id);
+      setActivePet(null);
+    } else {
+      setActivePet(null);
+      setActiveMount(null);
+    }
   };
 
   return (
@@ -786,6 +1140,23 @@ export function GameProvider({ children }) {
         miningHistory,
         setMiningHistory,
         mineTreasure,
+        inventory,
+        setInventory,
+        pets,
+        setPets,
+        activePet,
+        setActivePet,
+        activeMount,
+        setActiveMount,
+        hatchPet,
+        feedPet,
+        setActiveCompanion,
+        parentConfig,
+        setParentConfig,
+        screenMinutesUsedToday,
+        setScreenMinutesUsedToday,
+        screenRedeemsThisWeek,
+        setScreenRedeemsThisWeek,
       }}
     >
       {children}

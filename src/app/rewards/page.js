@@ -387,7 +387,7 @@ export default function RewardsPage() {
               💡 <strong>Bí quyết anh hùng:</strong> Hãy quay lại màn hình đào mỏ, click đập đá tìm kho báu hoặc làm nhiệm vụ ngày
               {shortageReward.currency === "heroCoins" 
                 ? " ngoài đời thật để tích lũy thêm Năng Lượng ⚡ đào mỏ nhé! 💪" 
-                : " học tập và tự rèn luyện (để trúng Chí Mạng ⚡ nhân đôi Điểm) nhé! ⭐"
+                : " học tập và tự rèn luyện (để nổ Điểm May Mắn ⚡ nhân đôi Điểm) nhé! ⭐"
               }
             </p>
 
