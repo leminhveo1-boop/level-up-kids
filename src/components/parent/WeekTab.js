@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
+import { generatePraiseSuggestions } from "@/lib/game/recognition";
+import { Send, Share2 } from "lucide-react";
 
 const STAT_META = {
   strength: { label: "Thể lực", color: "bg-terracotta", emoji: "❤️" },
@@ -27,10 +29,96 @@ export default function WeekTab() {
     screenRedeemsThisWeek,
     heroCoins,
     points,
+    sendEncouragement,
   } = useGame();
+
+  const [flash, setFlash] = useState("");
+  const [sentIdx, setSentIdx] = useState([]);
+  const showFlash = (text) => {
+    setFlash(text);
+    setTimeout(() => setFlash(""), 3000);
+  };
 
   const completedToday = tasks.filter((t) => t.completed).length;
   const rejectedToday = tasks.filter((t) => t.wasRejected).length;
+
+  const praises = generatePraiseSuggestions({ charName, streak, trustScore, tasks });
+
+  const handleSendPraise = (text, idx) => {
+    sendEncouragement(text);
+    setSentIdx((prev) => [...prev, idx]);
+    showFlash("Đã gửi lời khen qua bồ câu! 🕊️ Con sẽ thấy ngay trên màn hình.");
+  };
+
+  // ===== Thẻ Khoe Con — 9:16 share card via canvas (CAC≈0 growth loop) =====
+  const handleShareCard = async () => {
+    const W = 720, H = 1280;
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    // background
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, "#4CAF50");
+    grad.addColorStop(1, "#1B5E20");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // card panel
+    ctx.fillStyle = "#FDFBF7";
+    const rx = 48, px = 60, py = 200, pw = W - 120, ph = 760;
+    ctx.beginPath();
+    ctx.roundRect(px, py, pw, ph, rx);
+    ctx.fill();
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#FDFBF7";
+    ctx.font = "bold 44px system-ui";
+    ctx.fillText("🌟 ANH HÙNG NHÍ TUẦN NÀY 🌟", W / 2, 120);
+
+    ctx.fillStyle = "#1B5E20";
+    ctx.font = "90px system-ui";
+    ctx.fillText("🦸", W / 2, py + 150);
+    ctx.font = "bold 56px system-ui";
+    ctx.fillText(charName, W / 2, py + 240);
+    ctx.font = "bold 34px system-ui";
+    ctx.fillStyle = "#D97706";
+    ctx.fillText(`CẤP ${level} · 🔥 STREAK ${streak} NGÀY`, W / 2, py + 300);
+
+    ctx.fillStyle = "#444";
+    ctx.font = "32px system-ui";
+    ctx.fillText(`✅ ${completedToday} nhiệm vụ hôm nay`, W / 2, py + 380);
+    ctx.fillText(`🤝 Uy Tín ${trustScore}/100`, W / 2, py + 435);
+    ctx.fillText(`⭐ ${points} điểm · 🪙 ${heroCoins} coin`, W / 2, py + 490);
+
+    ctx.fillStyle = "#2E7D32";
+    ctx.font = "italic 30px system-ui";
+    ctx.fillText('"Mỗi việc tốt là một bước lên cấp!"', W / 2, py + 580);
+
+    ctx.fillStyle = "#999";
+    ctx.font = "28px system-ui";
+    ctx.fillText("Level Up Kids — levelupkids.vn", W / 2, H - 80);
+
+    const dataUrl = canvas.toDataURL("image/png");
+
+    // Try native share, fall back to download
+    try {
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], `khoe-con-${charName}.png`, { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `Thành tích của ${charName}!` });
+        return;
+      }
+    } catch {
+      /* fall through to download */
+    }
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = `khoe-con-${charName}.png`;
+    a.click();
+    showFlash("Đã tải Thẻ Khoe Con — đăng Facebook/Zalo khoe ngay! 📸");
+  };
 
   return (
     <div className="space-y-4">
@@ -87,12 +175,51 @@ export default function WeekTab() {
         </p>
       </div>
 
-      {/* Weekly report placeholder (V1.2) */}
-      <div className="bg-sand-light border border-dashed border-sand rounded-xl p-4 text-center">
-        <p className="text-scale-2xs text-gray-400 font-bold">
-          📬 Báo cáo tuần chi tiết (biểu đồ 7 ngày, so sánh tuần trước, gợi ý lời khen) sẽ có trong bản cập nhật tới.
-        </p>
+      {/* ===== Sổ Vàng Ghi Nhận — data-driven process praise (Dweck) ===== */}
+      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
+        <div className="space-y-0.5">
+          <h3 className="text-scale-sm font-black text-forest-dark">📖 Sổ Vàng — Gợi ý lời khen hôm nay</h3>
+          <p className="text-scale-2xs text-gray-400">
+            Khen QUÁ TRÌNH thay vì tư chất — soạn sẵn từ dữ liệu thật của con, chạm 1 phát để gửi 🕊️
+          </p>
+        </div>
+
+        {praises.map((text, idx) => (
+          <div key={idx} className="border border-sand rounded-xl p-3 flex items-start gap-2">
+            <p className="flex-grow text-scale-2xs text-gray-600 font-medium leading-relaxed">{text}</p>
+            <button
+              onClick={() => handleSendPraise(text, idx)}
+              disabled={sentIdx.includes(idx)}
+              className={`min-w-tap min-h-tap rounded-xl flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform ${
+                sentIdx.includes(idx) ? "bg-sand text-gray-400" : "bg-sky text-white"
+              }`}
+              title="Gửi qua bồ câu"
+            >
+              {sentIdx.includes(idx) ? "✓" : <Send size={16} />}
+            </button>
+          </div>
+        ))}
       </div>
+
+      {/* ===== Thẻ Khoe Con — shareable brag card ===== */}
+      <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+        <h3 className="text-scale-sm font-black text-forest-dark">📸 Thẻ Khoe Con</h3>
+        <p className="text-scale-2xs text-gray-400">
+          Xuất ảnh thành tích tuần của {charName} để đăng Facebook/Zalo — khoe con một chút cũng đáng mà!
+        </p>
+        <button
+          onClick={handleShareCard}
+          className="w-full min-h-tap bg-clay text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+        >
+          <Share2 size={16} /> XUẤT THẺ KHOE CON
+        </button>
+      </div>
+
+      {flash && (
+        <p className="text-scale-xs font-bold text-center text-forest bg-forest-light/30 border border-forest/20 rounded-xl p-2.5">
+          {flash}
+        </p>
+      )}
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
 import * as petSystem from "@/lib/game/pets";
+import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import { playSound } from "@/lib/sound";
 
 const GameContext = createContext(null);
@@ -458,6 +459,34 @@ export function GameProvider({ children }) {
     setState((prev) => (prev ? petSystem.setActiveCompanion(prev, type, id) : prev));
   }, []);
 
+  // ---------------- B3.5: Cosmetics (Góc Của Tớ) ----------------
+  const buyCosmetic = useCallback((cosmeticId) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = cosmeticsSystem.buyCosmetic(prev, cosmeticId);
+      outcome = result;
+      if (result.success) {
+        playSound("reward");
+        fireConfetti({ particleCount: 50, spread: 55, colors: ["#D97706", "#7C3AED"] });
+      }
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const equipCosmetic = useCallback((slot, cosmeticId) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = cosmeticsSystem.equipCosmetic(prev, slot, cosmeticId);
+      outcome = result;
+      if (result.success) playSound("complete");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
   const toggleTimerState = useCallback(() => {
     setState((prev) => {
       if (!prev) return prev;
@@ -596,6 +625,9 @@ export function GameProvider({ children }) {
         approveAllPending,
         rejectTask,
         nudgeParents,
+        cosmetics: s.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
+        buyCosmetic,
+        equipCosmetic,
         energy: s.energy,
         setEnergy: makeFieldSetter("energy"),
         stats: s.stats,

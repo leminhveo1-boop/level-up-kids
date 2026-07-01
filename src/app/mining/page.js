@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
+import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 
 export default function MiningCavePage() {
   const router = useRouter();
+  const { uiMode } = useAuth();
+  const isTeen = uiMode === "teen";
   const {
     isLoaded,
     charName,
@@ -176,10 +179,12 @@ export default function MiningCavePage() {
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat text-center space-y-1">
           <h2 className="text-sm font-black text-forest-dark uppercase tracking-widest flex items-center justify-center gap-1">
             <span>⛏️</span>
-            <span>ĐỘNG KHAI THÁC ANH HÙNG</span>
+            <span>{isTeen ? "GRIND ZONE" : "ĐỘNG KHAI THÁC ANH HÙNG"}</span>
             <span>⛏️</span>
           </h2>
-          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Tiêu hao 1 Năng Lượng ⚡ = 1 Click Đào Kho Báu 💎</p>
+          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">
+            {isTeen ? "1 Energy ⚡ = 1 lượt farm coin 💎" : "Tiêu hao 1 Năng Lượng ⚡ = 1 Click Đào Kho Báu 💎"}
+          </p>
         </div>
 
         {/* TAB SWITCHER */}

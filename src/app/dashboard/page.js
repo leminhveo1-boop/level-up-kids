@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import confetti from "canvas-confetti";
 import SoundToggle from "@/components/SoundToggle";
+import { getEquipped } from "@/lib/game/cosmetics";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function DashboardPage() {
     activeMount,
     pendingCount,
     nudgeParents,
+    cosmetics,
   } = useGame();
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
@@ -347,11 +349,21 @@ export default function DashboardPage() {
 
         {/* HERO CARD (Avatar, Level progress bar, and Pet/Mount Companion) */}
         <div className={`border-2 p-4 rounded-3xl shadow-game-flat flex items-center gap-4 ${classConfig.bg}`}>
-          {/* Avatar Icon + Pet Companion */}
+          {/* Avatar Icon + Pet Companion + Cosmetics */}
           <div className="relative">
-            <div className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg} border-sand`}>
+            <div
+              className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg}`}
+              style={{ borderColor: getEquipped({ cosmetics }).frame?.value || undefined }}
+            >
               {classConfig.icon}
             </div>
+
+            {/* Equipped hat */}
+            {getEquipped({ cosmetics }).hat && (
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-2xl drop-shadow z-20 select-none">
+                {getEquipped({ cosmetics }).hat.emoji}
+              </span>
+            )}
             
             {/* Active Pet companion floating on top-left of Avatar */}
             {activePetObj && (
@@ -371,10 +383,19 @@ export default function DashboardPage() {
           {/* Hero Name, Title & Level Bar */}
           <div className="flex-grow space-y-1.5">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-black text-forest-dark truncate max-w-[150px]">{charName}</h2>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
-                CẤP {level}
-              </span>
+              <h2 className="text-base font-black text-forest-dark truncate max-w-[130px]">{charName}</h2>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => router.push("/me")}
+                  className="min-h-tap text-[10px] font-black px-2 rounded-full bg-clay-light text-clay border border-clay/30 active:scale-95 transition-transform"
+                  title="Góc Của Tớ — tùy biến avatar"
+                >
+                  🏠 Của Tớ
+                </button>
+                <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
+                  CẤP {level}
+                </span>
+              </div>
             </div>
             
             <p className="text-[11px] font-bold text-gray-500">{getLevelTitle(level)}</p>
@@ -526,20 +547,45 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Tasks List */}
+          {/* Tasks — Kanban-grouped view (B6): WIP-1 lane → today → waiting → done.
+              Tap-to-move (BẮT ĐẦU LÀM / HOÀN THÀNH) instead of drag — better for young motor skills. */}
           <div className="space-y-3.5">
             {filteredTasks.length === 0 ? (
               <div className="bg-white border-2 border-sand border-dashed p-8 rounded-2xl text-center text-xs text-gray-400 font-bold">
                 📭 Không có nhiệm vụ nào trong danh mục này!
               </div>
             ) : (
-              [...filteredTasks]
-                .sort((a, b) => {
-                  if (a.completed !== b.completed) return a.completed ? 1 : -1;
-                  if (a.isMandatory !== b.isMandatory) return a.isMandatory ? -1 : 1;
-                  return 0;
-                })
-                .map((task) => {
+              [
+                { key: "doing", label: "⚡ ĐANG LÀM (tập trung 1 việc thôi!)", filter: (t) => !t.completed && t.id === activeTaskId },
+                { key: "today", label: "📋 HÔM NAY", filter: (t) => !t.completed && t.id !== activeTaskId },
+                { key: "waiting", label: "⏳ CHỜ BỐ MẸ DUYỆT", filter: (t) => t.completed && t.approval === "pending" },
+                { key: "done", label: "✅ HOÀN THÀNH", filter: (t) => t.completed && t.approval !== "pending" },
+              ].map(({ key, label, filter }) => {
+                const group = filteredTasks
+                  .filter(filter)
+                  .sort((a, b) => (a.isMandatory === b.isMandatory ? 0 : a.isMandatory ? -1 : 1));
+                if (group.length === 0) return null;
+                return (
+                  <div key={key} className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{label}</span>
+                      <span className="text-[10px] font-black text-gray-300">{group.length}</span>
+                    </div>
+                    {group.map((task) => renderTaskCard(task))}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+
+      {renderModals()}
+    </div>
+  );
+
+  // ---- Task card renderer (shared across kanban groups) ----
+  function renderTaskCard(task) {
                   // Determine style based on category
                   let emoji = "🛡️";
                   let statText = "EXP";
@@ -686,12 +732,12 @@ export default function DashboardPage() {
                       )}
                     </div>
                   );
-                })
-            )}
-          </div>
-        </div>
-      </div>
+  }
 
+  // ---- Modals & overlays (anchored to the outer relative container) ----
+  function renderModals() {
+    return (
+      <>
       {/* Hidden photo evidence input */}
       <input
         ref={photoInputRef}
@@ -952,6 +998,7 @@ export default function DashboardPage() {
           <span className="text-[9px] font-extrabold uppercase tracking-wider">Bố Mẹ</span>
         </button>
       </div>
-    </div>
-  );
+      </>
+    );
+  }
 }

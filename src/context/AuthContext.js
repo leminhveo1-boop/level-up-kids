@@ -117,7 +117,7 @@ export function AuthProvider({ children }) {
 
       const [{ data: prof }, { data: kids }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", userId).single(),
-        supabase.from("children").select("id, name, char_class").eq("parent_id", userId).order("created_at"),
+        supabase.from("children").select("id, name, char_class, ui_mode").eq("parent_id", userId).order("created_at"),
       ]);
 
       setProfile(prof || null);
@@ -181,7 +181,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const createChild = useCallback(
-    async (name, charClass) => {
+    async (name, charClass, uiMode = "kid") => {
       if (childProfiles.length >= childLimit) {
         return { success: false, error: "CHILD_LIMIT_REACHED", limit: childLimit };
       }
@@ -189,8 +189,8 @@ export function AuthProvider({ children }) {
       if (cloudEnabled && supabase && user) {
         const { data, error } = await supabase
           .from("children")
-          .insert({ parent_id: user.id, name, char_class: charClass })
-          .select("id, name, char_class")
+          .insert({ parent_id: user.id, name, char_class: charClass, ui_mode: uiMode })
+          .select("id, name, char_class, ui_mode")
           .single();
         if (error) {
           const msg = error.message || "";
@@ -207,7 +207,7 @@ export function AuthProvider({ children }) {
       }
 
       // local mode
-      const child = { id: "local_" + Date.now(), name, char_class: charClass };
+      const child = { id: "local_" + Date.now(), name, char_class: charClass, ui_mode: uiMode };
       const next = [...childProfiles, child];
       setChildProfiles(next);
       localStorage.setItem(LOCAL_CHILDREN_KEY, JSON.stringify(next));
@@ -232,6 +232,22 @@ export function AuthProvider({ children }) {
       return { success: true };
     },
     [cloudEnabled, supabase, user, childProfiles, activeChildId, selectChild]
+  );
+
+  /** Switch a child's UI mode (kid 6-11 / teen 12+) — parents can adjust anytime. */
+  const setChildUiMode = useCallback(
+    async (childId, uiMode) => {
+      if (cloudEnabled && supabase && user && !String(childId).startsWith("local_")) {
+        const { error } = await supabase.from("children").update({ ui_mode: uiMode }).eq("id", childId);
+        if (error) return { success: false, error: error.message };
+      } else {
+        const next = childProfiles.map((c) => (c.id === childId ? { ...c, ui_mode: uiMode } : c));
+        localStorage.setItem(LOCAL_CHILDREN_KEY, JSON.stringify(next));
+      }
+      setChildProfiles((prev) => prev.map((c) => (c.id === childId ? { ...c, ui_mode: uiMode } : c)));
+      return { success: true };
+    },
+    [cloudEnabled, supabase, user, childProfiles]
   );
 
   const redeemActivationCode = useCallback(
@@ -271,6 +287,8 @@ export function AuthProvider({ children }) {
         exitDemo,
         createChild,
         deleteChild,
+        setChildUiMode,
+        uiMode: activeChild?.ui_mode || "kid",
         redeemActivationCode,
         refreshAccount,
       }}

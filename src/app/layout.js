@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import DemoBanner from "@/components/DemoBanner";
+import UiModeApplier from "@/components/UiModeApplier";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({ children }) {
           <LanguageProvider>
             <AuthProvider>
               <GameProvider>
+                <UiModeApplier />
                 {children}
                 <DemoBanner />
               </GameProvider>

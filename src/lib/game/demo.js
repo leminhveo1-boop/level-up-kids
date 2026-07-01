@@ -11,6 +11,7 @@ export const DEMO_CHILD = {
   id: DEMO_CHILD_ID,
   name: "Bé Demo",
   char_class: "Warrior",
+  ui_mode: "kid",
 };
 
 /** @returns {object} full game state showcasing the product */

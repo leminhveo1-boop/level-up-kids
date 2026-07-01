@@ -29,6 +29,36 @@
   --fx-intensity: 0.4;     /* fewer perpetual animations */
 }
 
+/* Teen Dark Skin V1 — utility-class overrides (transitional until full
+   semantic tokenization; scoped to the classes actually used in the app). */
+[data-ui-mode="teen"] .bg-white { background-color: #1E293B; }
+[data-ui-mode="teen"] .bg-sand-light,
+[data-ui-mode="teen"] .bg-sand { background-color: #0F172A; }
+[data-ui-mode="teen"] .bg-forest-light,
+[data-ui-mode="teen"] .bg-amber-light,
+[data-ui-mode="teen"] .bg-sky-light,
+[data-ui-mode="teen"] .bg-clay-light,
+[data-ui-mode="teen"] .bg-terracotta-light { background-color: #24334A; }
+[data-ui-mode="teen"] .border-sand,
+[data-ui-mode="teen"] .border-sand-dark { border-color: #334155; }
+[data-ui-mode="teen"] .text-forest-dark,
+[data-ui-mode="teen"] .text-forest { color: #A7F3D0; }
+[data-ui-mode="teen"] .text-gray-500,
+[data-ui-mode="teen"] .text-gray-600,
+[data-ui-mode="teen"] .text-gray-400 { color: #94A3B8; }
+[data-ui-mode="teen"] .shadow-game-flat { box-shadow: 0 4px 0px 0px #0B1220; }
+[data-ui-mode="teen"] .bg-rose-50,
+[data-ui-mode="teen"] .bg-blue-50,
+[data-ui-mode="teen"] .bg-green-50,
+[data-ui-mode="teen"] .bg-amber-50,
+[data-ui-mode="teen"] .bg-purple-50,
+[data-ui-mode="teen"] .bg-gray-50,
+[data-ui-mode="teen"] .bg-gray-100 { background-color: #24334A; }
+/* calm the perpetual attention-seekers for teens */
+[data-ui-mode="teen"] .animate-bounce,
+[data-ui-mode="teen"] .animate-pulse,
+[data-ui-mode="teen"] .animate-flame { animation: none; }
+
 body {
   color: var(--foreground);
   background-color: var(--background);

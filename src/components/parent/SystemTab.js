@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameState";
-import { Save, RotateCcw, Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Save, RotateCcw, Lock, Palette } from "lucide-react";
 
 /** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
 export default function SystemTab() {
@@ -158,6 +159,9 @@ export default function SystemTab() {
         </div>
       </form>
 
+      {/* UI mode per child */}
+      <UiModeCard showFlash={showFlash} />
+
       {/* Daily reset */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
         <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
@@ -178,6 +182,48 @@ export default function SystemTab() {
           GIẢ LẬP NGÀY MỚI 🔄
         </button>
       </div>
+    </div>
+  );
+}
+
+/** Per-child UI mode switcher (kid 6-11 forest / teen 12+ dark). */
+function UiModeCard({ showFlash }) {
+  const { activeChild, activeChildId, uiMode, setChildUiMode, isDemo } = useAuth();
+
+  if (!activeChildId || isDemo) return null;
+
+  const handleSwitch = async (mode) => {
+    if (mode === uiMode) return;
+    const r = await setChildUiMode(activeChildId, mode);
+    showFlash(r.success ? `Đã đổi giao diện của ${activeChild?.name} sang chế độ ${mode === "teen" ? "Teen 🎧" : "Nhi đồng 🧒"}!` : "Không đổi được, thử lại!");
+  };
+
+  return (
+    <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+      <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+        <Palette size={16} /> Giao diện theo tuổi của {activeChild?.name}
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => handleSwitch("kid")}
+          className={`min-h-tap rounded-xl border-2 text-scale-2xs font-black transition-all ${
+            uiMode === "kid" ? "border-forest bg-forest-light/20 text-forest-dark" : "border-sand text-gray-500"
+          }`}
+        >
+          🧒 Nhi đồng (6–11)
+        </button>
+        <button
+          onClick={() => handleSwitch("teen")}
+          className={`min-h-tap rounded-xl border-2 text-scale-2xs font-black transition-all ${
+            uiMode === "teen" ? "border-forest bg-forest-light/20 text-forest-dark" : "border-sand text-gray-500"
+          }`}
+        >
+          🎧 Teen (12+)
+        </button>
+      </div>
+      <p className="text-scale-2xs text-gray-400">
+        Teen: nền tối, gọn gàng, bớt hiệu ứng — cùng cơ chế game, khác cách thể hiện.
+      </p>
     </div>
   );
 }

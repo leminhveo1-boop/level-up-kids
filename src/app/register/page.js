@@ -46,6 +46,7 @@ export default function RegisterPage() {
 
   const [nameInput, setNameInput] = useState("");
   const [selectedClass, setSelectedClass] = useState("Warrior");
+  const [ageGroup, setAgeGroup] = useState("kid"); // kid 6-11 | teen 12+
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -57,7 +58,7 @@ export default function RegisterPage() {
     setBusy(true);
     setErrorMessage("");
 
-    const res = await createChild(nameInput.trim(), selectedClass);
+    const res = await createChild(nameInput.trim(), selectedClass, ageGroup);
     setBusy(false);
 
     if (!res.success) {
@@ -96,7 +97,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Name Input Card */}
-      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-6">
+      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-4">
         <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Tên Anh Hùng Của Bé</label>
         <input
           type="text"
@@ -106,6 +107,33 @@ export default function RegisterPage() {
           className="w-full bg-sand-light border-2 border-sand rounded-xl px-4 py-3 text-base font-bold text-forest-dark focus:outline-none focus:border-forest transition-colors"
           maxLength={18}
         />
+      </div>
+
+      {/* Age group → UI mode (kid vs teen aesthetics) */}
+      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-6">
+        <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Nhóm Tuổi (chọn giao diện phù hợp)</label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setAgeGroup("kid")}
+            className={`min-h-tap p-3 rounded-xl border-2 text-center transition-all ${
+              ageGroup === "kid" ? "border-forest bg-forest-light/20" : "border-sand"
+            }`}
+          >
+            <p className="text-sm font-black text-forest-dark">🧒 6–11 tuổi</p>
+            <p className="text-[10px] text-gray-400 font-bold">Phiêu lưu rực rỡ, thú cưng, phép thuật</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAgeGroup("teen")}
+            className={`min-h-tap p-3 rounded-xl border-2 text-center transition-all ${
+              ageGroup === "teen" ? "border-forest bg-forest-light/20" : "border-sand"
+            }`}
+          >
+            <p className="text-sm font-black text-forest-dark">🎧 12+ tuổi</p>
+            <p className="text-[10px] text-gray-400 font-bold">Giao diện tối, gọn, kiểu app fitness</p>
+          </button>
+        </div>
       </div>
 
       {/* Class Selection */}
