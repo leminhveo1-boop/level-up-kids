@@ -12,6 +12,7 @@ import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
 import { createInitialState, BOSS_MAX_HP } from "@/lib/game/constants";
+import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
 import * as petSystem from "@/lib/game/pets";
@@ -43,6 +44,14 @@ export function GameProvider({ children }) {
       return;
     }
     if (loadedChildRef.current === activeChildId) return;
+
+    // Demo mode: pre-built showcase state, never read from storage
+    if (activeChildId === DEMO_CHILD_ID) {
+      loadedChildRef.current = activeChildId;
+      setState(createDemoState());
+      setIsLoaded(true);
+      return;
+    }
 
     let cancelled = false;
     const load = async () => {
@@ -98,6 +107,7 @@ export function GameProvider({ children }) {
   // ---------------- SAVE (localStorage immediate + cloud debounced) ----------------
   useEffect(() => {
     if (!isLoaded || !state || !activeChildId) return;
+    if (activeChildId === DEMO_CHILD_ID) return; // demo is never persisted
 
     const toSave = { ...state, savedAt: Date.now() };
     try {

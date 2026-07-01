@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { getSupabase, isCloudEnabled } from "@/lib/supabase/client";
+import { DEMO_CHILD, DEMO_CHILD_ID } from "@/lib/game/demo";
 
 const AuthContext = createContext(null);
 
@@ -9,8 +10,8 @@ const LOCAL_CHILDREN_KEY = "luk_children";
 const ACTIVE_CHILD_KEY = "luk_active_child";
 const LEGACY_STATE_KEY = "quocbao_game_state";
 
-/** Max children by plan */
-export const FREE_CHILD_LIMIT = 1;
+/** Paid-only model: free accounts get demo only (0 real children) */
+export const FREE_CHILD_LIMIT = 0;
 export const PREMIUM_CHILD_LIMIT = 6;
 
 function readJson(key, fallback) {
@@ -36,7 +37,10 @@ export function AuthProvider({ children }) {
     profile?.plan === "premium" &&
       (!profile.premium_until || new Date(profile.premium_until) > new Date())
   );
-  const childLimit = isPremium ? PREMIUM_CHILD_LIMIT : FREE_CHILD_LIMIT;
+  // Paid gate only applies in cloud mode; local mode (no env) stays open for self-host/dev
+  const isPaid = !cloudEnabled || isPremium;
+  const childLimit = !cloudEnabled ? PREMIUM_CHILD_LIMIT : isPremium ? PREMIUM_CHILD_LIMIT : FREE_CHILD_LIMIT;
+  const isDemo = activeChildId === DEMO_CHILD_ID;
 
   // ---------- bootstrap ----------
   useEffect(() => {
@@ -161,8 +165,19 @@ export function AuthProvider({ children }) {
 
   const selectChild = useCallback((childId) => {
     setActiveChildId(childId);
-    if (childId) localStorage.setItem(ACTIVE_CHILD_KEY, childId);
+    // demo selection is session-only, never persisted
+    if (childId && childId !== DEMO_CHILD_ID) localStorage.setItem(ACTIVE_CHILD_KEY, childId);
     else localStorage.removeItem(ACTIVE_CHILD_KEY);
+  }, []);
+
+  /** Enter showcase demo mode (view freely, nothing persisted). */
+  const enterDemo = useCallback(() => {
+    setActiveChildId(DEMO_CHILD_ID);
+    localStorage.removeItem(ACTIVE_CHILD_KEY);
+  }, []);
+
+  const exitDemo = useCallback(() => {
+    setActiveChildId(null);
   }, []);
 
   const createChild = useCallback(
@@ -178,9 +193,12 @@ export function AuthProvider({ children }) {
           .select("id, name, char_class")
           .single();
         if (error) {
-          const code = error.message?.includes("FREE_PLAN_CHILD_LIMIT")
+          const msg = error.message || "";
+          const code = msg.includes("PREMIUM_REQUIRED")
+            ? "PREMIUM_REQUIRED"
+            : msg.includes("FREE_PLAN_CHILD_LIMIT") || msg.includes("MAX_CHILDREN_REACHED")
             ? "CHILD_LIMIT_REACHED"
-            : error.message;
+            : msg;
           return { success: false, error: code, limit: childLimit };
         }
         setChildProfiles((prev) => [...prev, data]);
@@ -227,7 +245,9 @@ export function AuthProvider({ children }) {
     [supabase, user, refreshAccount]
   );
 
-  const activeChild = childProfiles.find((c) => c.id === activeChildId) || null;
+  const activeChild = isDemo
+    ? DEMO_CHILD
+    : childProfiles.find((c) => c.id === activeChildId) || null;
 
   return (
     <AuthContext.Provider
@@ -237,6 +257,8 @@ export function AuthProvider({ children }) {
         user,
         profile,
         isPremium,
+        isPaid,
+        isDemo,
         childLimit,
         childProfiles,
         activeChild,
@@ -245,6 +267,8 @@ export function AuthProvider({ children }) {
         signIn,
         signOut,
         selectChild,
+        enterDemo,
+        exitDemo,
         createChild,
         deleteChild,
         redeemActivationCode,

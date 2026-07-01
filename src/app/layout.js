@@ -4,6 +4,7 @@ import { GameProvider } from "@/context/GameState";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
+import DemoBanner from "@/components/DemoBanner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
             <AuthProvider>
               <GameProvider>
                 {children}
+                <DemoBanner />
               </GameProvider>
             </AuthProvider>
           </LanguageProvider>

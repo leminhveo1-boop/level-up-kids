@@ -8,14 +8,18 @@ import { useAuth } from "@/context/AuthContext";
 export default function LandingPage() {
   const router = useRouter();
   const { isLoaded, level } = useGame();
-  const { authLoaded, cloudEnabled, user, activeChild } = useAuth();
+  const { authLoaded, cloudEnabled, user, activeChild, isPaid, isDemo } = useAuth();
 
   // Where should the primary CTA go?
-  const primaryTarget = activeChild
-    ? "/dashboard"
-    : cloudEnabled && !user
-    ? "/auth"
-    : "/family";
+  // Paid-only funnel: unauth → /auth; unpaid → /demo (showcase); paid → family/dashboard
+  const primaryTarget =
+    activeChild && !isDemo
+      ? "/dashboard"
+      : cloudEnabled && !user
+      ? "/auth"
+      : !isPaid
+      ? "/demo"
+      : "/family";
 
   if (!isLoaded || !authLoaded) {
     return (
@@ -88,10 +92,23 @@ export default function LandingPage() {
           onClick={() => router.push(primaryTarget)}
           className="w-full bg-forest text-sand-light font-extrabold text-base py-4 px-6 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
         >
-          {activeChild ? `TIẾP TỤC HÀNH TRÌNH (CẤP ${level}) 🌳` : "BẮT ĐẦU PHIÊU LƯU 🗡️"}
+          {activeChild && !isDemo
+            ? `TIẾP TỤC HÀNH TRÌNH (CẤP ${level}) 🌳`
+            : primaryTarget === "/demo"
+            ? "CHƠI THỬ NGAY — MIỄN PHÍ 🎮"
+            : "BẮT ĐẦU PHIÊU LƯU 🗡️"}
         </button>
 
-        {activeChild && (
+        {primaryTarget === "/demo" && (
+          <button
+            onClick={() => router.push("/premium")}
+            className="w-full bg-amber text-white font-extrabold text-sm py-3 px-6 rounded-2xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
+          >
+            👑 MỞ KHÓA TRỌN BỘ — 199.000₫/NĂM
+          </button>
+        )}
+
+        {activeChild && !isDemo && (
           <button
             onClick={() => router.push("/family")}
             className="w-full bg-sand-light text-forest font-bold text-xs py-2.5 px-4 rounded-xl border border-sand hover:bg-sand-dark transition-all"

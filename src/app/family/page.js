@@ -16,6 +16,7 @@ export default function FamilyPage() {
     user,
     profile,
     isPremium,
+    isPaid,
     childLimit,
     childProfiles,
     activeChildId,
@@ -151,8 +152,8 @@ export default function FamilyPage() {
           </div>
         ))}
 
-        {/* Add child */}
-        {canAddChild ? (
+        {/* Add child (paid) / paywall + demo (unpaid) */}
+        {canAddChild && isPaid ? (
           <button
             onClick={() => router.push("/register")}
             className="w-full bg-white border-2 border-dashed border-sand hover:border-forest rounded-2xl p-4 text-sm font-black text-gray-400 hover:text-forest transition-colors"
@@ -160,14 +161,26 @@ export default function FamilyPage() {
             {t("children.add")}
           </button>
         ) : (
-          <div className="bg-amber-light/50 border-2 border-amber/30 rounded-2xl p-4 text-center space-y-2">
-            <p className="text-[11px] font-bold text-amber-dark">{t("children.limitFree")}</p>
-            <button
-              onClick={() => router.push("/premium")}
-              className="bg-amber text-white font-black text-xs px-5 py-2.5 rounded-xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
-            >
-              {t("premium.title")}
-            </button>
+          <div className="bg-amber-light/50 border-2 border-amber/30 rounded-2xl p-4 text-center space-y-3">
+            <p className="text-[11px] font-bold text-amber-dark">
+              {isPaid ? t("children.limitFree") : t("children.paidOnly")}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => router.push("/premium")}
+                className="bg-amber text-white font-black text-xs px-5 py-3 rounded-xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
+              >
+                👑 {t("premium.title")}
+              </button>
+              {!isPaid && (
+                <button
+                  onClick={() => router.push("/demo")}
+                  className="bg-white text-forest font-black text-xs px-5 py-3 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+                >
+                  {t("children.tryDemo")}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

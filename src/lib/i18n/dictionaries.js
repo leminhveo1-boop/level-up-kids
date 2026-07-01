@@ -40,7 +40,14 @@ export const dictionaries = {
     // Children profiles
     "children.title": "Chọn Anh Hùng Của Nhà Mình",
     "children.add": "Thêm Anh Hùng Mới ➕",
-    "children.limitFree": "Gói Miễn Phí chỉ tạo được 1 hồ sơ con. Nâng cấp Premium để thêm tối đa 6 con!",
+    "children.limitFree": "Cần gói Premium để tạo hồ sơ cho con (tối đa 6 bé/gia đình).",
+    "children.paidOnly": "Tài khoản của bạn đang ở chế độ dùng thử. Mở khóa Premium để tạo hồ sơ thật và lưu tiến trình của con!",
+    "children.tryDemo": "🎮 Chơi Thử Bản Demo",
+
+    // Demo mode
+    "demo.banner": "Bản dùng thử — không lưu tiến trình",
+    "demo.bannerSub": "Mở khóa trọn bộ chỉ 199.000₫/năm",
+    "demo.unlock": "Mở khóa",
     "children.play": "VÀO CHƠI 🎮",
     "children.delete": "Xóa hồ sơ",
     "children.deleteConfirm": "Xóa hồ sơ này? Toàn bộ tiến trình của bé sẽ bị mất!",
@@ -99,7 +106,14 @@ export const dictionaries = {
     // Children profiles
     "children.title": "Choose Your Family Hero",
     "children.add": "Add New Hero ➕",
-    "children.limitFree": "Free plan allows 1 child profile. Upgrade to Premium for up to 6!",
+    "children.limitFree": "Premium is required to create child profiles (up to 6 per family).",
+    "children.paidOnly": "Your account is in trial mode. Unlock Premium to create real profiles and save your child's progress!",
+    "children.tryDemo": "🎮 Try the Demo",
+
+    // Demo mode
+    "demo.banner": "Trial mode — progress is not saved",
+    "demo.bannerSub": "Unlock everything for just 199,000₫/year",
+    "demo.unlock": "Unlock",
     "children.play": "PLAY 🎮",
     "children.delete": "Delete profile",
     "children.deleteConfirm": "Delete this profile? All of this child's progress will be lost!",

@@ -36,7 +36,12 @@ const CLASSES = [
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { createChild, childLimit, childProfiles } = useAuth();
+  const { authLoaded, isPaid, createChild, childLimit, childProfiles } = useAuth();
+
+  // Paid-only: creating a real child requires premium — send prospects to the paywall
+  React.useEffect(() => {
+    if (authLoaded && !isPaid) router.replace("/premium");
+  }, [authLoaded, isPaid, router]);
 
   const [nameInput, setNameInput] = useState("");
   const [selectedClass, setSelectedClass] = useState("Warrior");
