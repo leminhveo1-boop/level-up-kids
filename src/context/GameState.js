@@ -355,12 +355,16 @@ export function GameProvider({ children }) {
     });
   }, []);
 
+  // Unique id even for same-millisecond batch inserts (onboarding wizard)
+  const makeUniqueId = (prefix) =>
+    `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
   const addCustomTask = useCallback((title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0) => {
     setState((prev) => {
       if (!prev) return prev;
       const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help" };
       const newTask = {
-        id: "custom_" + Date.now(),
+        id: makeUniqueId("custom"),
         title,
         exp: parseInt(expVal) || 15,
         points: parseInt(pointsVal) || parseInt(expVal) || 15,
@@ -387,7 +391,7 @@ export function GameProvider({ children }) {
       setState((prev) => {
         if (!prev) return prev;
         const newReward = {
-          id: "reward_" + Date.now(),
+          id: makeUniqueId("reward"),
           title,
           cost: parseInt(costVal) || 50,
           currency: currencyVal,

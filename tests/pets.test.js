@@ -110,4 +110,26 @@ describe("migrateState (legacy saves)", () => {
     expect(Array.isArray(migrated.tasks)).toBe(true);
     expect(migrated.parentConfig.maxCoinBalance).toBe(7000);
   });
+
+  test("heals duplicate task/reward ids from same-millisecond batch inserts", () => {
+    const dupState = {
+      charName: "X",
+      tasks: [
+        { id: "custom_1", title: "A", exp: 10, energy: 5, category: "help", completed: false },
+        { id: "custom_1", title: "B", exp: 10, energy: 5, category: "help", completed: false },
+        { id: "custom_1", title: "C", exp: 10, energy: 5, category: "help", completed: false },
+      ],
+      rewards: [
+        { id: "reward_1", title: "R1", cost: 10, currency: "points", type: "perk" },
+        { id: "reward_1", title: "R2", cost: 10, currency: "points", type: "perk" },
+      ],
+    };
+    const migrated = migrateState(dupState);
+    const taskIds = migrated.tasks.map((t) => t.id);
+    const rewardIds = migrated.rewards.map((r) => r.id);
+    expect(new Set(taskIds).size).toBe(taskIds.length);
+    expect(new Set(rewardIds).size).toBe(rewardIds.length);
+    // titles preserved in order
+    expect(migrated.tasks.map((t) => t.title)).toEqual(["A", "B", "C"]);
+  });
 });

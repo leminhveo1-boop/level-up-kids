@@ -15,6 +15,24 @@ import {
 } from "./constants";
 
 /**
+ * Rewrite duplicated ids (bug: same-millisecond batch inserts shared Date.now() ids).
+ * Keeps the first occurrence, re-ids the rest.
+ * @param {Array<{id: string}>} items
+ */
+function dedupeIds(items) {
+  const seen = new Set();
+  return items.map((item, index) => {
+    if (!seen.has(item.id)) {
+      seen.add(item.id);
+      return item;
+    }
+    const newId = `${item.id}_fix${index}`;
+    seen.add(newId);
+    return { ...item, id: newId };
+  });
+}
+
+/**
  * Normalize any historical saved shape into the current full state shape.
  * @param {object|null|undefined} data raw parsed state
  * @returns {object} valid full game state
@@ -31,6 +49,7 @@ export function migrateState(data) {
     }
     return { ...t };
   });
+  tasks = dedupeIds(tasks);
 
   // Legacy: reward currency gold → heroCoins/points
   let rewards = Array.isArray(data.rewards) ? data.rewards : DEFAULT_REWARDS;
@@ -42,6 +61,7 @@ export function migrateState(data) {
     }
     return { ...r };
   });
+  rewards = dedupeIds(rewards);
 
   // Legacy: gold wallet → heroCoins
   const heroCoins = data.heroCoins !== undefined ? data.heroCoins : data.gold || 0;
