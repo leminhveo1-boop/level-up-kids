@@ -51,7 +51,7 @@ export default function MiningCavePage() {
         setShowHatchSuccess(true);
         setSelectedEgg(null);
         setSelectedPotion(null);
-        setCaveLog(`🥚 Kỳ diệu! Dũng sĩ Quốc Bảo đã ấp nở thành công Thú cưng: ${res.pet.name} ${res.pet.emoji}! 🎉`);
+        setCaveLog(`🥚 Kỳ diệu! Dũng sĩ ${charName} đã ấp nở thành công Thú cưng: ${res.pet.name} ${res.pet.emoji}! 🎉`);
       } else {
         setErrorMessage(res.message);
         setTimeout(() => setErrorMessage(""), 3500);
@@ -128,7 +128,7 @@ export default function MiningCavePage() {
 
       // Log update
       if (result.lootType === "legendary") {
-        setCaveLog(`🎉 QUÁ KHỦNG KHIẾP! Quốc Bảo đã đào được ${result.title} cực hiếm và nhận ngay +${result.coinReward} 🪙! 🎉`);
+        setCaveLog(`🎉 QUÁ KHỦNG KHIẾP! ${charName} đã đào được ${result.title} cực hiếm và nhận ngay +${result.coinReward} 🪙! 🎉`);
       } else if (result.lootType === "epic") {
         setCaveLog(`👑 Tuyệt vời! Con đã đào được ${result.title} nhận +${result.coinReward} 🪙!`);
       } else {
@@ -562,7 +562,7 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🐾</span>
-                <span>Thú Cưng Của Quốc Bảo ({pets?.length || 0})</span>
+                <span>Thú Cưng Của {charName} ({pets?.length || 0})</span>
               </h3>
 
               {pets?.length === 0 ? (

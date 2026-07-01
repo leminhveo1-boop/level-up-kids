@@ -584,7 +584,7 @@ export default function DashboardPage() {
 
             <div className="space-y-1">
               <h3 className="text-sm font-black text-amber uppercase tracking-wider">Thư Từ Bố Mẹ 💌</h3>
-              <p className="text-[10px] text-gray-400">Gửi đến Chiến Binh Quốc Bảo yêu dấu</p>
+              <p className="text-[10px] text-gray-400">Gửi đến Chiến Binh {charName} yêu dấu</p>
             </div>
 
             {/* Letter Content block */}
@@ -618,7 +618,7 @@ export default function DashboardPage() {
 
             <div className="space-y-1 text-white">
               <h3 className="text-lg font-black tracking-widest uppercase animate-pulse">ĐIỂM MAY MẮN! 🌟</h3>
-              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">Quốc Bảo đã kích hoạt Cú Đập Sức Mạnh 💥</p>
+              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">{charName} đã kích hoạt Cú Đập Sức Mạnh 💥</p>
             </div>
 
             <div className="bg-white border-2 border-amber-dark p-4 rounded-2xl shadow-inner space-y-1">

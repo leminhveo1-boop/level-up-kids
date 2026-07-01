@@ -1,0 +1,128 @@
+/**
+ * i18n dictionaries — VI (default) + EN.
+ * V1 coverage: auth, onboarding, child profiles, premium/paywall, common navigation.
+ * Game screens keep Vietnamese-first copy; keys can be extended incrementally.
+ */
+
+export const dictionaries = {
+  vi: {
+    // Common
+    "common.appName": "Level Up Kids",
+    "common.loading": "Đang tải...",
+    "common.back": "Quay lại",
+    "common.cancel": "Hủy bỏ",
+    "common.confirm": "Xác nhận",
+    "common.save": "Lưu",
+    "common.close": "Đóng",
+    "common.error": "Có lỗi xảy ra, vui lòng thử lại!",
+
+    // Nav
+    "nav.adventure": "Phiêu Lưu",
+    "nav.rewards": "Đổi Quà",
+    "nav.mining": "Đào Mỏ",
+    "nav.parent": "Bố Mẹ",
+
+    // Auth
+    "auth.title": "Tài Khoản Gia Đình",
+    "auth.subtitle": "Đăng nhập để đồng bộ tiến trình của con trên mọi thiết bị",
+    "auth.email": "Email",
+    "auth.password": "Mật khẩu (tối thiểu 6 ký tự)",
+    "auth.displayName": "Tên phụ huynh",
+    "auth.signIn": "ĐĂNG NHẬP",
+    "auth.signUp": "ĐĂNG KÝ MIỄN PHÍ",
+    "auth.switchToSignUp": "Chưa có tài khoản? Đăng ký ngay",
+    "auth.switchToSignIn": "Đã có tài khoản? Đăng nhập",
+    "auth.signOut": "Đăng xuất",
+    "auth.checkEmail": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản. 📧",
+    "auth.localMode": "Chơi ngay không cần tài khoản (lưu trên máy này)",
+    "auth.error.invalid": "Email hoặc mật khẩu không đúng!",
+
+    // Children profiles
+    "children.title": "Chọn Anh Hùng Của Nhà Mình",
+    "children.add": "Thêm Anh Hùng Mới ➕",
+    "children.limitFree": "Gói Miễn Phí chỉ tạo được 1 hồ sơ con. Nâng cấp Premium để thêm tối đa 6 con!",
+    "children.play": "VÀO CHƠI 🎮",
+    "children.delete": "Xóa hồ sơ",
+    "children.deleteConfirm": "Xóa hồ sơ này? Toàn bộ tiến trình của bé sẽ bị mất!",
+
+    // Premium / paywall
+    "premium.title": "Nâng Cấp Premium 👑",
+    "premium.badge": "PREMIUM",
+    "premium.freeBadge": "MIỄN PHÍ",
+    "premium.feature.multiChild": "Tối đa 6 hồ sơ con trong 1 gia đình",
+    "premium.feature.sync": "Đồng bộ đám mây mọi thiết bị",
+    "premium.feature.support": "Hỗ trợ ưu tiên từ đội ngũ phát triển",
+    "premium.activeUntil": "Premium đến ngày",
+    "premium.enterCode": "Nhập mã kích hoạt",
+    "premium.redeem": "KÍCH HOẠT 🗝️",
+    "premium.codeSuccess": "Kích hoạt Premium thành công! 🎉",
+    "premium.code.CODE_NOT_FOUND": "Mã kích hoạt không tồn tại!",
+    "premium.code.CODE_ALREADY_USED": "Mã này đã được sử dụng!",
+    "premium.payTitle": "Thanh toán tự động qua chuyển khoản",
+    "premium.payDesc": "Chuyển khoản đúng số tiền với nội dung bên dưới, hệ thống sẽ tự động kích hoạt trong ~1 phút (qua SePay).",
+    "premium.payContent": "Nội dung chuyển khoản",
+    "premium.price": "Giá gói 1 năm",
+  },
+
+  en: {
+    // Common
+    "common.appName": "Level Up Kids",
+    "common.loading": "Loading...",
+    "common.back": "Back",
+    "common.cancel": "Cancel",
+    "common.confirm": "Confirm",
+    "common.save": "Save",
+    "common.close": "Close",
+    "common.error": "Something went wrong, please try again!",
+
+    // Nav
+    "nav.adventure": "Adventure",
+    "nav.rewards": "Rewards",
+    "nav.mining": "Mining",
+    "nav.parent": "Parents",
+
+    // Auth
+    "auth.title": "Family Account",
+    "auth.subtitle": "Sign in to sync your child's progress across devices",
+    "auth.email": "Email",
+    "auth.password": "Password (min 6 characters)",
+    "auth.displayName": "Parent name",
+    "auth.signIn": "SIGN IN",
+    "auth.signUp": "SIGN UP FREE",
+    "auth.switchToSignUp": "No account yet? Sign up",
+    "auth.switchToSignIn": "Already have an account? Sign in",
+    "auth.signOut": "Sign out",
+    "auth.checkEmail": "Signed up! Please check your email to confirm your account. 📧",
+    "auth.localMode": "Play now without an account (saved on this device)",
+    "auth.error.invalid": "Invalid email or password!",
+
+    // Children profiles
+    "children.title": "Choose Your Family Hero",
+    "children.add": "Add New Hero ➕",
+    "children.limitFree": "Free plan allows 1 child profile. Upgrade to Premium for up to 6!",
+    "children.play": "PLAY 🎮",
+    "children.delete": "Delete profile",
+    "children.deleteConfirm": "Delete this profile? All of this child's progress will be lost!",
+
+    // Premium / paywall
+    "premium.title": "Upgrade to Premium 👑",
+    "premium.badge": "PREMIUM",
+    "premium.freeBadge": "FREE",
+    "premium.feature.multiChild": "Up to 6 child profiles per family",
+    "premium.feature.sync": "Cloud sync across all devices",
+    "premium.feature.support": "Priority support from our team",
+    "premium.activeUntil": "Premium active until",
+    "premium.enterCode": "Enter activation code",
+    "premium.redeem": "ACTIVATE 🗝️",
+    "premium.codeSuccess": "Premium activated successfully! 🎉",
+    "premium.code.CODE_NOT_FOUND": "Activation code not found!",
+    "premium.code.CODE_ALREADY_USED": "This code has already been used!",
+    "premium.payTitle": "Automatic bank-transfer payment",
+    "premium.payDesc": "Transfer the exact amount with the content below; your account activates automatically within ~1 minute (via SePay).",
+    "premium.payContent": "Transfer content",
+    "premium.price": "1-year plan price",
+  },
+};
+
+export const SUPPORTED_LOCALES = ["vi", "en"];
+export const DEFAULT_LOCALE = "vi";

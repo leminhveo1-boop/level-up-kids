@@ -127,7 +127,7 @@ export default function ParentDashboard() {
       leaf: "🌿 Lá Cây"
     };
 
-    setItemAdjustSuccess(`Đã tặng +${itemAdjustAmount} ${itemNames[selectedItemKey]} cho Quốc Bảo! 🎉`);
+    setItemAdjustSuccess(`Đã tặng +${itemAdjustAmount} ${itemNames[selectedItemKey]} cho ${charName}! 🎉`);
     setTimeout(() => setItemAdjustSuccess(""), 3500);
   };
 
@@ -233,10 +233,10 @@ export default function ParentDashboard() {
     if (heroCoinsAdjustAmount <= 0) return;
     if (type === "add") {
       setHeroCoins((prev) => prev + heroCoinsAdjustAmount);
-      setHeroCoinsAdjustSuccess(`Đã thưởng nóng +${heroCoinsAdjustAmount} 🪙 Hero Coins cho Quốc Bảo! 🎉`);
+      setHeroCoinsAdjustSuccess(`Đã thưởng nóng +${heroCoinsAdjustAmount} 🪙 Hero Coins cho ${charName}! 🎉`);
     } else {
       setHeroCoins((prev) => Math.max(0, prev - heroCoinsAdjustAmount));
-      setHeroCoinsAdjustSuccess(`Đã phạt trừ -${heroCoinsAdjustAmount} 🪙 Hero Coins của Quốc Bảo! ⚠️`);
+      setHeroCoinsAdjustSuccess(`Đã phạt trừ -${heroCoinsAdjustAmount} 🪙 Hero Coins của ${charName}! ⚠️`);
     }
     setTimeout(() => setHeroCoinsAdjustSuccess(""), 3500);
   };
