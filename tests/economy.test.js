@@ -7,6 +7,12 @@ import {
   resetDailyTasks,
   applyExpGain,
   getStreakMultiplier,
+  approveTask,
+  approveAllPending,
+  rejectTask,
+  autoApproveExpired,
+  addApprovalNudge,
+  countPending,
 } from "@/lib/game/economy";
 import { createInitialState, ENERGY_CAP } from "@/lib/game/constants";
 
@@ -62,7 +68,7 @@ describe("getStreakMultiplier", () => {
 });
 
 describe("completeTask", () => {
-  test("adds exp, points, energy, stats and marks completed (no crit)", () => {
+  test("adds exp/energy/stats immediately, points go to ESCROW (P0)", () => {
     // Arrange
     const state = freshState();
     const task = state.tasks[0]; // t1: exp 10, points 5, energy 2, discipline +1
@@ -73,29 +79,32 @@ describe("completeTask", () => {
     // Assert
     const done = next.tasks.find((t) => t.id === task.id);
     expect(done.completed).toBe(true);
-    expect(next.exp).toBe(10);
-    expect(next.points).toBe(5);
-    expect(next.energy).toBe(state.energy + 2);
+    expect(done.approval).toBe("pending");
+    expect(done.pendingPoints).toBe(5);
+    expect(next.exp).toBe(10); // exp immediate
+    expect(next.points).toBe(0); // points HELD, not credited
+    expect(next.energy).toBe(state.energy + 2); // energy immediate (fun loop preserved)
     expect(next.stats.discipline).toBe(state.stats.discipline + 1);
     expect(events.isCritical).toBe(false);
+    expect(events.pointsPending).toBe(true);
     // immutability
     expect(state.tasks[0].completed).toBe(false);
-    expect(state.points).toBe(0);
   });
 
-  test("critical hit doubles base points", () => {
+  test("critical hit doubles base points (held in escrow)", () => {
     const state = freshState();
     const task = state.tasks[0]; // points 5
     const { state: next, events } = completeTask(state, task.id, rngQueue(0.01));
     expect(events.isCritical).toBe(true);
-    expect(next.points).toBe(10);
+    expect(next.tasks[0].pendingPoints).toBe(10);
+    expect(next.points).toBe(0);
   });
 
-  test("streak multiplier applies with ceil", () => {
+  test("streak multiplier applies with ceil (held in escrow)", () => {
     const state = freshState({ streak: 7 }); // x1.5
     const task = state.tasks[0]; // points 5 → ceil(7.5)=8
     const { state: next } = completeTask(state, task.id, rngQueue(0.99));
-    expect(next.points).toBe(8);
+    expect(next.tasks[0].pendingPoints).toBe(8);
   });
 
   test("energy is capped at 100", () => {
@@ -132,21 +141,26 @@ describe("completeTask", () => {
 });
 
 describe("uncompleteTask", () => {
-  test("reverts exactly the earned points/energy (crit-safe)", () => {
-    // Arrange: crit completion earns double
+  test("reverts approved points exactly (crit-safe), pending points just evaporate", () => {
+    // Arrange: crit completion (10 pts) then parent approves → wallet 10
     const state = freshState();
-    const { state: completed } = completeTask(state, "t1", rngQueue(0.01)); // crit → 10 points
-    expect(completed.points).toBe(10);
+    const { state: completed } = completeTask(state, "t1", rngQueue(0.01)); // crit → 10 pending
+    const approved = approveTask(completed, "t1").state;
+    expect(approved.points).toBe(10);
 
-    // Act
-    const { state: reverted } = uncompleteTask(completed, "t1");
-
-    // Assert — back to zero, not negative / not -5
+    // Act: un-tick after approval
+    const { state: reverted } = uncompleteTask(approved, "t1");
     expect(reverted.points).toBe(0);
     expect(reverted.energy).toBe(state.energy);
     expect(reverted.exp).toBe(0);
     expect(reverted.tasks.find((t) => t.id === "t1").completed).toBe(false);
     expect(reverted.stats.discipline).toBe(state.stats.discipline);
+
+    // Un-tick while still PENDING must not touch wallet
+    const { state: completed2 } = completeTask(state, "t1", rngQueue(0.99));
+    const { state: reverted2 } = uncompleteTask(completed2, "t1");
+    expect(reverted2.points).toBe(0);
+    expect(reverted2.exp).toBe(0);
   });
 
   test("stats never drop below 10 on revert", () => {
@@ -318,6 +332,113 @@ describe("resetDailyTasks", () => {
     const next = resetDailyTasks(state);
     expect(next.bossHp).toBe(100);
     expect(next.bossDefeated).toBe(false);
+  });
+});
+
+describe("P0 escrow & trust (PDCA Check)", () => {
+  test("approve releases held points and bumps trust", () => {
+    const state = freshState({ trustScore: 50 });
+    const { state: done } = completeTask(state, "t1", rngQueue(0.99)); // 5 pending
+    const { state: approved, result } = approveTask(done, "t1");
+
+    expect(result.success).toBe(true);
+    expect(result.released).toBe(5);
+    expect(approved.points).toBe(5);
+    expect(approved.trustScore).toBe(51);
+    expect(approved.tasks[0].approval).toBe("approved");
+    expect(approved.tasks[0].pendingPoints).toBe(0);
+    expect(approved.tasks[0].earnedPoints).toBe(5);
+  });
+
+  test("approveAllPending settles everything in one batch", () => {
+    let state = freshState();
+    state = completeTask(state, "t1", rngQueue(0.99)).state; // 5
+    state = completeTask(state, "t6", rngQueue(0.99)).state; // 8
+    expect(countPending(state)).toBe(2);
+
+    const { state: next, result } = approveAllPending(state);
+    expect(result.count).toBe(2);
+    expect(result.totalReleased).toBe(13);
+    expect(next.points).toBe(13);
+    expect(countPending(next)).toBe(0);
+  });
+
+  test("reject undoes completion, drops trust hard, wallet untouched, pet-safe", () => {
+    const state = freshState({ trustScore: 50, points: 20 });
+    const { state: done } = completeTask(state, "t1", rngQueue(0.99));
+    const { state: rejected, result } = rejectTask(done, "t1");
+
+    expect(result.success).toBe(true);
+    expect(rejected.points).toBe(20); // held points evaporated, wallet never touched
+    expect(rejected.exp).toBe(0); // exp reverted
+    expect(rejected.energy).toBe(state.energy); // energy reverted
+    expect(rejected.trustScore).toBe(42); // -8
+    const t = rejected.tasks.find((x) => x.id === "t1");
+    expect(t.completed).toBe(false);
+    expect(t.wasRejected).toBe(true);
+    expect(rejected.pets).toEqual(state.pets); // assets untouched
+  });
+
+  test("trust never goes below 0 or above 100", () => {
+    const low = freshState({ trustScore: 3 });
+    const { state: d1 } = completeTask(low, "t1", rngQueue(0.99));
+    expect(rejectTask(d1, "t1").state.trustScore).toBe(0);
+
+    const high = freshState({ trustScore: 100 });
+    const { state: d2 } = completeTask(high, "t1", rngQueue(0.99));
+    expect(approveTask(d2, "t1").state.trustScore).toBe(100);
+  });
+
+  test("auto-approve releases only tasks older than 24h", () => {
+    const now = Date.now();
+    let state = freshState();
+    state = completeTask(state, "t1", rngQueue(0.99)).state;
+    state = completeTask(state, "t6", rngQueue(0.99)).state;
+    // age t1 to 25h old
+    state = {
+      ...state,
+      tasks: state.tasks.map((t) => (t.id === "t1" ? { ...t, completedAt: now - 25 * 3600 * 1000 } : t)),
+    };
+
+    const { state: next, result } = autoApproveExpired(state, now);
+    expect(result.count).toBe(1);
+    expect(next.tasks.find((t) => t.id === "t1").approval).toBe("auto");
+    expect(next.tasks.find((t) => t.id === "t6").approval).toBe("pending");
+    expect(next.points).toBe(5);
+  });
+
+  test("daily reset settles all pending as auto-approved (parent forgot ⇒ trust)", () => {
+    let state = freshState();
+    state = completeTask(state, "t1", rngQueue(0.99)).state; // 5 pending
+    const next = resetDailyTasks(state, rngQueue(0.99));
+    expect(next.points).toBe(5); // released before reset
+    expect(countPending(next)).toBe(0);
+  });
+
+  test("nudge limited to 2 per day", () => {
+    const now = Date.now();
+    let state = freshState();
+    let r = addApprovalNudge(state, now);
+    expect(r.result.success).toBe(true);
+    r = addApprovalNudge(r.state, now + 1000);
+    expect(r.result.success).toBe(true);
+    r = addApprovalNudge(r.state, now + 2000);
+    expect(r.result.success).toBe(false);
+    expect(r.result.error).toBe("NUDGE_LIMIT");
+  });
+
+  test("photo spot-check flags declared at day start; high trust checks less", () => {
+    // rng 0.2 < 1/3 ⇒ flagged for normal trust
+    const normal = resetDailyTasks(freshState({ trustScore: 50 }), rngQueue(0.2));
+    const photoTasks = normal.tasks.filter((t) => t.verifyType === "photo");
+    expect(photoTasks.length).toBeGreaterThan(0);
+    expect(photoTasks.every((t) => t.photoRequiredToday === true)).toBe(true);
+    // trust-only tasks never flagged
+    expect(normal.tasks.filter((t) => t.verifyType !== "photo").every((t) => !t.photoRequiredToday)).toBe(true);
+
+    // same roll 0.2 > 1/6 ⇒ NOT flagged for high trust (lighter checking)
+    const trusted = resetDailyTasks(freshState({ trustScore: 85 }), rngQueue(0.2));
+    expect(trusted.tasks.filter((t) => t.verifyType === "photo").every((t) => !t.photoRequiredToday)).toBe(true);
   });
 });
 

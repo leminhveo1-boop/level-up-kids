@@ -16,6 +16,21 @@ export const BASE_MINING_CRIT_CHANCE = 0.2;
 export const STREAK_FREEZE_CAP = 3;
 export const STARTING_STREAK_FREEZES = 1;
 
+// ===== P0 Verification system (SCIENTIFIC_UPGRADE Phần 1) =====
+/** trust: tick là tính | timer: cần stopwatch đủ 80% | photo: chụp kết quả | witness: bố mẹ xác nhận PIN */
+export const VERIFY_TYPES = ["trust", "timer", "photo", "witness"];
+export const TIMER_COMPLETION_RATIO = 0.8; // stopwatch phải chạy >= 80% durationMin
+export const ESCROW_AUTO_APPROVE_MS = 24 * 60 * 60 * 1000; // bố mẹ quên 24h → auto-approve (default = trust)
+export const TRUST_START = 50;
+export const TRUST_MAX = 100;
+export const TRUST_MIN = 0;
+export const TRUST_GAIN_ON_APPROVE = 1;
+export const TRUST_LOSS_ON_REJECT = 8;
+export const TRUST_HIGH_THRESHOLD = 80; // Uy Tín cao → ít bị spot-check, điểm nhả nhanh
+export const PHOTO_SPOTCHECK_RATE = 1 / 3; // tỷ lệ việc photo bị cắm cờ 🔍 mỗi ngày
+export const PHOTO_SPOTCHECK_RATE_TRUSTED = 1 / 6; // khi Uy Tín >= 80
+export const NUDGE_LIMIT_PER_DAY = 2; // trẻ nhắc bố mẹ duyệt tối đa 2 lần/ngày
+
 export const DEFAULT_PARENT_CONFIG = {
   screenMaxMinutesPerDay: 60,
   screenRedeemMaxPerWeek: 5,
@@ -49,16 +64,16 @@ export const CHARACTER_CLASSES = [
 ];
 
 export const DEFAULT_TASKS = [
-  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false },
-  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 4, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true },
-  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
-  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true },
-  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 5, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false },
-  { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 8, energy: 3, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false },
-  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 4, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false },
-  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false },
-  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false },
-  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true },
+  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false, verifyType: "witness" },
+  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 4, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 15 },
+  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 20 },
+  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 20 },
+  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 5, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "photo" },
+  { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 8, energy: 3, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false, verifyType: "trust" },
+  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 4, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false, verifyType: "photo" },
+  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false, verifyType: "photo" },
+  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false, verifyType: "photo" },
+  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true, verifyType: "trust" },
 ];
 
 export const DEFAULT_REWARDS = [
@@ -100,6 +115,8 @@ export function createInitialState(opts = {}) {
     exp: 0,
     streak: 0,
     streakFreezes: STARTING_STREAK_FREEZES,
+    trustScore: TRUST_START,
+    approvalNudges: [],
     energy: STARTING_ENERGY,
     stats: opts.stats || (classDef ? { ...classDef.baseStats } : { ...DEFAULT_STATS }),
     tasks: DEFAULT_TASKS.map((t) => ({ ...t })),

@@ -181,15 +181,64 @@ export function GameProvider({ children }) {
   };
 
   // ---------------- Game actions ----------------
-  const completeTask = useCallback((id) => {
+  /**
+   * Complete/uncomplete a task with verification gates (P0).
+   * @param {string} id
+   * @param {{ elapsedSeconds?: number, pin?: string, photo?: string }} [opts]
+   * @returns {{ success: boolean, error?: string, requiredMin?: number }}
+   */
+  const completeTask = useCallback((id, opts = {}) => {
+    let outcome = { success: true };
     setState((prev) => {
       if (!prev) return prev;
       const task = prev.tasks.find((t) => t.id === id);
       if (!task) return prev;
 
       if (!task.completed) {
+        // ===== VERIFICATION GATES (declared up-front, never retroactive) =====
+        if (task.verifyType === "timer") {
+          const requiredSec = (task.durationMin || 10) * 60 * 0.8;
+          if ((opts.elapsedSeconds || 0) < requiredSec) {
+            outcome = {
+              success: false,
+              error: "TIMER_REQUIRED",
+              requiredMin: task.durationMin || 10,
+              message: `Nhiệm vụ này cần bấm "BẮT ĐẦU LÀM" và tập trung đủ ${task.durationMin || 10} phút (⏱️ tối thiểu ${Math.ceil(requiredSec / 60)} phút) mới hoàn thành được nhé!`,
+            };
+            return prev;
+          }
+        }
+        if (task.verifyType === "witness") {
+          if (opts.pin !== prev.parentPin) {
+            outcome = {
+              success: false,
+              error: "PIN_REQUIRED",
+              message: "Việc này cần bố mẹ có mặt xác nhận bằng mã PIN! 👀",
+            };
+            return prev;
+          }
+        }
+        if (task.verifyType === "photo" && task.photoRequiredToday && !opts.photo) {
+          outcome = {
+            success: false,
+            error: "PHOTO_REQUIRED",
+            message: "Hôm nay việc này cần chụp ảnh kết quả để làm bằng chứng nhé! 📸",
+          };
+          return prev;
+        }
+
         playSound("complete");
-        const { state: next, events } = economy.completeTask(prev, id);
+        let { state: next, events } = economy.completeTask(prev, id);
+        if (opts.photo) {
+          next = {
+            ...next,
+            tasks: next.tasks.map((t) => (t.id === id ? { ...t, evidencePhoto: opts.photo } : t)),
+          };
+        }
+        // Witness tasks are parent-confirmed on the spot → instant approval
+        if (task.verifyType === "witness") {
+          next = economy.approveTask(next, id).state;
+        }
         if (events?.leveledUp) {
           setTimeout(() => {
             playSound("level-up");
@@ -217,7 +266,75 @@ export function GameProvider({ children }) {
       playSound("uncomplete");
       return economy.uncompleteTask(prev, id).state;
     });
+    return outcome;
   }, []);
+
+  // ---------------- P0: Approval (escrow) actions ----------------
+  const approveTask = useCallback((taskId) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = economy.approveTask(prev, taskId);
+      outcome = result;
+      if (result.success) playSound("coin");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const approveAllPending = useCallback(() => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = economy.approveAllPending(prev);
+      outcome = result;
+      if (result.count > 0) {
+        playSound("reward");
+        fireConfetti({ particleCount: 60, spread: 55, colors: ["#2E7D32", "#D97706"] });
+      }
+      return next;
+    });
+    return outcome;
+  }, []);
+
+  const rejectTask = useCallback((taskId) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = economy.rejectTask(prev, taskId);
+      outcome = result;
+      if (result.success) playSound("uncomplete");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const nudgeParents = useCallback(() => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = economy.addApprovalNudge(prev);
+      outcome = result;
+      if (result.success) playSound("complete");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  // Auto-approve escrow older than 24h — on load and every 10 minutes
+  useEffect(() => {
+    if (!isLoaded || !state) return;
+    const run = () =>
+      setState((prev) => {
+        if (!prev) return prev;
+        const { state: next, result } = economy.autoApproveExpired(prev);
+        return result.count > 0 ? next : prev;
+      });
+    run();
+    const interval = setInterval(run, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded]);
 
   const mineTreasure = useCallback(() => {
     let outcome = { success: false, message: "Hết Năng Lượng rồi dũng sĩ ơi! Hãy đi làm nhiệm vụ để hồi phục nhé! ⚡" };
@@ -359,27 +476,32 @@ export function GameProvider({ children }) {
   const makeUniqueId = (prefix) =>
     `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
-  const addCustomTask = useCallback((title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0) => {
-    setState((prev) => {
-      if (!prev) return prev;
-      const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help" };
-      const newTask = {
-        id: makeUniqueId("custom"),
-        title,
-        exp: parseInt(expVal) || 15,
-        points: parseInt(pointsVal) || parseInt(expVal) || 15,
-        energy: parseInt(energyVal) || 15,
-        category,
-        completed: false,
-        statKey: statKeyMap[category] || "discipline",
-        statVal: 2,
-        custom: true,
-        isMandatory,
-      };
-      return { ...prev, tasks: [...prev.tasks, newTask] };
-    });
-    return { success: true };
-  }, []);
+  const addCustomTask = useCallback(
+    (title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0, verifyType = "trust", durationMin = 0) => {
+      setState((prev) => {
+        if (!prev) return prev;
+        const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help" };
+        const newTask = {
+          id: makeUniqueId("custom"),
+          title,
+          exp: parseInt(expVal) || 15,
+          points: parseInt(pointsVal) || parseInt(expVal) || 15,
+          energy: parseInt(energyVal) || 15,
+          category,
+          completed: false,
+          statKey: statKeyMap[category] || "discipline",
+          statVal: 2,
+          custom: true,
+          isMandatory,
+          verifyType,
+          durationMin: verifyType === "timer" ? parseInt(durationMin) || 10 : undefined,
+        };
+        return { ...prev, tasks: [...prev.tasks, newTask] };
+      });
+      return { success: true };
+    },
+    []
+  );
 
   const deleteTask = useCallback((id) => {
     setState((prev) => (prev ? { ...prev, tasks: prev.tasks.filter((t) => t.id !== id) } : prev));
@@ -466,6 +588,14 @@ export function GameProvider({ children }) {
         setStreak: makeFieldSetter("streak"),
         streakFreezes: s.streakFreezes || 0,
         setStreakFreezes: makeFieldSetter("streakFreezes"),
+        trustScore: s.trustScore ?? 50,
+        setTrustScore: makeFieldSetter("trustScore"),
+        pendingCount: s.tasks ? s.tasks.filter((t) => t.approval === "pending").length : 0,
+        approvalNudges: s.approvalNudges || [],
+        approveTask,
+        approveAllPending,
+        rejectTask,
+        nudgeParents,
         energy: s.energy,
         setEnergy: makeFieldSetter("energy"),
         stats: s.stats,

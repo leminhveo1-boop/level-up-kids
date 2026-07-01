@@ -30,6 +30,8 @@ export default function DashboardPage() {
     pets,
     activePet,
     activeMount,
+    pendingCount,
+    nudgeParents,
   } = useGame();
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
@@ -41,6 +43,18 @@ export default function DashboardPage() {
   const [activeTaskId, setActiveTaskId] = useState(null); // Task currently being actively tracked
   const [activeTaskStartTime, setActiveTaskStartTime] = useState(0); // Unix start time
   const [elapsedSeconds, setElapsedSeconds] = useState(0); // Elapsed focus seconds
+
+  // P0 verification UI states
+  const [verifyToast, setVerifyToast] = useState(""); // gate error message
+  const [witnessTask, setWitnessTask] = useState(null); // task waiting for parent PIN
+  const [witnessPin, setWitnessPin] = useState("");
+  const photoInputRef = React.useRef(null);
+  const [photoTaskId, setPhotoTaskId] = useState(null); // task waiting for evidence photo
+
+  const showVerifyToast = (msg) => {
+    setVerifyToast(msg);
+    setTimeout(() => setVerifyToast(""), 4500);
+  };
 
   // Real-time Active Task Stopwatch Effect
   useEffect(() => {
@@ -62,12 +76,73 @@ export default function DashboardPage() {
   };
 
   const handleTaskComplete = (taskId) => {
-    if (taskId === activeTaskId) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    // Un-ticking has no gates
+    if (task.completed) {
+      completeTask(taskId);
+      return;
+    }
+
+    // ===== P0 verification gates (routed to the right UI affordance) =====
+    if (task.verifyType === "witness") {
+      setWitnessTask(task);
+      setWitnessPin("");
+      return;
+    }
+    if (task.verifyType === "photo" && task.photoRequiredToday) {
+      setPhotoTaskId(taskId);
+      photoInputRef.current?.click();
+      return;
+    }
+
+    const isActive = taskId === activeTaskId;
+    const result = completeTask(taskId, { elapsedSeconds: isActive ? elapsedSeconds : 0 });
+    if (result && !result.success) {
+      showVerifyToast(result.message);
+      return;
+    }
+    if (isActive) {
       setActiveTaskId(null);
       setActiveTaskStartTime(0);
       setElapsedSeconds(0);
     }
-    completeTask(taskId);
+  };
+
+  const handleWitnessSubmit = (e) => {
+    e.preventDefault();
+    const result = completeTask(witnessTask.id, { pin: witnessPin });
+    if (result && !result.success) {
+      showVerifyToast(result.message);
+    } else {
+      setWitnessTask(null);
+    }
+    setWitnessPin("");
+  };
+
+  const handlePhotoSelected = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-choosing same file
+    if (!file || !photoTaskId) return;
+    try {
+      const { compressImageFile } = await import("@/lib/image");
+      const dataUrl = await compressImageFile(file);
+      const result = completeTask(photoTaskId, { photo: dataUrl });
+      if (result && !result.success) showVerifyToast(result.message);
+    } catch {
+      showVerifyToast("Không đọc được ảnh, con thử chụp lại nhé! 📸");
+    }
+    setPhotoTaskId(null);
+  };
+
+  const handleNudge = () => {
+    const r = nudgeParents();
+    showVerifyToast(
+      r.success
+        ? "Đã gửi lời nhắc đến bố mẹ! Bồ câu đang bay đi đây 🕊️"
+        : "Hôm nay con đã nhắc đủ 2 lần rồi — bố mẹ sẽ duyệt sớm thôi! 🌸"
+    );
   };
 
   // Companion pet/mount objects
@@ -375,6 +450,29 @@ export default function DashboardPage() {
               <span><strong>Mẹo:</strong> Hoàn thành từ 3 nhiệm vụ để duy trì ngọn lửa Streak 🔥.</span>
             </div>
 
+            {/* P0: Pending approval summary + child-initiated nudge */}
+            {pendingCount > 0 && (
+              <div className="w-full bg-sky-light/60 border border-sky/30 p-2.5 rounded-xl flex items-center justify-between gap-2">
+                <span className="text-[11px] text-sky-dark font-bold flex items-center gap-1">
+                  ⏳ {pendingCount} nhiệm vụ chờ bố mẹ duyệt điểm ⭐
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNudge}
+                  className="min-h-tap flex-shrink-0 bg-white border border-sky/40 text-sky-dark text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+                >
+                  Nhắc bố mẹ 🕊️
+                </button>
+              </div>
+            )}
+
+            {/* Verification gate toast */}
+            {verifyToast && (
+              <div className="w-full bg-rose-50 border border-red-200 p-2.5 rounded-xl text-[11px] text-terracotta font-bold text-center animate-fade-in">
+                {verifyToast}
+              </div>
+            )}
+
             {/* Filter buttons */}
             <div className="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
               <button 
@@ -491,6 +589,12 @@ export default function DashboardPage() {
                               <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
                                 {emoji} {statText}
                               </span>
+                              {/* P0: verification type badge */}
+                              <span className="text-[9px] font-bold text-gray-400 select-none" title="Cách xác nhận">
+                                {task.verifyType === "timer" && `⏱️ ${task.durationMin || 10}p`}
+                                {task.verifyType === "photo" && (task.photoRequiredToday ? "📸🔍 cần ảnh" : "📸")}
+                                {task.verifyType === "witness" && "👀 bố mẹ"}
+                              </span>
                               {task.isMandatory && !task.completed && (
                                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
                                   Bắt buộc 🔴
@@ -499,6 +603,11 @@ export default function DashboardPage() {
                               {task.custom && (
                                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
                                   Bố mẹ giao 👑
+                                </span>
+                              )}
+                              {task.approval === "pending" && (
+                                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-sky-light text-sky-dark border border-sky/30 uppercase select-none">
+                                  ⏳ Chờ duyệt
                                 </span>
                               )}
                             </div>
@@ -582,6 +691,62 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Hidden photo evidence input */}
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handlePhotoSelected}
+        className="hidden"
+      />
+
+      {/* Witness PIN Modal (👀 parent confirms on the spot) */}
+      {witnessTask && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
+          <form
+            onSubmit={handleWitnessSubmit}
+            className="bg-white border-4 border-sky rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4"
+          >
+            <div className="w-16 h-16 bg-sky-light rounded-full border-2 border-sky mx-auto flex items-center justify-center text-3xl">
+              👀
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-sky-dark uppercase tracking-wider">Bố Mẹ Chứng Kiến</h3>
+              <p className="text-[11px] text-gray-500">
+                &ldquo;{witnessTask.title}&rdquo; — bố mẹ có mặt xác nhận bằng mã PIN nhé!
+              </p>
+            </div>
+            <input
+              type="password"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              maxLength={6}
+              value={witnessPin}
+              onChange={(e) => setWitnessPin(e.target.value)}
+              placeholder="Mã PIN của bố mẹ..."
+              className="w-full min-h-tap text-center bg-sand-light border-2 border-sand rounded-xl text-lg font-black text-forest-dark focus:outline-none focus:border-sky transition-colors"
+              autoFocus
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setWitnessTask(null)}
+                className="w-1/2 min-h-tap bg-white text-gray-400 font-extrabold text-xs rounded-xl border-2 border-sand"
+              >
+                ĐỂ SAU
+              </button>
+              <button
+                type="submit"
+                className="w-1/2 min-h-tap bg-sky text-white font-black text-xs rounded-xl border-2 border-sky shadow-game-sky active:shadow-game-pressed btn-game-transition"
+              >
+                XÁC NHẬN ✅
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Pigeon Encouragement Letter Modal */}
       {selectedMessage && (

@@ -43,11 +43,18 @@ export function migrateState(data) {
   // Legacy: task.gold → task.energy
   let tasks = Array.isArray(data.tasks) ? data.tasks : DEFAULT_TASKS;
   tasks = tasks.map((t) => {
-    if (t.energy === undefined) {
-      const energyValue = t.gold !== undefined && t.gold > 0 ? t.gold * 5 : t.exp || 15;
-      return { ...t, energy: energyValue };
+    const next = { ...t };
+    if (next.energy === undefined) {
+      next.energy = next.gold !== undefined && next.gold > 0 ? next.gold * 5 : next.exp || 15;
     }
-    return { ...t };
+    // P0: verification type defaults to trust for legacy tasks
+    if (!next.verifyType) next.verifyType = "trust";
+    // P0: tasks completed before escrow existed were paid instantly → treat as approved
+    if (next.completed && !next.approval) {
+      next.approval = "auto";
+      if (next.earnedPoints === undefined) next.earnedPoints = next.points ?? next.exp ?? 0;
+    }
+    return next;
   });
   tasks = dedupeIds(tasks);
 
@@ -73,6 +80,8 @@ export function migrateState(data) {
     exp: data.exp || 0,
     streak: data.streak || 0,
     streakFreezes: data.streakFreezes !== undefined ? data.streakFreezes : 1,
+    trustScore: data.trustScore !== undefined ? data.trustScore : 50,
+    approvalNudges: data.approvalNudges || [],
     energy: data.energy !== undefined && data.energy > 0 ? data.energy : STARTING_ENERGY,
     stats: data.stats || { ...DEFAULT_STATS },
     tasks,

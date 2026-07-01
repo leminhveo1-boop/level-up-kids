@@ -63,6 +63,21 @@ module.exports = {
       fontFamily: {
         outfit: ["var(--font-outfit)", "sans-serif"],
       },
+      // B1 type scale — token-backed; prefer these over arbitrary text-[Npx]
+      fontSize: {
+        "scale-2xs": ["var(--text-2xs)", { lineHeight: "1.35" }],
+        "scale-xs": ["var(--text-xs)", { lineHeight: "1.4" }],
+        "scale-sm": ["var(--text-sm)", { lineHeight: "1.45" }],
+        "scale-base": ["var(--text-base)", { lineHeight: "1.5" }],
+        "scale-lg": ["var(--text-lg)", { lineHeight: "1.3" }],
+        "scale-xl": ["var(--text-xl)", { lineHeight: "1.2" }],
+      },
+      minWidth: {
+        tap: "44px",
+      },
+      minHeight: {
+        tap: "44px",
+      },
     },
   },
   plugins: [],

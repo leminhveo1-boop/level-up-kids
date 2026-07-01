@@ -15,6 +15,15 @@ import {
   MOUNT_CRIT_BONUS,
   BASE_MINING_CRIT_CHANCE,
   STREAK_FREEZE_CAP,
+  ESCROW_AUTO_APPROVE_MS,
+  TRUST_MAX,
+  TRUST_MIN,
+  TRUST_GAIN_ON_APPROVE,
+  TRUST_LOSS_ON_REJECT,
+  TRUST_HIGH_THRESHOLD,
+  PHOTO_SPOTCHECK_RATE,
+  PHOTO_SPOTCHECK_RATE_TRUSTED,
+  NUDGE_LIMIT_PER_DAY,
 } from "./constants";
 
 /** Streak → points multiplier (balanced against inflation). */
@@ -70,9 +79,20 @@ export function completeTask(state, taskId, rng = Math.random) {
   const nextBossHp = state.bossDefeated ? 0 : Math.max(0, state.bossHp - damage);
   const bossJustDefeated = !state.bossDefeated && nextBossHp === 0;
 
+  // ===== ESCROW (P0): points are held pending parent approval; EXP/energy/stats
+  // credit immediately to preserve the same-day fun loop (mining). Points are the
+  // screen-time currency — the cheat-worthy one — so they gate on the Check step.
   const nextTasks = state.tasks.map((t) =>
     t.id === taskId
-      ? { ...t, completed: true, earnedPoints: pointsAdded, earnedEnergy: energyAdded }
+      ? {
+          ...t,
+          completed: true,
+          approval: "pending",
+          pendingPoints: pointsAdded,
+          completedAt: Date.now(),
+          earnedPoints: 0,
+          earnedEnergy: energyAdded,
+        }
       : t
   );
 
@@ -87,7 +107,6 @@ export function completeTask(state, taskId, rng = Math.random) {
       stats: nextStats,
       level: expResult.level,
       exp: expResult.exp,
-      points: state.points + pointsAdded,
       energy: Math.min(ENERGY_CAP, state.energy + energyAdded),
       bossHp: nextBossHp,
       bossDefeated: state.bossDefeated || bossJustDefeated,
@@ -96,6 +115,7 @@ export function completeTask(state, taskId, rng = Math.random) {
         isCritical,
         taskTitle: task.title,
         timestamp: Date.now(),
+        pending: true,
       },
     },
     events: {
@@ -103,10 +123,119 @@ export function completeTask(state, taskId, rng = Math.random) {
       levelsGained: expResult.levelsGained,
       isCritical,
       pointsAdded,
+      pointsPending: true,
       energyAdded,
       bossDefeated: bossJustDefeated,
     },
   };
+}
+
+/**
+ * Approve a pending task: release held points to wallet, +trust.
+ * @param {object} state
+ * @param {string} taskId
+ * @param {{ auto?: boolean }} [opts] auto=true when system approves (24h expiry / daily reset)
+ */
+export function approveTask(state, taskId, opts = {}) {
+  const task = state.tasks.find((t) => t.id === taskId);
+  if (!task || task.approval !== "pending") return { state, result: { success: false, error: "NOT_PENDING" } };
+
+  const released = task.pendingPoints || 0;
+
+  return {
+    state: {
+      ...state,
+      points: state.points + released,
+      trustScore: Math.min(TRUST_MAX, (state.trustScore || 0) + TRUST_GAIN_ON_APPROVE),
+      tasks: state.tasks.map((t) =>
+        t.id === taskId
+          ? { ...t, approval: opts.auto ? "auto" : "approved", earnedPoints: released, pendingPoints: 0 }
+          : t
+      ),
+    },
+    result: { success: true, released, auto: Boolean(opts.auto) },
+  };
+}
+
+/** Approve every pending task at once (parent's 1-minute batch review). */
+export function approveAllPending(state, opts = {}) {
+  let next = state;
+  let totalReleased = 0;
+  let count = 0;
+  for (const t of state.tasks) {
+    if (t.approval === "pending") {
+      const r = approveTask(next, t.id, opts);
+      next = r.state;
+      totalReleased += r.result.released || 0;
+      count += 1;
+    }
+  }
+  return { state: next, result: { success: true, count, totalReleased } };
+}
+
+/**
+ * Reject a pending task: undo the completion (exp/energy/stats/boss), heavy trust hit.
+ * Held points simply evaporate (never credited). Pet/level assets untouched by design.
+ */
+export function rejectTask(state, taskId) {
+  const task = state.tasks.find((t) => t.id === taskId);
+  if (!task || task.approval !== "pending") return { state, result: { success: false, error: "NOT_PENDING" } };
+
+  const energyToRevert = task.earnedEnergy ?? task.energy ?? 0;
+  const nextStats = task.statKey
+    ? { ...state.stats, [task.statKey]: Math.max(10, (state.stats[task.statKey] || 10) - task.statVal) }
+    : state.stats;
+
+  return {
+    state: {
+      ...state,
+      tasks: state.tasks.map((t) =>
+        t.id === taskId
+          ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedEnergy: 0, evidencePhoto: undefined, wasRejected: true }
+          : t
+      ),
+      stats: nextStats,
+      exp: Math.max(0, state.exp - task.exp),
+      energy: Math.max(0, state.energy - energyToRevert),
+      bossHp: state.bossDefeated ? 0 : Math.min(BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
+      trustScore: Math.max(TRUST_MIN, (state.trustScore || 0) - TRUST_LOSS_ON_REJECT),
+    },
+    result: { success: true, taskTitle: task.title },
+  };
+}
+
+/** Auto-approve pending tasks older than 24h — parent forgot ⇒ default is TRUST. */
+export function autoApproveExpired(state, now = Date.now()) {
+  let next = state;
+  let count = 0;
+  for (const t of state.tasks) {
+    if (t.approval === "pending" && t.completedAt && now - t.completedAt >= ESCROW_AUTO_APPROVE_MS) {
+      next = approveTask(next, t.id, { auto: true }).state;
+      count += 1;
+    }
+  }
+  return { state: next, result: { count } };
+}
+
+/** Child nudges parents to review (max NUDGE_LIMIT_PER_DAY per day). */
+export function addApprovalNudge(state, now = Date.now()) {
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+  const todayNudges = (state.approvalNudges || []).filter((ts) => ts >= startOfDay.getTime());
+
+  if (todayNudges.length >= NUDGE_LIMIT_PER_DAY) {
+    return { state, result: { success: false, error: "NUDGE_LIMIT", max: NUDGE_LIMIT_PER_DAY } };
+  }
+
+  return {
+    state: { ...state, approvalNudges: [...todayNudges, now] },
+    result: { success: true, remaining: NUDGE_LIMIT_PER_DAY - todayNudges.length - 1 },
+  };
+}
+
+/** Count tasks waiting for parent approval. */
+export function countPending(state) {
+  return state.tasks.filter((t) => t.approval === "pending").length;
 }
 
 /**
@@ -117,11 +246,15 @@ export function uncompleteTask(state, taskId) {
   const task = state.tasks.find((t) => t.id === taskId);
   if (!task || !task.completed) return { state, events: null };
 
-  const pointsToRevert = task.earnedPoints ?? task.points ?? task.exp;
+  // Escrow-aware: pending points were never credited → only revert wallet when approved
+  const wasApproved = task.approval === "approved" || task.approval === "auto";
+  const pointsToRevert = wasApproved ? task.earnedPoints ?? task.points ?? task.exp : 0;
   const energyToRevert = task.earnedEnergy ?? task.energy ?? 0;
 
   const nextTasks = state.tasks.map((t) =>
-    t.id === taskId ? { ...t, completed: false, earnedPoints: 0, earnedEnergy: 0 } : t
+    t.id === taskId
+      ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedPoints: 0, earnedEnergy: 0, evidencePhoto: undefined }
+      : t
   );
 
   const nextStats = task.statKey
@@ -378,13 +511,19 @@ export function claimReward(state, rewardId, rng = Math.random) {
 }
 
 /**
- * Daily reset: streak bookkeeping (with freeze protection), task reset,
- * energy bonus, screen limits reset.
+ * Daily reset: auto-approve leftovers (day boundary = trust), streak bookkeeping
+ * (freeze protection), task reset, photo spot-check flags for the new day,
+ * energy bonus, screen limits reset, nudges cleared.
+ * @param {object} state
+ * @param {() => number} [rng] injected for deterministic spot-check tests
  */
-export function resetDailyTasks(state) {
-  const completedCount = state.tasks.filter((t) => t.completed).length;
-  let streak = state.streak;
-  let streakFreezes = state.streakFreezes || 0;
+export function resetDailyTasks(state, rng = Math.random) {
+  // Day is over — any still-pending approvals default to TRUST before reset
+  const settled = approveAllPending(state, { auto: true }).state;
+
+  const completedCount = settled.tasks.filter((t) => t.completed).length;
+  let streak = settled.streak;
+  let streakFreezes = settled.streakFreezes || 0;
   let freezeUsed = false;
 
   if (completedCount >= STREAK_MIN_TASKS) {
@@ -399,16 +538,32 @@ export function resetDailyTasks(state) {
     }
   }
 
+  // 🔍 Spot-check: flag a fraction of photo-tasks for today (declared UP FRONT,
+  // never demanded retroactively). High trust ⇒ lighter checking.
+  const spotRate =
+    (settled.trustScore || 0) >= TRUST_HIGH_THRESHOLD ? PHOTO_SPOTCHECK_RATE_TRUSTED : PHOTO_SPOTCHECK_RATE;
+
   return {
-    ...state,
+    ...settled,
     streak,
     streakFreezes,
     lastFreezeUsed: freezeUsed,
-    tasks: state.tasks.map((t) => ({ ...t, completed: false, earnedPoints: 0, earnedEnergy: 0 })),
-    energy: Math.min(ENERGY_CAP, state.energy + DAILY_ENERGY_BONUS),
-    rewards: state.rewards.map((r) => ({ ...r, parentApproved: false })),
+    approvalNudges: [],
+    tasks: settled.tasks.map((t) => ({
+      ...t,
+      completed: false,
+      approval: undefined,
+      pendingPoints: 0,
+      earnedPoints: 0,
+      earnedEnergy: 0,
+      evidencePhoto: undefined,
+      wasRejected: false,
+      photoRequiredToday: t.verifyType === "photo" ? rng() < spotRate : false,
+    })),
+    energy: Math.min(ENERGY_CAP, settled.energy + DAILY_ENERGY_BONUS),
+    rewards: settled.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
-    bossHp: state.bossDefeated ? BOSS_MAX_HP : state.bossHp,
+    bossHp: settled.bossDefeated ? BOSS_MAX_HP : settled.bossHp,
     bossDefeated: false,
   };
 }
