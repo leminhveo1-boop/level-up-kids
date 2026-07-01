@@ -17,7 +17,8 @@ export const metadata = {
   description: "Biến quá trình phát triển bản thân, học tập và rèn luyện của trẻ thành một cuộc phiêu lưu nhập vai kỳ thú ngoài đời thực.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: [{ url: "/icons/icon-192.png", type: "image/png", sizes: "192x192" }, { url: "/favicon.ico" }],
+    apple: "/icons/apple-touch-icon.png",
   },
   appleWebApp: {
     capable: true,

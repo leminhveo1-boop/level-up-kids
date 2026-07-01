@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { track } from "@/lib/analytics";
 
 const CLASSES = [
   {
@@ -64,13 +65,16 @@ export default function RegisterPage() {
         setErrorMessage(
           `Gói hiện tại chỉ tạo được ${childLimit} hồ sơ con (đang có ${childProfiles.length}). Nâng cấp Premium để thêm bé nhé! 👑`
         );
+      } else if (res.error === "PREMIUM_REQUIRED") {
+        router.push("/premium");
       } else {
         setErrorMessage(res.error || "Có lỗi xảy ra, vui lòng thử lại!");
       }
       return;
     }
 
-    router.push("/dashboard");
+    track("child_created", { char_class: selectedClass });
+    router.push("/setup");
   };
 
   return (

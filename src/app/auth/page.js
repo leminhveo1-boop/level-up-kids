@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
+import { track } from "@/lib/analytics";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function AuthPage() {
         if (!res.success) {
           setErrorMessage(res.error || t("common.error"));
         } else {
+          track("signup_success");
           setInfoMessage(t("auth.checkEmail"));
         }
       } else {
@@ -45,6 +47,7 @@ export default function AuthPage() {
         if (!res.success) {
           setErrorMessage(t("auth.error.invalid"));
         } else {
+          track("signin_success");
           router.push("/family");
         }
       }

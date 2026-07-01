@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import confetti from "canvas-confetti";
+import SoundToggle from "@/components/SoundToggle";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function DashboardPage() {
     exp,
     expToNextLevel,
     streak,
+    streakFreezes,
     energy,
     stats,
     tasks,
@@ -243,11 +245,20 @@ export default function DashboardPage() {
             </button>
           )}
 
-          {/* Streak Flame */}
-          <div className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
+          {/* Streak Flame + Freeze cards */}
+          <div
+            className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat"
+            title={`Streak ${streak} ngày — ${streakFreezes} thẻ đóng băng ❄️`}
+          >
             <span className="text-xs animate-flame">🔥</span>
             <span className="text-[9px] font-black text-amber">{streak}N</span>
+            {streakFreezes > 0 && (
+              <span className="text-[9px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
+            )}
           </div>
+
+          {/* Sound mute toggle */}
+          <SoundToggle />
 
           {/* Guide Button for child */}
           <button

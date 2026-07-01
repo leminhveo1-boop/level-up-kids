@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
+import { track } from "@/lib/analytics";
 
 /** Entry point: switches into showcase demo mode then drops into the dashboard. */
 export default function DemoPage() {
@@ -13,6 +14,7 @@ export default function DemoPage() {
 
   useEffect(() => {
     if (!authLoaded) return;
+    track("demo_start");
     enterDemo();
     router.replace("/dashboard");
   }, [authLoaded, enterDemo, router]);

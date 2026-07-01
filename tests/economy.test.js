@@ -300,8 +300,8 @@ describe("resetDailyTasks", () => {
     expect(next.energy).toBe(state.energy + 10);
   });
 
-  test("streak resets to 0 when nothing completed", () => {
-    const state = freshState({ streak: 5 });
+  test("streak resets to 0 when nothing completed and no freeze cards", () => {
+    const state = freshState({ streak: 5, streakFreezes: 0 });
     const next = resetDailyTasks(state);
     expect(next.streak).toBe(0);
   });
@@ -318,5 +318,54 @@ describe("resetDailyTasks", () => {
     const next = resetDailyTasks(state);
     expect(next.bossHp).toBe(100);
     expect(next.bossDefeated).toBe(false);
+  });
+});
+
+describe("streak freeze ❄️", () => {
+  test("freeze card saves streak on a fully-missed day and is consumed", () => {
+    const state = freshState({ streak: 6, streakFreezes: 1 });
+    const next = resetDailyTasks(state);
+    expect(next.streak).toBe(6); // saved!
+    expect(next.streakFreezes).toBe(0);
+    expect(next.lastFreezeUsed).toBe(true);
+  });
+
+  test("without freeze, missed day still resets streak to 0", () => {
+    const state = freshState({ streak: 6, streakFreezes: 0 });
+    const next = resetDailyTasks(state);
+    expect(next.streak).toBe(0);
+    expect(next.lastFreezeUsed).toBe(false);
+  });
+
+  test("freeze is NOT consumed when child completed 1-2 tasks (streak safe anyway)", () => {
+    let state = freshState({ streak: 6, streakFreezes: 1 });
+    state = completeTask(state, "t1", rngQueue(0.99)).state;
+    const next = resetDailyTasks(state);
+    expect(next.streak).toBe(6);
+    expect(next.streakFreezes).toBe(1);
+  });
+
+  test("can buy freeze card with hero coins (rf1)", () => {
+    const base = freshState({
+      heroCoins: 100,
+      streakFreezes: 0,
+      parentConfig: { ...freshState().parentConfig, requireAllMandatory: false },
+    });
+    const { state: next, result } = claimReward(base, "rf1");
+    expect(result.success).toBe(true);
+    expect(next.heroCoins).toBe(40); // cost 60
+    expect(next.streakFreezes).toBe(1);
+  });
+
+  test("freeze inventory is capped at 3", () => {
+    const base = freshState({
+      heroCoins: 500,
+      streakFreezes: 3,
+      parentConfig: { ...freshState().parentConfig, requireAllMandatory: false },
+    });
+    const { state: next, result } = claimReward(base, "rf1");
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("FREEZE_CAP");
+    expect(next.heroCoins).toBe(500); // not charged
   });
 });

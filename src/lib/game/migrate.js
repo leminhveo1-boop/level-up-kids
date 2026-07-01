@@ -52,6 +52,7 @@ export function migrateState(data) {
     level: data.level || 1,
     exp: data.exp || 0,
     streak: data.streak || 0,
+    streakFreezes: data.streakFreezes !== undefined ? data.streakFreezes : 1,
     energy: data.energy !== undefined && data.energy > 0 ? data.energy : STARTING_ENERGY,
     stats: data.stats || { ...DEFAULT_STATS },
     tasks,

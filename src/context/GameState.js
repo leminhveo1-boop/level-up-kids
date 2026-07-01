@@ -203,6 +203,7 @@ export function GameProvider({ children }) {
         }
         if (events?.isCritical) {
           setTimeout(() => {
+            playSound("coin");
             fireConfetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, colors: ["#D97706", "#FBBF24"] });
             fireConfetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, colors: ["#D97706", "#FBBF24"] });
           }, 150);
@@ -225,7 +226,10 @@ export function GameProvider({ children }) {
       const { state: next, result } = economy.mineTreasure(prev);
       if (!result.success) return prev;
 
-      playSound("complete");
+      playSound("mine");
+      if (result.coinReward > 0 && (result.isCritical || result.lootType !== "common")) {
+        setTimeout(() => playSound("coin"), 80);
+      }
       if (result.lootType === "legendary" && !result.isMaterial) {
         setTimeout(() => {
           playSound("level-up");
@@ -263,11 +267,13 @@ export function GameProvider({ children }) {
           SCREEN_WEEKLY_LIMIT: `Đã hết lượt đổi giải trí trong tuần này! (Giới hạn: ${result.max} lần/tuần) ⚠️`,
           NOT_ENOUGH_COINS: `Con chưa đủ Hero Coins! Cần thêm ${result.shortage} 🪙 nữa nhé! ⚠️`,
           NOT_ENOUGH_POINTS: `Con chưa đủ Điểm Tích Lũy! Cần thêm ${result.shortage} ⭐ nữa nhé! ⚠️`,
+          FREEZE_CAP: `Chỉ được giữ tối đa ${result.max} Thẻ Đóng Băng ❄️ thôi! Dùng bớt rồi mua thêm nhé!`,
         };
         outcome = { success: false, message: messages[result.error] || "Không thể đổi phần thưởng! ❌" };
         return prev;
       }
 
+      playSound("reward");
       fireConfetti({ particleCount: 80, spread: 60, colors: ["#D97706", "#4CAF50", "#2E7D32"] });
       outcome = { success: true, message: `Thành công! Đã duyệt đổi: ${result.rewardTitle} 🎉` };
       return next;
@@ -282,10 +288,11 @@ export function GameProvider({ children }) {
       const { state: next, result } = petSystem.hatchPet(prev, eggType, potionType);
       if (!result.success) return prev;
 
+      playSound("hatch");
       setTimeout(() => {
         playSound("level-up");
         fireConfetti({ particleCount: 100, spread: 70, colors: ["#2E7D32", "#4CAF50", "#D97706"] });
-      }, 100);
+      }, 300);
       outcome = { success: true, pet: result.pet };
       return next;
     });
@@ -453,6 +460,8 @@ export function GameProvider({ children }) {
         expToNextLevel: s.level * 100,
         streak: s.streak,
         setStreak: makeFieldSetter("streak"),
+        streakFreezes: s.streakFreezes || 0,
+        setStreakFreezes: makeFieldSetter("streakFreezes"),
         energy: s.energy,
         setEnergy: makeFieldSetter("energy"),
         stats: s.stats,

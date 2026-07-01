@@ -13,6 +13,8 @@ export const BOSS_MAX_HP = 100;
 export const MOUNT_ENERGY_MULTIPLIER = 1.1;
 export const MOUNT_CRIT_BONUS = 0.05;
 export const BASE_MINING_CRIT_CHANCE = 0.2;
+export const STREAK_FREEZE_CAP = 3;
+export const STARTING_STREAK_FREEZES = 1;
 
 export const DEFAULT_PARENT_CONFIG = {
   screenMaxMinutesPerDay: 60,
@@ -64,6 +66,7 @@ export const DEFAULT_REWARDS = [
   { id: "r2", title: "Đổi 45 phút chơi game / xem TV 🚀", cost: 80, currency: "points", type: "game_time", value: 45, parentApproved: false, rarity: "common" },
   { id: "r3", title: "Bố mẹ dẫn đi xem phim rạp cuối tuần 🍿", cost: 150, currency: "points", type: "perk", value: "movie_tickets", parentApproved: false, rarity: "rare" },
   { id: "r4", title: "Thẻ bài miễn làm 1 nhiệm vụ ngày 🎟️", cost: 100, currency: "points", type: "card", value: "skip_task", parentApproved: false, rarity: "epic" },
+  { id: "rf1", title: "❄️ Thẻ Đóng Băng Streak (nghỉ 1 ngày không mất lửa)", cost: 60, currency: "heroCoins", type: "streak_freeze", value: 1, parentApproved: false, rarity: "rare" },
   { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 30, currency: "heroCoins", type: "pet_egg", value: "base", parentApproved: false, rarity: "common" },
   { id: "rp2", title: "Mua 🐺 Trứng Sói Chiến (Ấp sói nguyên tố hiếm)", cost: 80, currency: "heroCoins", type: "pet_egg", value: "wolf", parentApproved: false, rarity: "rare" },
   { id: "rp3", title: "Mua 🐉 Trứng Rồng Thần (Ấp rồng bay huyền thoại)", cost: 150, currency: "heroCoins", type: "pet_egg", value: "dragon", parentApproved: false, rarity: "legendary" },
@@ -96,6 +99,7 @@ export function createInitialState(opts = {}) {
     level: 1,
     exp: 0,
     streak: 0,
+    streakFreezes: STARTING_STREAK_FREEZES,
     energy: STARTING_ENERGY,
     stats: opts.stats || (classDef ? { ...classDef.baseStats } : { ...DEFAULT_STATS }),
     tasks: DEFAULT_TASKS.map((t) => ({ ...t })),

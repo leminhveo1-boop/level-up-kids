@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
+import { track } from "@/lib/analytics";
 
 const PRICE_VND = Number(process.env.NEXT_PUBLIC_PREMIUM_PRICE_VND) || 199000;
 const BANK_ID = process.env.NEXT_PUBLIC_BANK_ID || ""; // e.g. "MB", "VCB" (VietQR bank code)
@@ -18,6 +19,11 @@ export default function PremiumPage() {
   const [codeInput, setCodeInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(null); // { ok: boolean, text: string }
+
+  React.useEffect(() => {
+    if (authLoaded) track("paywall_view", { paid: isPremium });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoaded]);
 
   if (!authLoaded) {
     return (
@@ -64,6 +70,7 @@ export default function PremiumPage() {
     setBusy(false);
 
     if (res?.success) {
+      track("code_redeemed", { duration_days: res.duration_days });
       setMessage({ ok: true, text: t("premium.codeSuccess") });
       setCodeInput("");
     } else {

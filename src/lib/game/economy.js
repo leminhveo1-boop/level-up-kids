@@ -14,6 +14,7 @@ import {
   MOUNT_ENERGY_MULTIPLIER,
   MOUNT_CRIT_BONUS,
   BASE_MINING_CRIT_CHANCE,
+  STREAK_FREEZE_CAP,
 } from "./constants";
 
 /** Streak → points multiplier (balanced against inflation). */
@@ -329,8 +330,17 @@ export function claimReward(state, rewardId, rng = Math.random) {
 
   next.rewards = state.rewards.map((r) => (r.id === rewardId ? { ...r, parentApproved: true } : r));
 
+  // Streak freeze card: capped inventory to prevent hoarding
+  if (reward.type === "streak_freeze") {
+    if ((state.streakFreezes || 0) >= STREAK_FREEZE_CAP) {
+      return { state, result: { success: false, error: "FREEZE_CAP", max: STREAK_FREEZE_CAP } };
+    }
+  }
+
   let rolledPotion;
-  if (reward.type === "game_time") {
+  if (reward.type === "streak_freeze") {
+    next.streakFreezes = (state.streakFreezes || 0) + (reward.value || 1);
+  } else if (reward.type === "game_time") {
     const addedSeconds = reward.value * 60;
     next.screenMinutesUsedToday = state.screenMinutesUsedToday + reward.value;
     next.screenRedeemsThisWeek = state.screenRedeemsThisWeek + 1;
@@ -368,17 +378,32 @@ export function claimReward(state, rewardId, rng = Math.random) {
 }
 
 /**
- * Daily reset: streak bookkeeping, task reset, energy bonus, screen limits reset.
+ * Daily reset: streak bookkeeping (with freeze protection), task reset,
+ * energy bonus, screen limits reset.
  */
 export function resetDailyTasks(state) {
   const completedCount = state.tasks.filter((t) => t.completed).length;
   let streak = state.streak;
-  if (completedCount >= STREAK_MIN_TASKS) streak += 1;
-  else if (completedCount === 0 && streak > 0) streak = 0;
+  let streakFreezes = state.streakFreezes || 0;
+  let freezeUsed = false;
+
+  if (completedCount >= STREAK_MIN_TASKS) {
+    streak += 1;
+  } else if (completedCount === 0 && streak > 0) {
+    if (streakFreezes > 0) {
+      // ❄️ Freeze card saves the streak for one missed day
+      streakFreezes -= 1;
+      freezeUsed = true;
+    } else {
+      streak = 0;
+    }
+  }
 
   return {
     ...state,
     streak,
+    streakFreezes,
+    lastFreezeUsed: freezeUsed,
     tasks: state.tasks.map((t) => ({ ...t, completed: false, earnedPoints: 0, earnedEnergy: 0 })),
     energy: Math.min(ENERGY_CAP, state.energy + DAILY_ENERGY_BONUS),
     rewards: state.rewards.map((r) => ({ ...r, parentApproved: false })),
