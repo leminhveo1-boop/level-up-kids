@@ -4,9 +4,13 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import confetti from "canvas-confetti";
+import SoundToggle from "@/components/SoundToggle";
+import { getEquipped } from "@/lib/game/cosmetics";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { childProfiles, activeChildId, selectChild, isDemo } = useAuth();
   const {
     isLoaded,
     charName,
@@ -15,6 +19,7 @@ export default function DashboardPage() {
     exp,
     expToNextLevel,
     streak,
+    streakFreezes,
     energy,
     stats,
     tasks,
@@ -28,7 +33,21 @@ export default function DashboardPage() {
     pets,
     activePet,
     activeMount,
+    pendingCount,
+    nudgeParents,
+    cosmetics,
+    rewards,
+    lastGraduation,
+    clearLastGraduation,
   } = useGame();
+
+  // 🎯 V1.2 Goal gradient: nearest big reward the child is saving coins for
+  const coinGoal = React.useMemo(() => {
+    const candidates = (rewards || [])
+      .filter((r) => r.currency === "heroCoins" && r.type === "perk" && r.cost > heroCoins)
+      .sort((a, b) => a.cost - b.cost);
+    return candidates[0] || null;
+  }, [rewards, heroCoins]);
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -39,6 +58,18 @@ export default function DashboardPage() {
   const [activeTaskId, setActiveTaskId] = useState(null); // Task currently being actively tracked
   const [activeTaskStartTime, setActiveTaskStartTime] = useState(0); // Unix start time
   const [elapsedSeconds, setElapsedSeconds] = useState(0); // Elapsed focus seconds
+
+  // P0 verification UI states
+  const [verifyToast, setVerifyToast] = useState(""); // gate error message
+  const [witnessTask, setWitnessTask] = useState(null); // task waiting for parent PIN
+  const [witnessPin, setWitnessPin] = useState("");
+  const photoInputRef = React.useRef(null);
+  const [photoTaskId, setPhotoTaskId] = useState(null); // task waiting for evidence photo
+
+  const showVerifyToast = (msg) => {
+    setVerifyToast(msg);
+    setTimeout(() => setVerifyToast(""), 4500);
+  };
 
   // Real-time Active Task Stopwatch Effect
   useEffect(() => {
@@ -60,12 +91,76 @@ export default function DashboardPage() {
   };
 
   const handleTaskComplete = (taskId) => {
-    if (taskId === activeTaskId) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    // Un-ticking has no gates
+    if (task.completed) {
+      completeTask(taskId);
+      return;
+    }
+
+    // ===== P0 verification gates (routed to the right UI affordance) =====
+    // Same-day grace: re-tick of a previously-approved task skips all gates
+    if (!task.wasApprovedToday) {
+      if (task.verifyType === "witness") {
+        setWitnessTask(task);
+        setWitnessPin("");
+        return;
+      }
+      if (task.verifyType === "photo" && task.photoRequiredToday) {
+        setPhotoTaskId(taskId);
+        photoInputRef.current?.click();
+        return;
+      }
+    }
+
+    const isActive = taskId === activeTaskId;
+    const result = completeTask(taskId, { elapsedSeconds: isActive ? elapsedSeconds : 0 });
+    if (result && !result.success) {
+      showVerifyToast(result.message);
+      return;
+    }
+    if (isActive) {
       setActiveTaskId(null);
       setActiveTaskStartTime(0);
       setElapsedSeconds(0);
     }
-    completeTask(taskId);
+  };
+
+  const handleWitnessSubmit = (e) => {
+    e.preventDefault();
+    const result = completeTask(witnessTask.id, { pin: witnessPin });
+    if (result && !result.success) {
+      showVerifyToast(result.message);
+    } else {
+      setWitnessTask(null);
+    }
+    setWitnessPin("");
+  };
+
+  const handlePhotoSelected = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-choosing same file
+    if (!file || !photoTaskId) return;
+    try {
+      const { compressImageFile } = await import("@/lib/image");
+      const dataUrl = await compressImageFile(file);
+      const result = completeTask(photoTaskId, { photo: dataUrl });
+      if (result && !result.success) showVerifyToast(result.message);
+    } catch {
+      showVerifyToast("Không đọc được ảnh, con thử chụp lại nhé! 📸");
+    }
+    setPhotoTaskId(null);
+  };
+
+  const handleNudge = () => {
+    const r = nudgeParents();
+    showVerifyToast(
+      r.success
+        ? "Đã gửi lời nhắc đến bố mẹ! Bồ câu đang bay đi đây 🕊️"
+        : "Hôm nay con đã nhắc đủ 2 lần rồi — bố mẹ sẽ duyệt sớm thôi! 🌸"
+    );
   };
 
   // Companion pet/mount objects
@@ -243,11 +338,20 @@ export default function DashboardPage() {
             </button>
           )}
 
-          {/* Streak Flame */}
-          <div className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
+          {/* Streak Flame + Freeze cards */}
+          <div
+            className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat"
+            title={`Streak ${streak} ngày — ${streakFreezes} thẻ đóng băng ❄️`}
+          >
             <span className="text-xs animate-flame">🔥</span>
             <span className="text-[9px] font-black text-amber">{streak}N</span>
+            {streakFreezes > 0 && (
+              <span className="text-[9px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
+            )}
           </div>
+
+          {/* Sound mute toggle */}
+          <SoundToggle />
 
           {/* Guide Button for child */}
           <button
@@ -261,11 +365,21 @@ export default function DashboardPage() {
 
         {/* HERO CARD (Avatar, Level progress bar, and Pet/Mount Companion) */}
         <div className={`border-2 p-4 rounded-3xl shadow-game-flat flex items-center gap-4 ${classConfig.bg}`}>
-          {/* Avatar Icon + Pet Companion */}
+          {/* Avatar Icon + Pet Companion + Cosmetics */}
           <div className="relative">
-            <div className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg} border-sand`}>
+            <div
+              className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center shadow-inner ${classConfig.avatarBg}`}
+              style={{ borderColor: getEquipped({ cosmetics }).frame?.value || undefined }}
+            >
               {classConfig.icon}
             </div>
+
+            {/* Equipped hat */}
+            {getEquipped({ cosmetics }).hat && (
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-2xl drop-shadow z-20 select-none">
+                {getEquipped({ cosmetics }).hat.emoji}
+              </span>
+            )}
             
             {/* Active Pet companion floating on top-left of Avatar */}
             {activePetObj && (
@@ -285,10 +399,19 @@ export default function DashboardPage() {
           {/* Hero Name, Title & Level Bar */}
           <div className="flex-grow space-y-1.5">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-black text-forest-dark truncate max-w-[150px]">{charName}</h2>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
-                CẤP {level}
-              </span>
+              <h2 className="text-base font-black text-forest-dark truncate max-w-[130px]">{charName}</h2>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => router.push("/me")}
+                  className="min-h-tap text-[10px] font-black px-2 rounded-full bg-clay-light text-clay border border-clay/30 active:scale-95 transition-transform"
+                  title="Góc Của Tớ — tùy biến avatar"
+                >
+                  🏠 Của Tớ
+                </button>
+                <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
+                  CẤP {level}
+                </span>
+              </div>
             </div>
             
             <p className="text-[11px] font-bold text-gray-500">{getLevelTitle(level)}</p>
@@ -364,6 +487,101 @@ export default function DashboardPage() {
               <span><strong>Mẹo:</strong> Hoàn thành từ 3 nhiệm vụ để duy trì ngọn lửa Streak 🔥.</span>
             </div>
 
+            {/* P0: Pending approval summary + child-initiated nudge */}
+            {pendingCount > 0 && (
+              <div className="w-full bg-sky-light/60 border border-sky/30 p-2.5 rounded-xl flex items-center justify-between gap-2">
+                <span className="text-[11px] text-sky-dark font-bold flex items-center gap-1">
+                  ⏳ {pendingCount} nhiệm vụ chờ bố mẹ duyệt điểm ⭐
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNudge}
+                  className="min-h-tap flex-shrink-0 bg-white border border-sky/40 text-sky-dark text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+                >
+                  Nhắc bố mẹ 🕊️
+                </button>
+              </div>
+            )}
+
+            {/* Verification gate toast */}
+            {verifyToast && (
+              <div className="w-full bg-rose-50 border border-red-200 p-2.5 rounded-xl text-[11px] text-terracotta font-bold text-center animate-fade-in">
+                {verifyToast}
+              </div>
+            )}
+
+            {/* 🎓 Graduation ceremony banner (Overjustification defense) */}
+            {lastGraduation && (
+              <div className="w-full bg-amber-light border-2 border-amber p-3.5 rounded-2xl text-center space-y-2 animate-fade-in">
+                <p className="text-2xl">🎓✨</p>
+                <p className="text-[12px] font-black text-amber-dark leading-snug">
+                  &ldquo;{lastGraduation.title}&rdquo; đã trở thành BẢN NĂNG ANH HÙNG!
+                </p>
+                <p className="text-[10px] text-gray-500 font-medium">
+                  Con đã tự giác làm việc này {lastGraduation.days} ngày liên tục — giờ nó là một phần con người con rồi, không cần điểm thưởng nữa! Huy hiệu vĩnh viễn ở 🏠 Góc Của Tớ.
+                </p>
+                <button
+                  onClick={clearLastGraduation}
+                  className="min-h-tap bg-amber text-white text-[10px] font-black px-5 rounded-xl active:scale-95 transition-transform"
+                >
+                  TUYỆT VỜI! 🙌
+                </button>
+              </div>
+            )}
+
+            {/* 🎯 Goal gradient — visible progress to the next big reward */}
+            {coinGoal && (
+              <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">🎯 Mục tiêu lớn</span>
+                  <span className="text-[10px] font-black text-amber-dark">
+                    {heroCoins}/{coinGoal.cost} 🪙 ({Math.round((heroCoins / coinGoal.cost) * 100)}%)
+                  </span>
+                </div>
+                <p className="text-[11px] font-black text-forest-dark truncate">{coinGoal.title}</p>
+                <div className="h-3 bg-sand rounded-full overflow-hidden border border-sand">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber to-amber-dark rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.round((heroCoins / coinGoal.cost) * 100))}%` }}
+                  />
+                </div>
+                <p className="text-[9px] text-gray-400 font-bold">
+                  Còn {coinGoal.cost - heroCoins} 🪙 nữa — đào mỏ thôi! ⛏️
+                </p>
+              </div>
+            )}
+
+            {/* 👨‍👩‍👧‍👦 NHÀ MÌNH — siblings strip (Octalysis CD5, family circle V1) */}
+            {!isDemo && childProfiles.length > 1 && (
+              <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-2">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">👨‍👩‍👧‍👦 Nhà Mình</span>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {childProfiles.map((sib) => {
+                    const isMe = sib.id === activeChildId;
+                    const sibEmoji = sib.char_class === "Mage" ? "🔮" : sib.char_class === "Druid" ? "🌱" : "🛡️";
+                    return (
+                      <button
+                        key={sib.id}
+                        onClick={() => {
+                          if (!isMe && confirm(`Đổi sang người chơi ${sib.name}?`)) {
+                            selectChild(sib.id);
+                          }
+                        }}
+                        className={`min-h-tap flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all active:scale-95 ${
+                          isMe ? "border-forest bg-forest-light/20" : "border-sand bg-sand-light"
+                        }`}
+                      >
+                        <span className="text-lg">{sibEmoji}</span>
+                        <span className="text-[11px] font-black text-forest-dark">
+                          {sib.name} {isMe && "(tớ)"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Filter buttons */}
             <div className="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
               <button 
@@ -406,7 +624,7 @@ export default function DashboardPage() {
               >
                 🎨 Sáng tạo
               </button>
-              <button 
+              <button
                 onClick={() => setTaskFilter("help")}
                 className={`px-3 py-1.5 rounded-full border transition-all ${
                   taskFilter === "help" ? "bg-forest-medium text-white border-forest-medium" : "bg-white text-gray-500 border-sand hover:border-gray-300"
@@ -414,23 +632,56 @@ export default function DashboardPage() {
               >
                 🤝 Giúp đỡ
               </button>
+              <button
+                onClick={() => setTaskFilter("connection")}
+                className={`px-3 py-1.5 rounded-full border transition-all ${
+                  taskFilter === "connection" ? "bg-terracotta text-white border-terracotta" : "bg-white text-gray-500 border-sand hover:border-gray-300"
+                }`}
+              >
+                💞 Kết nối
+              </button>
             </div>
           </div>
 
-          {/* Tasks List */}
+          {/* Tasks — Kanban-grouped view (B6): WIP-1 lane → today → waiting → done.
+              Tap-to-move (BẮT ĐẦU LÀM / HOÀN THÀNH) instead of drag — better for young motor skills. */}
           <div className="space-y-3.5">
             {filteredTasks.length === 0 ? (
               <div className="bg-white border-2 border-sand border-dashed p-8 rounded-2xl text-center text-xs text-gray-400 font-bold">
                 📭 Không có nhiệm vụ nào trong danh mục này!
               </div>
             ) : (
-              [...filteredTasks]
-                .sort((a, b) => {
-                  if (a.completed !== b.completed) return a.completed ? 1 : -1;
-                  if (a.isMandatory !== b.isMandatory) return a.isMandatory ? -1 : 1;
-                  return 0;
-                })
-                .map((task) => {
+              [
+                { key: "doing", label: "⚡ ĐANG LÀM (tập trung 1 việc thôi!)", filter: (t) => !t.completed && t.id === activeTaskId },
+                { key: "today", label: "📋 HÔM NAY", filter: (t) => !t.completed && t.id !== activeTaskId },
+                { key: "waiting", label: "⏳ CHỜ BỐ MẸ DUYỆT", filter: (t) => t.completed && t.approval === "pending" },
+                { key: "done", label: "✅ HOÀN THÀNH", filter: (t) => t.completed && t.approval !== "pending" },
+              ].map(({ key, label, filter }) => {
+                const group = filteredTasks
+                  .filter(filter)
+                  .sort((a, b) => (a.isMandatory === b.isMandatory ? 0 : a.isMandatory ? -1 : 1));
+                if (group.length === 0) return null;
+                return (
+                  <div key={key} className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{label}</span>
+                      <span className="text-[10px] font-black text-gray-300">{group.length}</span>
+                    </div>
+                    {group.map((task) => renderTaskCard(task))}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+
+      {renderModals()}
+    </div>
+  );
+
+  // ---- Task card renderer (shared across kanban groups) ----
+  function renderTaskCard(task) {
                   // Determine style based on category
                   let emoji = "🛡️";
                   let statText = "EXP";
@@ -439,6 +690,7 @@ export default function DashboardPage() {
                   if (task.category === "intellect") { emoji = "🧠"; statText = "Trí tuệ"; }
                   if (task.category === "creative") { emoji = "🎨"; statText = "Sáng tạo"; }
                   if (task.category === "help") { emoji = "🤝"; statText = "Giúp đỡ"; }
+                  if (task.category === "connection") { emoji = "💞"; statText = "Kết nối"; }
 
                   let itemStyle = "border-sand shadow-game-flat hover:border-sand-dark";
                   if (task.isMandatory && !task.completed) {
@@ -480,6 +732,12 @@ export default function DashboardPage() {
                               <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
                                 {emoji} {statText}
                               </span>
+                              {/* P0: verification type badge */}
+                              <span className="text-[9px] font-bold text-gray-400 select-none" title="Cách xác nhận">
+                                {task.verifyType === "timer" && `⏱️ ${task.durationMin || 10}p`}
+                                {task.verifyType === "photo" && (task.photoRequiredToday ? "📸🔍 cần ảnh" : "📸")}
+                                {task.verifyType === "witness" && "👀 bố mẹ"}
+                              </span>
                               {task.isMandatory && !task.completed && (
                                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
                                   Bắt buộc 🔴
@@ -488,6 +746,11 @@ export default function DashboardPage() {
                               {task.custom && (
                                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
                                   Bố mẹ giao 👑
+                                </span>
+                              )}
+                              {task.approval === "pending" && (
+                                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-sky-light text-sky-dark border border-sky/30 uppercase select-none">
+                                  ⏳ Chờ duyệt
                                 </span>
                               )}
                             </div>
@@ -566,11 +829,67 @@ export default function DashboardPage() {
                       )}
                     </div>
                   );
-                })
-            )}
-          </div>
+  }
+
+  // ---- Modals & overlays (anchored to the outer relative container) ----
+  function renderModals() {
+    return (
+      <>
+      {/* Hidden photo evidence input */}
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handlePhotoSelected}
+        className="hidden"
+      />
+
+      {/* Witness PIN Modal (👀 parent confirms on the spot) */}
+      {witnessTask && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
+          <form
+            onSubmit={handleWitnessSubmit}
+            className="bg-white border-4 border-sky rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4"
+          >
+            <div className="w-16 h-16 bg-sky-light rounded-full border-2 border-sky mx-auto flex items-center justify-center text-3xl">
+              👀
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-sky-dark uppercase tracking-wider">Bố Mẹ Chứng Kiến</h3>
+              <p className="text-[11px] text-gray-500">
+                &ldquo;{witnessTask.title}&rdquo; — bố mẹ có mặt xác nhận bằng mã PIN nhé!
+              </p>
+            </div>
+            <input
+              type="password"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              maxLength={6}
+              value={witnessPin}
+              onChange={(e) => setWitnessPin(e.target.value)}
+              placeholder="Mã PIN của bố mẹ..."
+              className="w-full min-h-tap text-center bg-sand-light border-2 border-sand rounded-xl text-lg font-black text-forest-dark focus:outline-none focus:border-sky transition-colors"
+              autoFocus
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setWitnessTask(null)}
+                className="w-1/2 min-h-tap bg-white text-gray-400 font-extrabold text-xs rounded-xl border-2 border-sand"
+              >
+                ĐỂ SAU
+              </button>
+              <button
+                type="submit"
+                className="w-1/2 min-h-tap bg-sky text-white font-black text-xs rounded-xl border-2 border-sky shadow-game-sky active:shadow-game-pressed btn-game-transition"
+              >
+                XÁC NHẬN ✅
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
+      )}
 
       {/* Pigeon Encouragement Letter Modal */}
       {selectedMessage && (
@@ -584,7 +903,7 @@ export default function DashboardPage() {
 
             <div className="space-y-1">
               <h3 className="text-sm font-black text-amber uppercase tracking-wider">Thư Từ Bố Mẹ 💌</h3>
-              <p className="text-[10px] text-gray-400">Gửi đến Chiến Binh Quốc Bảo yêu dấu</p>
+              <p className="text-[10px] text-gray-400">Gửi đến Chiến Binh {charName} yêu dấu</p>
             </div>
 
             {/* Letter Content block */}
@@ -618,7 +937,7 @@ export default function DashboardPage() {
 
             <div className="space-y-1 text-white">
               <h3 className="text-lg font-black tracking-widest uppercase animate-pulse">ĐIỂM MAY MẮN! 🌟</h3>
-              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">Quốc Bảo đã kích hoạt Cú Đập Sức Mạnh 💥</p>
+              <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">{charName} đã kích hoạt Cú Đập Sức Mạnh 💥</p>
             </div>
 
             <div className="bg-white border-2 border-amber-dark p-4 rounded-2xl shadow-inner space-y-1">
@@ -776,6 +1095,7 @@ export default function DashboardPage() {
           <span className="text-[9px] font-extrabold uppercase tracking-wider">Bố Mẹ</span>
         </button>
       </div>
-    </div>
-  );
+      </>
+    );
+  }
 }

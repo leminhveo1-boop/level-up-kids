@@ -1,0 +1,12 @@
+# Remote auth config for luk-prod — applied via `npx supabase config push`
+project_id = "level-up-kids"
+
+[auth]
+site_url = "https://level-up-kids.pages.dev"
+additional_redirect_urls = ["http://localhost:3000", "https://level-up-kids.pages.dev"]
+
+[auth.email]
+enable_signup = true
+# No scary "Supabase" confirmation email — payment is the real gate.
+# Re-enable once a custom domain + Resend SMTP are wired for branded emails.
+enable_confirmations = false

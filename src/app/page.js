@@ -3,20 +3,25 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LandingPage() {
   const router = useRouter();
-  const { isLoaded, charName, level, resetEntireGame } = useGame();
+  const { isLoaded, level } = useGame();
+  const { authLoaded, cloudEnabled, user, activeChild, isPaid, isDemo } = useAuth();
 
-  const [isCharacterCreated, setIsCharacterCreated] = React.useState(false);
+  // Where should the primary CTA go?
+  // Paid-only funnel: unauth → /auth; unpaid → /demo (showcase); paid → family/dashboard
+  const primaryTarget =
+    activeChild && !isDemo
+      ? "/dashboard"
+      : cloudEnabled && !user
+      ? "/auth"
+      : !isPaid
+      ? "/demo"
+      : "/family";
 
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsCharacterCreated(localStorage.getItem("quocbao_game_state") !== null);
-    }
-  }, []);
-
-  if (!isLoaded) {
+  if (!isLoaded || !authLoaded) {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
@@ -48,8 +53,8 @@ export default function LandingPage() {
         {/* Branding & Title */}
         <div className="space-y-2">
           <h1 className="text-3xl font-extrabold text-forest tracking-tight uppercase leading-tight drop-shadow-sm">
-            Hành Trình Anh Hùng <br />
-            <span className="text-amber">Quốc Bảo</span>
+            Level Up <span className="text-amber">Kids</span> <br />
+            <span className="text-lg">Hành Trình Anh Hùng Nhí</span>
           </h1>
           <p className="text-sm font-medium text-forest-dark opacity-90 max-w-xs mx-auto">
             Biến quá trình phát triển bản thân ngoài đời thực thành một trò chơi phiêu lưu kỳ thú!
@@ -83,32 +88,32 @@ export default function LandingPage() {
 
       {/* Action Buttons Footer */}
       <div className="mt-8 space-y-3 w-full pb-4">
-        {isCharacterCreated ? (
-          <>
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="w-full bg-forest text-sand-light font-extrabold text-base py-4 px-6 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
-            >
-              TIẾP TỤC HÀNH TRÌNH (CẤP {level}) 🌳
-            </button>
-            <button
-              onClick={() => {
-                if (confirm("Con có chắc muốn bắt đầu lại hành trình mới không? Mọi EXP và cấp độ hiện tại sẽ được khởi động lại.")) {
-                  resetEntireGame();
-                  router.push("/register");
-                }
-              }}
-              className="w-full bg-sand-light text-forest font-bold text-xs py-2.5 px-4 rounded-xl border border-sand hover:bg-sand-dark transition-all"
-            >
-              Tạo nhân vật mới 🔁
-            </button>
-          </>
-        ) : (
+        <button
+          onClick={() => router.push(primaryTarget)}
+          className="w-full bg-forest text-sand-light font-extrabold text-base py-4 px-6 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+        >
+          {activeChild && !isDemo
+            ? `TIẾP TỤC HÀNH TRÌNH (CẤP ${level}) 🌳`
+            : primaryTarget === "/demo"
+            ? "CHƠI THỬ NGAY — MIỄN PHÍ 🎮"
+            : "BẮT ĐẦU PHIÊU LƯU 🗡️"}
+        </button>
+
+        {primaryTarget === "/demo" && (
           <button
-            onClick={() => router.push("/register")}
-            className="w-full bg-forest text-sand-light font-extrabold text-base py-4 px-6 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+            onClick={() => router.push("/premium")}
+            className="w-full bg-amber text-white font-extrabold text-sm py-3 px-6 rounded-2xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
           >
-            BẮT ĐẦU PHIÊU LƯU 🗡️
+            👑 MỞ KHÓA TRỌN BỘ — 199.000₫/NĂM
+          </button>
+        )}
+
+        {activeChild && !isDemo && (
+          <button
+            onClick={() => router.push("/family")}
+            className="w-full bg-sand-light text-forest font-bold text-xs py-2.5 px-4 rounded-xl border border-sand hover:bg-sand-dark transition-all"
+          >
+            👨‍👩‍👧‍👦 Đổi hồ sơ / Thêm anh hùng mới
           </button>
         )}
 

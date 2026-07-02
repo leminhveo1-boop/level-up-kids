@@ -1,13 +1,35 @@
 {
-  "name": "Hành Trình Anh Hùng Quốc Bảo",
-  "short_name": "Anh Hùng Quốc Bảo",
+  "name": "Level Up Kids - Hành Trình Anh Hùng Nhí",
+  "short_name": "Level Up Kids",
   "description": "Game hóa giáo dục phát triển bản thân dành cho trẻ em ngoài đời thật.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FDFBF7",
   "theme_color": "#2E7D32",
   "orientation": "portrait",
+  "lang": "vi",
+  "categories": ["education", "kids", "lifestyle"],
   "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",

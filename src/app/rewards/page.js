@@ -357,7 +357,7 @@ export default function RewardsPage() {
               <h3 className="text-sm font-black text-terracotta uppercase tracking-wider">
                 {shortageReward.currency === "heroCoins" ? "Chưa Đủ Hero Coin! 🔒" : "Chưa Đủ Điểm Số! 🔒"}
               </h3>
-              <p className="text-[10px] text-gray-500">Quốc Bảo ơi, hãy cố gắng thêm chút nữa nhé!</p>
+              <p className="text-[10px] text-gray-500">Dũng sĩ ơi, hãy cố gắng thêm chút nữa nhé!</p>
             </div>
 
             <div className="bg-sand-light border-2 border-sand p-4 rounded-2xl shadow-inner text-xs font-bold text-forest-dark space-y-2">

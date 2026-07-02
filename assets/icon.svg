@@ -1,0 +1,52 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F1E9DC"/>
+    </linearGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+
+  <!-- Soft glow highlights -->
+  <circle cx="130" cy="120" r="150" fill="#FFFFFF" opacity="0.08"/>
+  <circle cx="420" cy="430" r="120" fill="#000000" opacity="0.08"/>
+
+  <!-- Shield -->
+  <path d="M256 88
+           L392 130
+           v118
+           c0 92 -62 152 -136 186
+           c-74 -34 -136 -94 -136 -186
+           v-118
+           Z"
+        fill="url(#shield)" stroke="#1B5E20" stroke-width="14" stroke-linejoin="round"/>
+
+  <!-- Sprout: stem -->
+  <path d="M256 332 v-74" stroke="#2E7D32" stroke-width="22" stroke-linecap="round"/>
+  <!-- Sprout: left leaf -->
+  <path d="M256 268 C 218 268, 192 244, 190 206 C 228 206, 254 230, 256 268 Z" fill="#4CAF50"/>
+  <!-- Sprout: right leaf -->
+  <path d="M256 240 C 294 240, 320 216, 322 178 C 284 178, 258 202, 256 240 Z" fill="#2E7D32"/>
+
+  <!-- Level-up star on shield crest -->
+  <path d="M256 128 l16.5 33.4 36.9 5.4 -26.7 26 6.3 36.7 -33 -17.3 -33 17.3 6.3 -36.7 -26.7 -26 36.9 -5.4 Z"
+        fill="url(#star)" stroke="#B45309" stroke-width="6" stroke-linejoin="round" transform="translate(0,14)"/>
+
+  <!-- Ground arc under shield -->
+  <path d="M164 420 q92 44 184 0" stroke="#A7F3D0" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.85"/>
+
+  <!-- XP pips -->
+  <circle cx="150" cy="452" r="10" fill="#FBBF24"/>
+  <circle cx="256" cy="466" r="10" fill="#FBBF24"/>
+  <circle cx="362" cy="452" r="10" fill="#FBBF24"/>
+</svg>

@@ -1,0 +1,20 @@
+# Cloudflare Pages config for Level Up Kids (Next.js via @cloudflare/next-on-pages)
+name = "level-up-kids"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# Secrets (set via `wrangler pages secret put <NAME>` or CF dashboard — NEVER commit values):
+#   SUPABASE_SERVICE_ROLE_KEY
+#   SEPAY_WEBHOOK_API_KEY
+#   SEPAY_WEBHOOK_SECRET
+
+[vars]
+NEXT_PUBLIC_SUPABASE_URL = "https://mqgfdotuywgxpoiezpmj.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xZ2Zkb3R1eXdneHBvaWV6cG1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NDk0NjIsImV4cCI6MjA5ODUyNTQ2Mn0.fqH1t2PUJUS7iZKLi0Az9Ig3ttQbamrYX7huxhEZJS4"
+PREMIUM_PRICE_VND = 199000
+PREMIUM_DAYS_PER_PERIOD = 365
+NEXT_PUBLIC_PREMIUM_PRICE_VND = 199000
+NEXT_PUBLIC_BANK_ID = "TPBank"
+NEXT_PUBLIC_BANK_ACCOUNT = "0934567698"
+NEXT_PUBLIC_BANK_HOLDER = "BUI THE LONG"

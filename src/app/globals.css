@@ -5,7 +5,59 @@
 :root {
   --background: #FDFBF7; /* sand-light */
   --foreground: #1B2E1E; /* Deep forest charcoal */
+
+  /* ===== TYPE SCALE (UX_AUDIT 3.1) — floor 12px, 6 steps =====
+     Use text-scale-* utilities below; arbitrary text-[Npx] is deprecated. */
+  --text-2xs: 12px;  /* labels, badges — ABSOLUTE FLOOR */
+  --text-xs: 13px;   /* secondary text */
+  --text-sm: 14px;   /* body compact */
+  --text-base: 16px; /* body (kid-friendly) */
+  --text-lg: 20px;   /* section titles */
+  --text-xl: 26px;   /* page titles */
+
+  /* Touch target floor (Apple HIG / Material) */
+  --tap-min: 44px;
+
+  /* Effects intensity (kid default) */
+  --fx-intensity: 1;
 }
+
+/* ===== TEEN MODE TOKENS (UX_AUDIT Phần 4) — applied via [data-ui-mode="teen"] ===== */
+[data-ui-mode="teen"] {
+  --background: #0F172A;   /* slate-900 */
+  --foreground: #E2E8F0;   /* slate-200 */
+  --fx-intensity: 0.4;     /* fewer perpetual animations */
+}
+
+/* Teen Dark Skin V1 — utility-class overrides (transitional until full
+   semantic tokenization; scoped to the classes actually used in the app). */
+[data-ui-mode="teen"] .bg-white { background-color: #1E293B; }
+[data-ui-mode="teen"] .bg-sand-light,
+[data-ui-mode="teen"] .bg-sand { background-color: #0F172A; }
+[data-ui-mode="teen"] .bg-forest-light,
+[data-ui-mode="teen"] .bg-amber-light,
+[data-ui-mode="teen"] .bg-sky-light,
+[data-ui-mode="teen"] .bg-clay-light,
+[data-ui-mode="teen"] .bg-terracotta-light { background-color: #24334A; }
+[data-ui-mode="teen"] .border-sand,
+[data-ui-mode="teen"] .border-sand-dark { border-color: #334155; }
+[data-ui-mode="teen"] .text-forest-dark,
+[data-ui-mode="teen"] .text-forest { color: #A7F3D0; }
+[data-ui-mode="teen"] .text-gray-500,
+[data-ui-mode="teen"] .text-gray-600,
+[data-ui-mode="teen"] .text-gray-400 { color: #94A3B8; }
+[data-ui-mode="teen"] .shadow-game-flat { box-shadow: 0 4px 0px 0px #0B1220; }
+[data-ui-mode="teen"] .bg-rose-50,
+[data-ui-mode="teen"] .bg-blue-50,
+[data-ui-mode="teen"] .bg-green-50,
+[data-ui-mode="teen"] .bg-amber-50,
+[data-ui-mode="teen"] .bg-purple-50,
+[data-ui-mode="teen"] .bg-gray-50,
+[data-ui-mode="teen"] .bg-gray-100 { background-color: #24334A; }
+/* calm the perpetual attention-seekers for teens */
+[data-ui-mode="teen"] .animate-bounce,
+[data-ui-mode="teen"] .animate-pulse,
+[data-ui-mode="teen"] .animate-flame { animation: none; }
 
 body {
   color: var(--foreground);
@@ -101,4 +153,48 @@ body {
 
 .animate-float {
   animation: float 3s infinite ease-in-out;
+}
+
+/* ===== TYPE SCALE UTILITIES (B1) ===== */
+.text-scale-2xs { font-size: var(--text-2xs); line-height: 1.35; }
+.text-scale-xs { font-size: var(--text-xs); line-height: 1.4; }
+.text-scale-sm { font-size: var(--text-sm); line-height: 1.45; }
+.text-scale-base { font-size: var(--text-base); line-height: 1.5; }
+.text-scale-lg { font-size: var(--text-lg); line-height: 1.3; }
+.text-scale-xl { font-size: var(--text-xl); line-height: 1.2; }
+
+/* ===== TOUCH TARGET (B1 — UX_AUDIT 3.2) =====
+   Guarantees a >=44px hit area even when the visual element is smaller. */
+.hit-target {
+  position: relative;
+}
+.hit-target::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== REDUCED MOTION (B1 — UX_AUDIT 3.4) ===== */
+@media (prefers-reduced-motion: reduce) {
+  .animate-flame,
+  .animate-float,
+  .animate-shimmer::after,
+  .animate-bounce,
+  .animate-pulse,
+  .animate-spin,
+  .animate-fade-in,
+  .animate-wiggle {
+    animation: none !important;
+  }
+  .btn-game-transition,
+  .btn-game-transition:active {
+    transition: none;
+    transform: none;
+  }
 }

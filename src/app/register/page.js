@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGame } from "@/context/GameState";
+import { useAuth } from "@/context/AuthContext";
+import { track } from "@/lib/analytics";
 
 const CLASSES = [
   {
@@ -36,28 +37,45 @@ const CLASSES = [
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setCharName, setCharClass, setStats, setStreak, setEnergy } = useGame();
-  
-  const [nameInput, setNameInput] = useState("Quốc Bảo");
-  const [selectedClass, setSelectedClass] = useState("Warrior");
+  const { authLoaded, isPaid, createChild, childLimit, childProfiles } = useAuth();
 
-  const handleStartAdventure = () => {
+  // Paid-only: creating a real child requires premium — send prospects to the paywall
+  React.useEffect(() => {
+    if (authLoaded && !isPaid) router.replace("/premium");
+  }, [authLoaded, isPaid, router]);
+
+  const [nameInput, setNameInput] = useState("");
+  const [selectedClass, setSelectedClass] = useState("Warrior");
+  const [ageGroup, setAgeGroup] = useState("kid"); // kid 6-11 | teen 12+
+  const [busy, setBusy] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleStartAdventure = async () => {
     if (!nameInput.trim()) {
-      alert("Vui lòng nhập tên Anh Hùng của con nhé!");
+      setErrorMessage("Vui lòng nhập tên Anh Hùng của con nhé!");
+      return;
+    }
+    setBusy(true);
+    setErrorMessage("");
+
+    const res = await createChild(nameInput.trim(), selectedClass, ageGroup);
+    setBusy(false);
+
+    if (!res.success) {
+      if (res.error === "CHILD_LIMIT_REACHED") {
+        setErrorMessage(
+          `Gói hiện tại chỉ tạo được ${childLimit} hồ sơ con (đang có ${childProfiles.length}). Nâng cấp Premium để thêm bé nhé! 👑`
+        );
+      } else if (res.error === "PREMIUM_REQUIRED") {
+        router.push("/premium");
+      } else {
+        setErrorMessage(res.error || "Có lỗi xảy ra, vui lòng thử lại!");
+      }
       return;
     }
 
-    const chosenClassObj = CLASSES.find((c) => c.id === selectedClass);
-    
-    // Set state
-    setCharName(nameInput);
-    setCharClass(selectedClass);
-    setStats(chosenClassObj.baseStats);
-    setStreak(0);
-    setEnergy(100);
-
-    // Push to dashboard
-    router.push("/dashboard");
+    track("child_created", { char_class: selectedClass });
+    router.push("/setup");
   };
 
   return (
@@ -65,8 +83,8 @@ export default function RegisterPage() {
       <div className="absolute top-0 right-0 w-32 h-32 bg-forest-accent opacity-20 rounded-full blur-2xl -z-10"></div>
       
       {/* Back button */}
-      <button 
-        onClick={() => router.push("/")}
+      <button
+        onClick={() => router.push("/family")}
         className="self-start text-xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider mb-4 flex items-center gap-1"
       >
         ⬅️ Quay lại
@@ -79,7 +97,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Name Input Card */}
-      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-6">
+      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-4">
         <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Tên Anh Hùng Của Bé</label>
         <input
           type="text"
@@ -89,6 +107,33 @@ export default function RegisterPage() {
           className="w-full bg-sand-light border-2 border-sand rounded-xl px-4 py-3 text-base font-bold text-forest-dark focus:outline-none focus:border-forest transition-colors"
           maxLength={18}
         />
+      </div>
+
+      {/* Age group → UI mode (kid vs teen aesthetics) */}
+      <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-6">
+        <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Nhóm Tuổi (chọn giao diện phù hợp)</label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setAgeGroup("kid")}
+            className={`min-h-tap p-3 rounded-xl border-2 text-center transition-all ${
+              ageGroup === "kid" ? "border-forest bg-forest-light/20" : "border-sand"
+            }`}
+          >
+            <p className="text-sm font-black text-forest-dark">🧒 6–11 tuổi</p>
+            <p className="text-[10px] text-gray-400 font-bold">Phiêu lưu rực rỡ, thú cưng, phép thuật</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAgeGroup("teen")}
+            className={`min-h-tap p-3 rounded-xl border-2 text-center transition-all ${
+              ageGroup === "teen" ? "border-forest bg-forest-light/20" : "border-sand"
+            }`}
+          >
+            <p className="text-sm font-black text-forest-dark">🎧 12+ tuổi</p>
+            <p className="text-[10px] text-gray-400 font-bold">Giao diện tối, gọn, kiểu app fitness</p>
+          </button>
+        </div>
       </div>
 
       {/* Class Selection */}
@@ -157,12 +202,22 @@ export default function RegisterPage() {
       </div>
 
       {/* Launch Action */}
-      <div className="mt-8 pb-4">
+      <div className="mt-8 pb-4 space-y-3">
+        {errorMessage && (
+          <p className="text-[11px] font-bold text-terracotta text-center bg-rose-50 border border-red-100 rounded-xl p-2.5">
+            ⚠️ {errorMessage}
+          </p>
+        )}
         <button
           onClick={handleStartAdventure}
-          className="w-full bg-forest text-sand-light font-extrabold text-base py-4 px-6 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+          disabled={busy}
+          className={`w-full font-extrabold text-base py-4 px-6 rounded-2xl border-2 btn-game-transition ${
+            busy
+              ? "bg-gray-100 border-sand text-gray-400"
+              : "bg-forest text-sand-light border-forest shadow-game-forest active:shadow-game-pressed"
+          }`}
         >
-          XUẤT PHÁT KIÊN CƯỜNG! 🚀
+          {busy ? "ĐANG TẠO..." : "XUẤT PHÁT KIÊN CƯỜNG! 🚀"}
         </button>
       </div>
     </div>

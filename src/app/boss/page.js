@@ -44,7 +44,7 @@ export default function BossPage() {
       spread: 80,
       colors: ["#D97706", "#4CAF50", "#E11D48"],
     });
-    alert("🎉 Chúc mừng Chiến Binh Quốc Bảo đã mở Rương Kho Báu Mùa Hè! Bố mẹ sẽ thưởng cho con một món quà đặc biệt ngày hôm nay! Hãy chụp màn hình này gửi cho bố mẹ nhé!");
+    alert("🎉 Chúc mừng Chiến Binh của bố mẹ đã mở Rương Kho Báu Mùa Hè! Bố mẹ sẽ thưởng cho con một món quà đặc biệt ngày hôm nay! Hãy chụp màn hình này gửi cho bố mẹ nhé!");
   };
 
   const playSoundEffect = () => {
