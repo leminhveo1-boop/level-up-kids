@@ -120,7 +120,7 @@ export function migrateState(data) {
     parentConfig: { ...DEFAULT_PARENT_CONFIG, ...(data.parentConfig || {}) },
     screenMinutesUsedToday: data.screenMinutesUsedToday || 0,
     screenRedeemsThisWeek: data.screenRedeemsThisWeek || 0,
-    cosmetics: data.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
+    cosmetics: data.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null, roomWall: null, roomFloor: null, roomFurniture: null, roomPet: null } },
     history: data.history || [],
     graduatedHabits: data.graduatedHabits || [],
     lastGraduation: data.lastGraduation || null,

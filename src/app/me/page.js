@@ -15,6 +15,10 @@ const SLOT_LABEL_KEYS = {
   hat: "game.me.slot.hat",
   frame: "game.me.slot.frame",
   petAccessory: "game.me.slot.petAccessory",
+  roomWall: "game.me.slot.roomWall",
+  roomFloor: "game.me.slot.roomFloor",
+  roomFurniture: "game.me.slot.roomFurniture",
+  roomPet: "game.me.slot.roomPet",
 };
 
 const RARITY_BADGE = {
@@ -131,6 +135,34 @@ export default function MyCornerPage() {
           <p className="text-scale-2xs text-gray-400 font-bold">
             {t("game.me.previewHint")}
           </p>
+        </div>
+
+        {/* 🏰 D6 Căn Cứ Anh Hùng — decorated room scene (deeper coin sink) */}
+        <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-2">
+          <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">{t("game.me.roomTitle")}</h3>
+          <p className="text-scale-2xs text-gray-400 font-medium">{t("game.me.roomHint")}</p>
+          {equipped.roomWall || equipped.roomFloor || equipped.roomFurniture || equipped.roomPet ? (
+            <div className="relative h-40 rounded-2xl overflow-hidden border-2 border-sand bg-sand-light">
+              <div className="absolute inset-x-0 top-0 h-2/3 flex items-center justify-center text-6xl opacity-90 select-none">
+                {equipped.roomWall?.emoji || ""}
+              </div>
+              <div className="absolute inset-x-0 bottom-0 h-1/3 flex items-center justify-around text-3xl bg-sand/70 border-t border-sand select-none">
+                {equipped.roomFurniture && <span>{equipped.roomFurniture.emoji}</span>}
+                <span className="text-4xl">🦸</span>
+                {companion && <span>{companion.emoji}</span>}
+                {equipped.roomPet && <span>{equipped.roomPet.emoji}</span>}
+              </div>
+              {equipped.roomFloor && (
+                <div className="absolute inset-x-0 bottom-0.5 text-center text-[10px] opacity-40 select-none">
+                  {equipped.roomFloor.emoji} {equipped.roomFloor.emoji} {equipped.roomFloor.emoji}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="h-24 rounded-2xl border-2 border-dashed border-sand flex items-center justify-center text-center text-scale-2xs text-gray-400 font-bold px-4">
+              {t("game.me.roomEmpty")}
+            </div>
+          )}
         </div>
 
         {flash && (

@@ -46,6 +46,22 @@ describe("cosmetics shop (Góc Của Tớ)", () => {
     expect(equipCosmetic(state, "hat", "frame_gold").result.error).toBe("ITEM_NOT_FOUND");
   });
 
+  test("D6 Căn Cứ: room slots buy + equip + resolve like avatar slots", () => {
+    let state = freshState({ heroCoins: 500 });
+    state = buyCosmetic(state, "wall_galaxy").state; // roomWall, auto-equip
+    state = buyCosmetic(state, "furn_trophy").state; // roomFurniture
+    expect(state.cosmetics.equipped.roomWall).toBe("wall_galaxy");
+    expect(state.cosmetics.equipped.roomFurniture).toBe("furn_trophy");
+
+    const eq = getEquipped(state);
+    expect(eq.roomWall.emoji).toBe("🌌");
+    expect(eq.roomFurniture.name).toBe("Tủ Cúp Vinh Danh");
+    expect(eq.roomFloor).toBeNull();
+
+    // wrong-slot equip is rejected
+    expect(equipCosmetic(state, "roomWall", "furn_trophy").result.error).toBe("ITEM_NOT_FOUND");
+  });
+
   test("getEquipped resolves catalog entries", () => {
     let state = freshState({ heroCoins: 500 });
     state = buyCosmetic(state, "pet_bow").state;
@@ -57,7 +73,11 @@ describe("cosmetics shop (Góc Của Tớ)", () => {
   test("catalog integrity: unique ids, valid slots, positive costs", () => {
     const ids = COSMETICS_CATALOG.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(COSMETICS_CATALOG.every((c) => ["hat", "frame", "petAccessory"].includes(c.slot))).toBe(true);
+    expect(
+      COSMETICS_CATALOG.every((c) =>
+        ["hat", "frame", "petAccessory", "roomWall", "roomFloor", "roomFurniture", "roomPet"].includes(c.slot)
+      )
+    ).toBe(true);
     expect(COSMETICS_CATALOG.every((c) => c.cost > 0)).toBe(true);
   });
 });

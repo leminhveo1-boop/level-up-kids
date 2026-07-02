@@ -3,7 +3,9 @@
  * Pure functions; hero-coin sink. Assets are emoji/color based (no artwork pipeline).
  */
 
-export const COSMETIC_SLOTS = ["hat", "frame", "petAccessory"];
+// Avatar slots + D6 "Căn Cứ Anh Hùng" room slots (deeper hero-coin sink, Octalysis CD3).
+export const ROOM_SLOTS = ["roomWall", "roomFloor", "roomFurniture", "roomPet"];
+export const COSMETIC_SLOTS = ["hat", "frame", "petAccessory", ...ROOM_SLOTS];
 
 export const COSMETICS_CATALOG = [
   // Hats (đội lên avatar)
@@ -23,9 +25,32 @@ export const COSMETICS_CATALOG = [
   { id: "pet_bow", slot: "petAccessory", name: "Nơ Xinh Cho Pet", emoji: "🎀", cost: 50, rarity: "common" },
   { id: "pet_glasses", slot: "petAccessory", name: "Kính Ngầu Cho Pet", emoji: "🕶️", cost: 70, rarity: "rare" },
   { id: "pet_scarf", slot: "petAccessory", name: "Khăn Ấm Cho Pet", emoji: "🧣", cost: 50, rarity: "common" },
+
+  // D6 Căn Cứ — Walls (nền cảnh phía sau)
+  { id: "wall_brick", slot: "roomWall", name: "Tường Gạch Ấm Cúng", emoji: "🧱", cost: 60, rarity: "common" },
+  { id: "wall_rainbow", slot: "roomWall", name: "Tường Cầu Vồng", emoji: "🌈", cost: 90, rarity: "rare" },
+  { id: "wall_galaxy", slot: "roomWall", name: "Tường Ngân Hà", emoji: "🌌", cost: 160, rarity: "epic" },
+
+  // D6 Căn Cứ — Floors (sàn nhà)
+  { id: "floor_wood", slot: "roomFloor", name: "Sàn Gỗ Mộc", emoji: "🟫", cost: 60, rarity: "common" },
+  { id: "floor_grass", slot: "roomFloor", name: "Thảm Cỏ Xanh", emoji: "🟩", cost: 90, rarity: "rare" },
+  { id: "floor_crystal", slot: "roomFloor", name: "Sàn Pha Lê", emoji: "🔷", cost: 160, rarity: "epic" },
+
+  // D6 Căn Cứ — Furniture (nội thất chính)
+  { id: "furn_desk", slot: "roomFurniture", name: "Bàn Học Anh Hùng", emoji: "🪑", cost: 80, rarity: "common" },
+  { id: "furn_books", slot: "roomFurniture", name: "Kệ Sách Trí Tuệ", emoji: "📚", cost: 100, rarity: "rare" },
+  { id: "furn_game", slot: "roomFurniture", name: "Góc Game Thư Giãn", emoji: "🎮", cost: 140, rarity: "epic" },
+  { id: "furn_trophy", slot: "roomFurniture", name: "Tủ Cúp Vinh Danh", emoji: "🏆", cost: 200, rarity: "epic" },
+
+  // D6 Căn Cứ — Pet corner (chỗ ở cho thú cưng)
+  { id: "petroom_house", slot: "roomPet", name: "Nhà Nhỏ Cho Pet", emoji: "🏠", cost: 70, rarity: "common" },
+  { id: "petroom_bed", slot: "roomPet", name: "Ổ Nệm Êm Cho Pet", emoji: "🧺", cost: 90, rarity: "rare" },
 ];
 
-export const DEFAULT_COSMETICS = { owned: [], equipped: { hat: null, frame: null, petAccessory: null } };
+export const DEFAULT_COSMETICS = {
+  owned: [],
+  equipped: { hat: null, frame: null, petAccessory: null, roomWall: null, roomFloor: null, roomFurniture: null, roomPet: null },
+};
 
 /**
  * Buy a cosmetic with hero coins.
@@ -77,13 +102,18 @@ export function equipCosmetic(state, slot, cosmeticId) {
   };
 }
 
-/** Resolve equipped items to their catalog entries. */
+/** Resolve equipped items to their catalog entries (avatar + room slots). */
 export function getEquipped(state) {
   const cosmetics = state.cosmetics || DEFAULT_COSMETICS;
+  const equipped = cosmetics.equipped || {};
   const find = (id) => COSMETICS_CATALOG.find((c) => c.id === id) || null;
   return {
-    hat: find(cosmetics.equipped.hat),
-    frame: find(cosmetics.equipped.frame),
-    petAccessory: find(cosmetics.equipped.petAccessory),
+    hat: find(equipped.hat),
+    frame: find(equipped.frame),
+    petAccessory: find(equipped.petAccessory),
+    roomWall: find(equipped.roomWall),
+    roomFloor: find(equipped.roomFloor),
+    roomFurniture: find(equipped.roomFurniture),
+    roomPet: find(equipped.roomPet),
   };
 }

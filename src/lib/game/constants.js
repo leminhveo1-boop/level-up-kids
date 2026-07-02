@@ -181,7 +181,7 @@ export function createInitialState(opts = {}) {
     parentConfig: { ...DEFAULT_PARENT_CONFIG },
     screenMinutesUsedToday: 0,
     screenRedeemsThisWeek: 0,
-    cosmetics: { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
+    cosmetics: { owned: [], equipped: { hat: null, frame: null, petAccessory: null, roomWall: null, roomFloor: null, roomFurniture: null, roomPet: null } },
     history: [],
     graduatedHabits: [],
     lastGraduation: null,
