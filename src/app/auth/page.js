@@ -40,7 +40,11 @@ export default function AuthPage() {
           setErrorMessage(res.error || t("common.error"));
         } else {
           track("signup_success");
-          setInfoMessage(t("auth.checkEmail"));
+          if (res.hasSession) {
+            router.push("/family"); // instant sign-in (no email confirmation)
+          } else {
+            setInfoMessage(t("auth.checkEmail"));
+          }
         }
       } else {
         const res = await signIn(email.trim(), password);

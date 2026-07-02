@@ -137,13 +137,14 @@ export function AuthProvider({ children }) {
   const signUp = useCallback(
     async (email, password, displayName) => {
       if (!supabase) return { success: false, error: "CLOUD_DISABLED" };
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { display_name: displayName } },
       });
       if (error) return { success: false, error: error.message };
-      return { success: true };
+      // hasSession=true when email confirmation is disabled (instant sign-in)
+      return { success: true, hasSession: Boolean(data?.session) };
     },
     [supabase]
   );
