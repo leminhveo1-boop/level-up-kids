@@ -38,3 +38,6 @@ next-env.d.ts
 # local env & wrangler
 .env
 .wrangler
+
+# supabase CLI temp
+supabase/.temp/
