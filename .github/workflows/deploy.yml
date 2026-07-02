@@ -28,6 +28,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Money-flow E2E: real Next server + local Supabase stub (request-only,
+      # no browser binaries needed — see playwright.config.mjs)
+      - name: E2E SePay webhook
+        run: npm run test:e2e
+
       - name: Build for Cloudflare Workers
         run: npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion
         env:

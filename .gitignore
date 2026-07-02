@@ -42,5 +42,9 @@ next-env.d.ts
 # opennextjs-cloudflare build output
 .open-next
 
+# playwright
+/test-results/
+/playwright-report/
+
 # supabase CLI temp
 supabase/.temp/
