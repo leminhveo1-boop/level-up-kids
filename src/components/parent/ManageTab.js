@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
+import { useLang } from "@/context/LanguageContext";
+import { getAtRiskTasks } from "@/lib/game/habits";
 import { Trash2, Plus } from "lucide-react";
 
 const TASK_TEMPLATES = [
@@ -47,12 +49,16 @@ export default function ManageTab() {
     rewards,
     addCustomTask,
     deleteTask,
+    splitTask,
+    dismissAtRisk,
     addCustomReward,
     deleteReward,
     setInventory,
     parentConfig,
     charName,
   } = useGame();
+  const { t } = useLang();
+  const atRiskTasks = getAtRiskTasks(tasks);
 
   const [flash, setFlash] = useState("");
   const showFlash = (text) => {
@@ -134,6 +140,34 @@ export default function ManageTab() {
         <p className="text-scale-xs font-bold text-center text-forest bg-forest-light/30 border border-forest/20 rounded-xl p-2.5">
           {flash}
         </p>
+      )}
+
+      {/* D4: at-risk tasks — gentle "make it tiny" nudge (Fogg) */}
+      {atRiskTasks.length > 0 && (
+        <div className="bg-amber-light/40 border-2 border-amber/40 rounded-xl p-4 space-y-2.5">
+          <h3 className="text-scale-sm font-black text-amber-dark">{t("game.habit.title")}</h3>
+          <p className="text-scale-2xs text-gray-500 font-medium leading-relaxed">{t("game.habit.desc")}</p>
+          {atRiskTasks.map((tk) => (
+            <div key={tk.id} className="bg-white border border-amber/30 rounded-xl px-3 py-2 flex items-center gap-2">
+              <div className="flex-grow min-w-0">
+                <p className="text-scale-2xs font-black text-forest-dark truncate">{tk.title}</p>
+                <p className="text-[9px] font-bold text-terracotta">{t("game.habit.missDays", { n: tk.missStreak || 0 })}</p>
+              </div>
+              <button
+                onClick={() => { splitTask(tk.id); showFlash(t("game.habit.splitDone")); }}
+                className="min-h-tap flex-shrink-0 bg-forest text-white text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+              >
+                {t("game.habit.split")}
+              </button>
+              <button
+                onClick={() => dismissAtRisk(tk.id)}
+                className="min-h-tap flex-shrink-0 bg-white border border-sand text-gray-500 text-[10px] font-bold px-2.5 rounded-xl active:scale-95 transition-transform"
+              >
+                {t("game.habit.dismiss")}
+              </button>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* ============ TASKS ============ */}

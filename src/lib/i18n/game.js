@@ -123,6 +123,14 @@ export const gameDict = {
     "game.crit.desc": "Đã nhân đôi Điểm Tích Lũy và nhân hệ số Streak! 🎉",
     "game.crit.cta": "QUÁ TUYỆT VỜI! 🚀",
 
+    // D4 Habit stacking / chia nhỏ (parent Việc & Quà tab)
+    "game.habit.title": "🐣 Việc con hay bỏ — thử chia nhỏ?",
+    "game.habit.desc": "Những việc dưới đây bị bỏ nhiều ngày liền. Chia nhỏ để con dễ bắt đầu lại (thà làm việc bé còn hơn bỏ hẳn).",
+    "game.habit.missDays": "bỏ {n} ngày liền",
+    "game.habit.split": "Chia nhỏ 🐣",
+    "game.habit.dismiss": "Để nguyên",
+    "game.habit.splitDone": "Đã tạo bản nhỏ hơn — con thử lại từ việc bé nhé! 🐣",
+
     // D7 Season (Fresh Start)
     "game.season.label": "Mùa {n}",
     "game.season.status": "Tuần {week}/{total} · còn {days} ngày",
@@ -468,6 +476,14 @@ export const gameDict = {
     "game.crit.reward": "Quest Reward",
     "game.crit.desc": "Points doubled and multiplied by your Streak! 🎉",
     "game.crit.cta": "AMAZING! 🚀",
+
+    // D4 Habit stacking / make it tiny (parent Tasks tab)
+    "game.habit.title": "🐣 Tasks your child keeps missing — make them smaller?",
+    "game.habit.desc": "The tasks below have been missed several days in a row. Make them tiny so it's easy to start again (a small win beats giving up).",
+    "game.habit.missDays": "missed {n} days in a row",
+    "game.habit.split": "Make it tiny 🐣",
+    "game.habit.dismiss": "Keep as is",
+    "game.habit.splitDone": "Created a smaller version — let's restart from the tiny one! 🐣",
 
     // D7 Season (Fresh Start)
     "game.season.label": "Season {n}",

@@ -598,6 +598,8 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
   const tasksWithHabits = settled.tasks.map((t) => ({
     ...t,
     habitStreak: t.completed ? (t.habitStreak || 0) + 1 : 0,
+    // D4: consecutive misses drive the "chia nhỏ" suggestion
+    missStreak: t.completed ? 0 : (t.missStreak || 0) + 1,
   }));
   const remainingTasks = tasksWithHabits.filter((t) => {
     if ((t.habitStreak || 0) >= GRADUATION_DAYS) {

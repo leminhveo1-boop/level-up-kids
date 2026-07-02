@@ -19,6 +19,7 @@ import * as petSystem from "@/lib/game/pets";
 import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
+import { buildTinyTask } from "@/lib/game/habits";
 import { deliverGiftToSibling } from "@/lib/siblingGift";
 import { playSound } from "@/lib/sound";
 
@@ -618,6 +619,35 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  /** D4: create a smaller version of a task the child keeps missing (Fogg tiny-habit). */
+  const splitTask = useCallback((id) => {
+    setState((prev) => {
+      if (!prev) return prev;
+      const target = prev.tasks.find((t) => t.id === id);
+      if (!target) return prev;
+      const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help", connection: "help" };
+      const spec = buildTinyTask(target);
+      const tinyTask = {
+        id: makeUniqueId("tiny"),
+        ...spec,
+        completed: false,
+        statKey: statKeyMap[spec.category] || "discipline",
+        statVal: 1,
+        custom: true,
+      };
+      // reset the original's miss counter so the suggestion clears
+      const tasks = prev.tasks.map((t) => (t.id === id ? { ...t, missStreak: 0 } : t));
+      return { ...prev, tasks: [...tasks, tinyTask] };
+    });
+    return { success: true };
+  }, []);
+
+  /** D4: dismiss the at-risk nudge for a task without splitting it. */
+  const dismissAtRisk = useCallback((id) => {
+    setState((prev) => (prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? { ...t, missStreak: 0 } : t)) } : prev));
+    return { success: true };
+  }, []);
+
   const addCustomReward = useCallback(
     (title, costVal, typeVal, minutes = 0, rarityVal = "rare", currencyVal = "points") => {
       setState((prev) => {
@@ -776,6 +806,8 @@ export function GameProvider({ children }) {
         readAllMessages,
         addCustomTask,
         deleteTask,
+        splitTask,
+        dismissAtRisk,
         addCustomReward,
         deleteReward,
         resetDailyTasks,
