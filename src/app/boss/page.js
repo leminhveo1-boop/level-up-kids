@@ -4,12 +4,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
 
 export default function BossPage() {
   const router = useRouter();
+  const { t } = useLang();
   const { uiMode } = useAuth();
   const isTeen = uiMode === "teen";
+  const m = isTeen ? "teen" : "kid"; // kid/teen dictionary suffix
   const {
     isLoaded,
     charName,
@@ -36,7 +39,7 @@ export default function BossPage() {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
-        <p className="mt-4 text-forest font-medium">Đang tải...</p>
+        <p className="mt-4 text-forest font-medium">{t("common.loading")}</p>
       </div>
     );
   }
@@ -88,7 +91,7 @@ export default function BossPage() {
           >
             🌳 Dashboard
           </button>
-          <span className="text-xs font-black text-terracotta">{isTeen ? "🎯 THỬ THÁCH TUẦN" : "👾 BOSS THỬ THÁCH TUẦN"}</span>
+          <span className="text-xs font-black text-terracotta">{t(`game.boss.headerTitle.${m}`)}</span>
         </div>
 
         {/* BATTLEGROUND CONTAINER */}
@@ -108,28 +111,27 @@ export default function BossPage() {
 
               <div className="space-y-2">
                 <h2 className="text-xl font-black text-forest uppercase tracking-tight">
-                  {isTeen ? "HOÀN THÀNH THỬ THÁCH TUẦN!" : "TIÊU DIỆT BOSS THÀNH CÔNG!"}
+                  {t(`game.boss.wonTitle.${m}`)}
                 </h2>
                 <p className="text-xs font-bold text-gray-500 max-w-xs mx-auto">
-                  {isTeen
-                    ? `Tuyệt vời! Bạn đã hoàn thành thử thách tuần này. ${bossChestOpened ? "Phần thưởng đã nhận — hẹn thử thách tuần sau nhé!" : "Chạm để nhận phần thưởng thật!"}`
-                    : `Tuyệt vời! Con đã đánh bại ${bossName} tuần này. ${bossChestOpened ? "Rương đã mở — hẹn boss tuần sau nhé!" : "Hãy chạm vào rương báu để nhận phần thưởng thật!"}`}
+                  {t(`game.boss.wonDesc.${m}`, {
+                    boss: bossName,
+                    chest: t(`game.boss.${bossChestOpened ? "chestDoneHint" : "chestOpenHint"}.${m}`),
+                  })}
                 </p>
               </div>
 
               {lootResult ? (
                 <div className="bg-amber-50 border-2 border-amber rounded-2xl p-4 max-w-xs mx-auto space-y-1">
-                  <p className="text-sm font-black text-amber-800">+{lootResult.coins} 🪙 Hero Coins</p>
+                  <p className="text-sm font-black text-amber-800">{t("game.boss.lootCoins", { coins: lootResult.coins })}</p>
                   {lootResult.egg && (
-                    <p className="text-sm font-black text-amber-800">+1 {EGG_LABELS[lootResult.egg]}</p>
+                    <p className="text-sm font-black text-amber-800">{t("game.boss.lootEgg", { egg: EGG_LABELS[lootResult.egg] })}</p>
                   )}
                 </div>
               ) : bossChestOpened ? (
                 <div className="bg-white border-2 border-sand rounded-2xl p-4 max-w-xs mx-auto">
                   <p className="text-xs font-bold text-gray-400">
-                    {isTeen
-                      ? `📦 Phần thưởng chu kỳ ${bossCycleCount || 1} đã nhận rồi. Thử thách mới xuất hiện tuần sau!`
-                      : `📦 Rương chu kỳ ${bossCycleCount || 1} đã mở rồi. Boss mới sẽ xuất hiện tuần sau!`}
+                    {t(`game.boss.chestAlready.${m}`, { n: bossCycleCount || 1 })}
                   </p>
                 </div>
               ) : (
@@ -137,7 +139,7 @@ export default function BossPage() {
                   onClick={handleOpenChest}
                   className="bg-amber text-sand-light font-black text-sm py-4 px-8 rounded-2xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
                 >
-                  {isTeen ? "NHẬN THƯỞNG 🪙" : "MỞ RƯƠNG KHO BÁU 🪙"}
+                  {t(`game.boss.openBtn.${m}`)}
                 </button>
               )}
             </div>
@@ -148,7 +150,7 @@ export default function BossPage() {
               {/* Boss Title & Attributes */}
               <div className="space-y-1">
                 <span className="text-[10px] font-black px-2 py-0.5 rounded bg-terracotta-light text-terracotta border border-terracotta/30 uppercase">
-                  {isTeen ? `THỬ THÁCH TUẦN · CHU KỲ #${bossCycleCount || 1}` : `BOSS TUẦN NÀY · CHU KỲ #${bossCycleCount || 1}`}
+                  {t(`game.boss.badge.${m}`, { n: bossCycleCount || 1 })}
                 </span>
                 <h2 className="text-lg font-black text-forest-dark uppercase tracking-tight">{bossName}</h2>
               </div>
@@ -170,7 +172,7 @@ export default function BossPage() {
               {/* Boss Health Bar */}
               <div className="space-y-2 max-w-xs mx-auto">
                 <div className="flex justify-between items-center text-xs font-black text-gray-500">
-                  <span>{isTeen ? "TIẾN ĐỘ THỬ THÁCH" : "MÁU BOSS (HP)"}</span>
+                  <span>{t(`game.boss.hpLabel.${m}`)}</span>
                   <span className="text-terracotta">{bossHp} / {bossMaxHp} {isTeen ? "" : "HP"}</span>
                 </div>
                 
@@ -186,21 +188,13 @@ export default function BossPage() {
               <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat text-xs font-bold text-gray-500 leading-normal max-w-xs mx-auto space-y-2">
                 {isTeen ? (
                   <>
-                    <div className="text-forest-dark">
-                      🎯 Hôm nay bạn đã hoàn thành <strong className="text-terracotta text-sm">{activeHits} nhiệm vụ</strong>!
-                    </div>
-                    <p className="text-[10px]">
-                      Mỗi nhiệm vụ hoàn thành sẽ tự động cộng tiến độ cho thử thách tuần này! Kiên trì dọn dẹp, đọc sách, học bài để hoàn thành mục tiêu tuần nhé!
-                    </p>
+                    <div className="text-forest-dark">{t("game.boss.hits.teen", { n: activeHits })}</div>
+                    <p className="text-[10px]">{t("game.boss.hint.teen")}</p>
                   </>
                 ) : (
                   <>
-                    <div className="text-forest-dark">
-                      ⚔️ Hôm nay con đã tung ra <strong className="text-terracotta text-sm">{activeHits} đòn đánh</strong>!
-                    </div>
-                    <p className="text-[10px]">
-                      Mỗi khi con tích chọn hoàn thành nhiệm vụ ngoài đời thực, con sẽ tự động tấn công giảm máu Boss tuần này! Hãy kiên trì dọn dẹp, đọc sách, học bài để tiêu diệt Thần Lười Biếng nhé!
-                    </p>
+                    <div className="text-forest-dark">{t("game.boss.hits.kid", { n: activeHits })}</div>
+                    <p className="text-[10px]">{t("game.boss.hint.kid")}</p>
                   </>
                 )}
               </div>
@@ -219,7 +213,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Phiêu Lưu</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -227,7 +221,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Đổi Quà</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -235,7 +229,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">👾</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">{isTeen ? "Thử Thách" : "Boss Tuần"}</span>
+          <span className="text-[9px] font-black uppercase tracking-wider">{t(`game.boss.tab.${m}`)}</span>
         </button>
 
         <button
@@ -243,7 +237,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Bố Mẹ</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>

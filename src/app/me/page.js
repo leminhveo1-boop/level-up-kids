@@ -4,16 +4,17 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LanguageContext";
 import { COSMETICS_CATALOG, getEquipped } from "@/lib/game/cosmetics";
 import { PET_ROSTER, getPetMood } from "@/lib/game/pets";
 
 const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
-const MOOD_LABEL = { joyful: "Rất vui", happy: "Vui vẻ", hungry: "Hơi đói", starving: "Rất đói" };
 
-const SLOT_LABELS = {
-  hat: "🎩 Mũ & Phụ Kiện Đầu",
-  frame: "🖼️ Khung Avatar",
-  petAccessory: "🐾 Đồ Cho Thú Cưng",
+// slot → dictionary key for the shop section header
+const SLOT_LABEL_KEYS = {
+  hat: "game.me.slot.hat",
+  frame: "game.me.slot.frame",
+  petAccessory: "game.me.slot.petAccessory",
 };
 
 const RARITY_BADGE = {
@@ -25,8 +26,10 @@ const RARITY_BADGE = {
 /** Góc Của Tớ 🏠 — avatar/pet cosmetics shop (Octalysis CD4, sibling identity). */
 export default function MyCornerPage() {
   const router = useRouter();
+  const { t } = useLang();
   const { uiMode } = useAuth();
   const isTeen = uiMode === "teen";
+  const m = isTeen ? "teen" : "kid";
   const {
     isLoaded,
     charName,
@@ -52,7 +55,7 @@ export default function MyCornerPage() {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
-        <p className="mt-4 text-forest font-medium">Đang mở Góc Của Tớ...</p>
+        <p className="mt-4 text-forest font-medium">{t("game.me.loading")}</p>
       </div>
     );
   }
@@ -68,11 +71,11 @@ export default function MyCornerPage() {
   const handleBuy = (item) => {
     const r = buyCosmetic(item.id);
     if (r.success) {
-      showFlash(true, `Đã mua & mặc luôn ${item.name}! ✨`);
+      showFlash(true, t("game.me.buyOk", { name: item.name }));
     } else if (r.error === "NOT_ENOUGH_COINS") {
-      showFlash(false, `Còn thiếu ${r.shortage} 🪙 nữa — đi đào mỏ thôi! ⛏️`);
+      showFlash(false, t("game.me.buyShort", { n: r.shortage }));
     } else {
-      showFlash(false, "Không mua được, thử lại nhé!");
+      showFlash(false, t("game.me.buyFail"));
     }
   };
 
@@ -94,13 +97,13 @@ export default function MyCornerPage() {
           </button>
           <div className="bg-amber-light border border-amber/30 px-3 py-1.5 rounded-full flex items-center gap-1">
             <span>🪙</span>
-            <span className="text-scale-2xs font-black text-amber-dark">{heroCoins} COIN</span>
+            <span className="text-scale-2xs font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
           </div>
         </div>
 
         {/* PREVIEW CARD — hero with equipped cosmetics */}
         <div className="bg-white border-2 border-sand p-5 rounded-3xl shadow-game-flat text-center space-y-3">
-          <h2 className="text-scale-sm font-black text-forest-dark uppercase tracking-widest">🏠 Góc Của {charName}</h2>
+          <h2 className="text-scale-sm font-black text-forest-dark uppercase tracking-widest">{t("game.me.title", { name: charName })}</h2>
 
           <div className="relative w-28 h-28 mx-auto">
             {/* Avatar with frame color */}
@@ -126,7 +129,7 @@ export default function MyCornerPage() {
           </div>
 
           <p className="text-scale-2xs text-gray-400 font-bold">
-            Mua đồ bằng Hero Coin 🪙 để tạo phong cách riêng — không đụng hàng với anh chị em nhà mình!
+            {t("game.me.previewHint")}
           </p>
         </div>
 
@@ -144,10 +147,10 @@ export default function MyCornerPage() {
         {graduatedHabits?.length > 0 && (
           <div className="bg-white border-2 border-amber/40 p-4 rounded-3xl shadow-game-flat space-y-2.5">
             <h3 className="text-scale-xs font-black text-amber-dark uppercase tracking-wider">
-              🎓 Bản Năng Anh Hùng ({graduatedHabits.length})
+              {t("game.me.gradTitle", { n: graduatedHabits.length })}
             </h3>
             <p className="text-scale-2xs text-gray-400 font-medium">
-              Những thói quen con đã rèn 30 ngày liên tục — giờ là một phần con người con, mãi mãi!
+              {t("game.me.gradDesc")}
             </p>
             <div className="space-y-1.5">
               {graduatedHabits.map((h, i) => (
@@ -156,7 +159,7 @@ export default function MyCornerPage() {
                   <div className="min-w-0">
                     <p className="text-scale-2xs font-black text-forest-dark truncate">{h.title}</p>
                     <p className="text-[9px] text-gray-400 font-bold">
-                      {h.days} ngày liên tục · {new Date(h.graduatedAt).toLocaleDateString("vi-VN")}
+                      {t("game.me.gradDays", { days: h.days, date: new Date(h.graduatedAt).toLocaleDateString("vi-VN") })}
                     </p>
                   </div>
                 </div>
@@ -168,7 +171,7 @@ export default function MyCornerPage() {
         {/* 📖 Pokédex — full pet roster, owned vs undiscovered */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
           <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">
-            {isTeen ? `📖 Bộ Sưu Tập (${pets?.length || 0}/${PET_ROSTER.length})` : `📖 Sổ Tay Thú Cưng (${pets?.length || 0}/${PET_ROSTER.length})`}
+            {t(`game.me.pokedex.${m}`, { a: pets?.length || 0, b: PET_ROSTER.length })}
           </h3>
           <div className="grid grid-cols-3 gap-2">
             {PET_ROSTER.map((entry) => {
@@ -189,7 +192,7 @@ export default function MyCornerPage() {
                   </p>
                   {owned && (
                     <span className="text-[9px] font-bold text-gray-400">
-                      {MOOD_EMOJI[mood]} {MOOD_LABEL[mood]}
+                      {MOOD_EMOJI[mood]} {t(`game.me.mood.${mood}`)}
                     </span>
                   )}
                 </div>
@@ -200,9 +203,9 @@ export default function MyCornerPage() {
 
         {/* 💌 Two-way pigeon: child writes to parents */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-2.5">
-          <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">💌 Gửi Thư Cho Bố Mẹ</h3>
+          <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">{t("game.me.letterTitle")}</h3>
           <p className="text-scale-2xs text-gray-400 font-medium">
-            Con muốn nói gì với bố mẹ hôm nay? Lời cảm ơn, điều con vui, hay điều con mong ước...
+            {t("game.me.letterDesc")}
           </p>
           <form
             onSubmit={(e) => {
@@ -210,7 +213,7 @@ export default function MyCornerPage() {
               const r = sendChildMessage(letterText);
               if (r.success) {
                 setLetterText("");
-                showFlash(true, "Bồ câu đã mang thư đến bố mẹ! 🕊️");
+                showFlash(true, t("game.me.letterSent"));
               }
             }}
             className="flex gap-2"
@@ -219,7 +222,7 @@ export default function MyCornerPage() {
               type="text"
               value={letterText}
               onChange={(e) => setLetterText(e.target.value)}
-              placeholder="Con cảm ơn bố mẹ vì..."
+              placeholder={t("game.me.letterPlaceholder")}
               className="flex-grow min-h-tap bg-sand-light border-2 border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
               maxLength={200}
             />
@@ -236,9 +239,9 @@ export default function MyCornerPage() {
         </div>
 
         {/* SHOP by slot */}
-        {Object.entries(SLOT_LABELS).map(([slot, label]) => (
+        {Object.entries(SLOT_LABEL_KEYS).map(([slot, labelKey]) => (
           <div key={slot} className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
-            <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">{label}</h3>
+            <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">{t(labelKey)}</h3>
             <div className="grid grid-cols-2 gap-2">
               {COSMETICS_CATALOG.filter((c) => c.slot === slot).map((item) => {
                 const owned = cosmetics.owned.includes(item.id);
@@ -260,7 +263,7 @@ export default function MyCornerPage() {
                     </div>
                     <p className="text-scale-2xs font-black text-forest-dark leading-tight">{item.name}</p>
                     <span className={`inline-block text-[10px] font-black px-1.5 py-0.5 rounded border uppercase ${RARITY_BADGE[item.rarity]}`}>
-                      {item.rarity === "epic" ? "Sử thi" : item.rarity === "rare" ? "Hiếm" : "Thường"}
+                      {t(`game.me.rarity.${item.rarity === "epic" ? "epic" : item.rarity === "rare" ? "rare" : "common"}`)}
                     </span>
 
                     {owned ? (
@@ -272,7 +275,7 @@ export default function MyCornerPage() {
                             : "bg-white text-forest border-forest/40"
                         }`}
                       >
-                        {isEquipped ? "ĐANG DÙNG ✓" : "MẶC VÀO"}
+                        {isEquipped ? t("game.me.equipped") : t("game.me.equip")}
                       </button>
                     ) : (
                       <button
@@ -298,19 +301,19 @@ export default function MyCornerPage() {
       <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
         <button onClick={() => router.push("/dashboard")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
           <span className="text-xl">🌳</span>
-          <span className="text-scale-2xs font-extrabold">Phiêu Lưu</span>
+          <span className="text-scale-2xs font-extrabold">{t("nav.adventure")}</span>
         </button>
         <button onClick={() => router.push("/rewards")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
           <span className="text-xl">🛒</span>
-          <span className="text-scale-2xs font-extrabold">Đổi Quà</span>
+          <span className="text-scale-2xs font-extrabold">{t("nav.rewards")}</span>
         </button>
         <button onClick={() => router.push("/mining")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
           <span className="text-xl">⛏️</span>
-          <span className="text-scale-2xs font-extrabold">Đào Mỏ</span>
+          <span className="text-scale-2xs font-extrabold">{t("nav.mining")}</span>
         </button>
         <button onClick={() => {}} className="min-h-tap flex flex-col items-center p-2 text-forest-medium space-y-0.5">
           <span className="text-xl">🏠</span>
-          <span className="text-scale-2xs font-black">Của Tớ</span>
+          <span className="text-scale-2xs font-black">{t("game.hero.myCorner").replace("🏠 ", "")}</span>
         </button>
       </div>
     </div>

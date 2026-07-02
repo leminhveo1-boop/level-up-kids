@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
+import { useLang } from "@/context/LanguageContext";
 
 export default function RewardsPage() {
   const router = useRouter();
+  const { t } = useLang();
   const {
     isLoaded,
     charName,
@@ -35,7 +37,7 @@ export default function RewardsPage() {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
-        <p className="mt-4 text-forest font-medium">Đang tải...</p>
+        <p className="mt-4 text-forest font-medium">{t("common.loading")}</p>
       </div>
     );
   }
@@ -74,7 +76,7 @@ export default function RewardsPage() {
   const handleRedeem = (e) => {
     e.preventDefault();
     if (!pinInput) {
-      setErrorMessage("Vui lòng nhập mã PIN!");
+      setErrorMessage(t("game.rw.pinRequired"));
       return;
     }
 
@@ -109,13 +111,13 @@ export default function RewardsPage() {
             {/* Points Wallet */}
             <div className="bg-forest-light/35 border border-forest/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">⭐</span>
-              <span className="text-[9px] font-black text-forest-dark">{points} ĐIỂM</span>
+              <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
             </div>
             
             {/* Hero Coins Wallet */}
             <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">🪙</span>
-              <span className="text-[9px] font-black text-amber-dark">{heroCoins} COIN</span>
+              <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
             </div>
           </div>
         </div>
@@ -123,8 +125,8 @@ export default function RewardsPage() {
         {/* SCREEN TIME COUNTDOWN CONTAINER */}
         <div className="bg-white border-2 border-sand p-5 rounded-3xl shadow-game-flat text-center space-y-4">
           <div className="space-y-1">
-            <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">⏱️ Thời Gian Giải Trí Được Duyệt</h3>
-            <p className="text-[10px] text-gray-400">Được cộng dồn khi hoàn thành nhiệm vụ hằng ngày</p>
+            <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">{t("game.rw.screenTitle")}</h3>
+            <p className="text-[10px] text-gray-400">{t("game.rw.screenSub")}</p>
           </div>
 
           {/* Time display */}
@@ -147,7 +149,7 @@ export default function RewardsPage() {
                     : "bg-forest border-forest text-white shadow-game-forest active:shadow-game-pressed"
                 }`}
               >
-                {isTimerActive ? "TẠM DỪNG CHƠI ⏸️" : "BẮT ĐẦU CHƠI ▶️"}
+                {isTimerActive ? t("game.rw.timerPause") : t("game.rw.timerStart")}
               </button>
             </div>
           )}
@@ -164,7 +166,7 @@ export default function RewardsPage() {
             }`}
           >
             <span>🎮</span>
-            <span>ĐỔI GIẢI TRÍ (ĐIỂM ⭐)</span>
+            <span>{t("game.rw.tabPoints")}</span>
           </button>
           <button
             onClick={() => setRewardsTab("heroCoins")}
@@ -175,7 +177,7 @@ export default function RewardsPage() {
             }`}
           >
             <span>🪙</span>
-            <span>ĐỔI QUÀ LỚN (COIN 🪙)</span>
+            <span>{t("game.rw.tabCoins")}</span>
           </button>
         </div>
 
@@ -183,10 +185,10 @@ export default function RewardsPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">
-              {rewardsTab === "points" ? "🎮 Gói Giải Trí & Đặc Quyền" : "🎁 Gói Đổi Quà Của Bố Mẹ"}
+              {rewardsTab === "points" ? t("game.rw.storeTitlePoints") : t("game.rw.storeTitleCoins")}
             </h3>
             <span className="text-[9px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full uppercase">
-              Ví: {rewardsTab === "points" ? `${points} ⭐` : `${heroCoins} 🪙`}
+              {t("game.rw.wallet")} {rewardsTab === "points" ? `${points} ⭐` : `${heroCoins} 🪙`}
             </span>
           </div>
           
@@ -201,34 +203,34 @@ export default function RewardsPage() {
                 const costSymbol = rewardsTab === "heroCoins" ? "🪙" : "⭐";
                 
                 // Set up Rarity colors
-                let rarityText = "Thường ⚙️";
+                let rarityText = t("game.rw.rarity.common");
                 let rarityBg = "bg-gray-100 text-gray-500 border-gray-200";
                 let cardBorder = "border-sand shadow-game-flat hover:border-sand-dark";
-                
+
                 if (r.rarity === "rare") {
-                  rarityText = "Hiếm 🔷";
+                  rarityText = t("game.rw.rarity.rare");
                   rarityBg = "bg-blue-50 text-sky border-blue-100";
                   cardBorder = "border-sky-light bg-blue-50/5 shadow-game-sky hover:border-sky";
                 } else if (r.rarity === "epic") {
-                  rarityText = "Sử Thi 👑";
+                  rarityText = t("game.rw.rarity.epic");
                   rarityBg = "bg-amber-50 text-amber border-yellow-100";
                   cardBorder = "border-amber bg-amber-50/5 shadow-game-amber hover:border-amber-dark";
                 } else if (r.rarity === "legendary") {
-                  rarityText = "Huyền Thoại ⚡";
+                  rarityText = t("game.rw.rarity.legendary");
                   rarityBg = "bg-rose-50 text-terracotta border-red-100";
                   cardBorder = "border-red-400 bg-red-50/5 shadow-game-terracotta hover:border-red-500 animate-shimmer-red";
                 }
 
-                let badgeText = "Đặc Quyền";
+                let badgeText = t("game.rw.badge.default");
                 let badgeBg = "bg-sand text-gray-500 border-sand";
                 if (r.type === "game_time") {
-                  badgeText = "Giờ chơi";
+                  badgeText = t("game.rw.badge.game_time");
                   badgeBg = "bg-amber-light text-amber border-amber/30";
                 } else if (r.type === "perk") {
-                  badgeText = "Món quà";
+                  badgeText = t("game.rw.badge.perk");
                   badgeBg = "bg-forest-accent text-forest border-forest/30";
                 } else if (r.type === "card") {
-                  badgeText = "Thẻ Phép";
+                  badgeText = t("game.rw.badge.card");
                   badgeBg = "bg-sky-light text-sky border-sky/30";
                 }
 
@@ -250,7 +252,7 @@ export default function RewardsPage() {
                         </span>
                         {r.parentApproved && (
                           <span className="text-[8px] font-black text-forest flex items-center gap-0.5">
-                            ✓ Đã Duyệt
+                            {t("game.rw.approved")}
                           </span>
                         )}
                       </div>
@@ -258,7 +260,7 @@ export default function RewardsPage() {
                       
                       {/* Cost display */}
                       <div className="flex items-center gap-1 text-[10px] font-extrabold text-amber-dark">
-                        <span>Yêu cầu tích lũy:</span>
+                        <span>{t("game.rw.costLabel")}</span>
                         <span className="text-xs font-black flex items-center gap-0.5">
                           {r.cost} {costSymbol}
                         </span>
@@ -278,7 +280,7 @@ export default function RewardsPage() {
                         : "bg-sky text-white border-sky shadow-game-sky"
                     }`}
                   >
-                    {isAffordable ? "ĐỔI QUÀ 🗝️" : r.currency === "heroCoins" ? "THIẾU COIN 🔒" : "THIẾU ĐIỂM 🔒"}
+                    {isAffordable ? t("game.rw.redeem") : r.currency === "heroCoins" ? t("game.rw.shortCoin") : t("game.rw.shortPts")}
                   </button>
                 </div>
               );
@@ -302,8 +304,8 @@ export default function RewardsPage() {
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">Xác Nhận Của Bố Mẹ</h3>
-              <p className="text-[10.5px] text-gray-500">Bố mẹ vui lòng nhập mã PIN bảo mật để duyệt phần thưởng này</p>
+              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">{t("game.rw.pinTitle")}</h3>
+              <p className="text-[10.5px] text-gray-500">{t("game.rw.pinDesc")}</p>
             </div>
 
             {/* Input field */}
@@ -315,7 +317,7 @@ export default function RewardsPage() {
                 maxLength={6}
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
-                placeholder="Nhập mã PIN..."
+                placeholder={t("game.rw.pinPlaceholder")}
                 className="w-full text-center bg-sand-light border-2 border-sand rounded-xl py-3 text-lg font-black text-forest-dark focus:outline-none focus:border-forest transition-colors letter-spacing-lg"
               />
               {errorMessage && <p className="text-[10px] font-bold text-terracotta">{errorMessage}</p>}
@@ -329,13 +331,13 @@ export default function RewardsPage() {
                 onClick={() => setSelectedReward(null)}
                 className="w-1/2 bg-white text-gray-400 font-extrabold text-xs py-3 rounded-xl border-2 border-sand shadow-game-flat btn-game-transition active:shadow-game-pressed"
               >
-                HỦY BỎ
+                {t("game.rw.cancel")}
               </button>
               <button
                 type="submit"
                 className="w-1/2 bg-forest text-sand-light font-black text-xs py-3 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
               >
-                DUYỆT QUÀ ✅
+                {t("game.rw.approveGift")}
               </button>
             </div>
           </form>
@@ -355,40 +357,38 @@ export default function RewardsPage() {
 
             <div className="space-y-1">
               <h3 className="text-sm font-black text-terracotta uppercase tracking-wider">
-                {shortageReward.currency === "heroCoins" ? "Chưa Đủ Hero Coin! 🔒" : "Chưa Đủ Điểm Số! 🔒"}
+                {shortageReward.currency === "heroCoins" ? t("game.rw.shortTitleCoin") : t("game.rw.shortTitlePts")}
               </h3>
-              <p className="text-[10px] text-gray-500">Dũng sĩ ơi, hãy cố gắng thêm chút nữa nhé!</p>
+              <p className="text-[10px] text-gray-500">{t("game.rw.shortSub")}</p>
             </div>
 
             <div className="bg-sand-light border-2 border-sand p-4 rounded-2xl shadow-inner text-xs font-bold text-forest-dark space-y-2">
-              <p className="text-gray-400 text-[10px] font-black uppercase">Phần Quà Đang Đổi</p>
+              <p className="text-gray-400 text-[10px] font-black uppercase">{t("game.rw.giftInProgress")}</p>
               <p className="text-xs font-black text-forest-dark truncate px-2">{shortageReward.title}</p>
               <div className="flex items-center justify-center gap-4 py-1.5 border-t border-sand mt-2 pt-2">
                 <div className="text-center">
-                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">Hiện có</p>
+                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">{t("game.rw.have")}</p>
                   <p className="text-base font-black text-amber-dark">
                     {shortageReward.currency === "heroCoins" ? `${heroCoins} 🪙` : `${points} ⭐`}
                   </p>
                 </div>
                 <div className="text-xs text-gray-300 font-black">/</div>
                 <div className="text-center">
-                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">Yêu cầu</p>
+                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">{t("game.rw.need")}</p>
                   <p className="text-base font-black text-forest-medium">
                     {shortageReward.cost} {shortageReward.currency === "heroCoins" ? "🪙" : "⭐"}
                   </p>
                 </div>
               </div>
               <p className="text-[10px] text-terracotta font-black bg-rose-50 p-2 rounded-xl border border-red-100">
-                Con cần tích lũy thêm {shortageReward.cost - (shortageReward.currency === "heroCoins" ? heroCoins : points)} {shortageReward.currency === "heroCoins" ? "🪙 Hero Coin" : "⭐ Điểm"} nữa!
+                {t(shortageReward.currency === "heroCoins" ? "game.rw.needMoreCoin" : "game.rw.needMorePts", {
+                  n: shortageReward.cost - (shortageReward.currency === "heroCoins" ? heroCoins : points),
+                })}
               </p>
             </div>
 
             <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
-              💡 <strong>Bí quyết anh hùng:</strong> Hãy quay lại màn hình đào mỏ, click đập đá tìm kho báu hoặc làm nhiệm vụ ngày
-              {shortageReward.currency === "heroCoins" 
-                ? " ngoài đời thật để tích lũy thêm Năng Lượng ⚡ đào mỏ nhé! 💪" 
-                : " học tập và tự rèn luyện (để nổ Điểm May Mắn ⚡ nhân đôi Điểm) nhé! ⭐"
-              }
+              💡 <strong>{t("game.rw.tipLabel")}</strong> {t(shortageReward.currency === "heroCoins" ? "game.rw.tipCoin" : "game.rw.tipPts")}
             </p>
 
             {/* Actions */}
@@ -396,7 +396,7 @@ export default function RewardsPage() {
               onClick={() => setShortageReward(null)}
               className="w-full bg-terracotta text-white font-black text-xs py-3 rounded-xl border-2 border-terracotta shadow-game-terracotta btn-game-transition active:shadow-game-pressed"
             >
-              CON SẼ CỐ GẮNG LÀM NHIỆM VỤ! 💪
+              {t("game.rw.shortCta")}
             </button>
           </div>
         </div>
@@ -409,7 +409,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Phiêu Lưu</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -417,7 +417,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">Đổi Quà</span>
+          <span className="text-[9px] font-black uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -425,7 +425,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">⛏️</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Đào Mỏ</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.mining")}</span>
         </button>
 
         <button
@@ -433,7 +433,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Bố Mẹ</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>
