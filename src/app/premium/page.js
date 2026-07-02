@@ -7,6 +7,10 @@ import { useLang } from "@/context/LanguageContext";
 import { track } from "@/lib/analytics";
 import { normalizeReferralCode, isValidReferralCode, buildReferralLink } from "@/lib/referral";
 
+// Referral code from a shared link must survive the sign-up detour, so we stash
+// it on the device the moment the link opens and auto-apply it once authenticated.
+const PENDING_REF_KEY = "luk_pending_ref";
+
 const PRICE_VND = Number(process.env.NEXT_PUBLIC_PREMIUM_PRICE_VND) || 199000;
 const BANK_ID = process.env.NEXT_PUBLIC_BANK_ID || ""; // e.g. "MB", "VCB" (VietQR bank code)
 const BANK_ACCOUNT = process.env.NEXT_PUBLIC_BANK_ACCOUNT || "";
@@ -33,6 +37,15 @@ function PremiumContent() {
   const autoRefDone = useRef(false);
   const alreadyReferred = Boolean(profile?.referred_by);
 
+  // Stash a link-borne ref code immediately so it outlives the sign-up redirect.
+  useEffect(() => {
+    const stash = normalizeReferralCode(prefillRef);
+    if (stash) {
+      localStorage.setItem(PENDING_REF_KEY, stash);
+      setRefInput((prev) => prev || stash);
+    }
+  }, [prefillRef]);
+
   const handleApplyReferral = async (rawCode) => {
     const code = normalizeReferralCode(rawCode);
     if (!isValidReferralCode(code)) {
@@ -47,10 +60,15 @@ function PremiumContent() {
       track("referral_applied");
       setRefMessage({ ok: true, text: t("premium.referApplied") });
       setRefInput("");
+      localStorage.removeItem(PENDING_REF_KEY);
     } else {
       const key = `premium.refer.${res?.error}`;
       const translated = t(key);
       setRefMessage({ ok: false, text: translated === key ? t("common.error") : translated });
+      // ALREADY_REFERRED / SELF_REFERRAL are terminal — stop retrying from the stash
+      if (res?.error === "ALREADY_REFERRED" || res?.error === "SELF_REFERRAL") {
+        localStorage.removeItem(PENDING_REF_KEY);
+      }
     }
   };
 
@@ -103,13 +121,17 @@ function PremiumContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoaded, cloudEnabled, user, prefillCode]);
 
-  // Auto-apply a referral code arriving via deep link ?ref=REFXXXXXX
+  // Auto-apply a referral code once authenticated — reads from the URL OR the
+  // stash, so a link opened before sign-up still lands the referral after
+  // registering (flow: click link → register → pay → both families +6 months).
   useEffect(() => {
-    if (!prefillRef || autoRefDone.current) return;
+    if (autoRefDone.current) return;
     if (!authLoaded || !cloudEnabled || !user) return;
     if (isPremium || alreadyReferred) return; // no bonus possible / already set
+    const pending = normalizeReferralCode(prefillRef) || localStorage.getItem(PENDING_REF_KEY) || "";
+    if (!isValidReferralCode(pending)) return;
     autoRefDone.current = true;
-    handleApplyReferral(prefillRef);
+    handleApplyReferral(pending);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoaded, cloudEnabled, user, prefillRef, isPremium, alreadyReferred]);
 
