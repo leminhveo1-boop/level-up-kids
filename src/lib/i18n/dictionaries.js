@@ -73,6 +73,23 @@ export const dictionaries = {
     "premium.payDesc": "Chuyển khoản đúng số tiền với nội dung bên dưới, hệ thống sẽ tự động kích hoạt trong ~1 phút (qua SePay).",
     "premium.payContent": "Nội dung chuyển khoản",
     "premium.price": "Giá gói 1 năm",
+
+    // Referral (two-sided +6 months)
+    "premium.referTitle": "Giới thiệu bạn bè 🎁",
+    "premium.referDesc": "Mỗi gia đình bạn giới thiệu nâng cấp thành công: CẢ HAI nhà được tặng thêm 6 tháng Premium!",
+    "premium.yourCode": "Mã giới thiệu của bạn",
+    "premium.shareBtn": "Chia sẻ lời mời 📤",
+    "premium.copied": "Đã sao chép lời mời!",
+    "premium.enterReferTitle": "Có mã giới thiệu? 🎟️",
+    "premium.enterReferDesc": "Nhập mã của người giới thiệu trước khi thanh toán — cả hai nhà +6 tháng ngay khi bạn nâng cấp.",
+    "premium.referPlaceholder": "REFXXXXXX",
+    "premium.applyRefer": "ÁP DỤNG",
+    "premium.referApplied": "Đã áp dụng mã giới thiệu! Khi bạn nâng cấp Premium, cả hai nhà sẽ được +6 tháng. 🎉",
+    "premium.referredBadge": "✓ Đã áp dụng mã giới thiệu — cả hai nhà +6 tháng khi bạn nâng cấp",
+    "premium.refer.CODE_NOT_FOUND": "Mã giới thiệu không tồn tại!",
+    "premium.refer.ALREADY_REFERRED": "Bạn đã dùng một mã giới thiệu rồi.",
+    "premium.refer.SELF_REFERRAL": "Không thể tự giới thiệu chính mình.",
+    "premium.refer.INVALID": "Mã giới thiệu chưa đúng định dạng (REF + 6 ký tự).",
   },
 
   en: {
@@ -140,6 +157,23 @@ export const dictionaries = {
     "premium.payDesc": "Transfer the exact amount with the content below; your account activates automatically within ~1 minute (via SePay).",
     "premium.payContent": "Transfer content",
     "premium.price": "1-year plan price",
+
+    // Referral (two-sided +6 months)
+    "premium.referTitle": "Refer a Friend 🎁",
+    "premium.referDesc": "For every family you refer who upgrades: BOTH families get an extra 6 months of Premium!",
+    "premium.yourCode": "Your referral code",
+    "premium.shareBtn": "Share invite 📤",
+    "premium.copied": "Invite copied!",
+    "premium.enterReferTitle": "Have a referral code? 🎟️",
+    "premium.enterReferDesc": "Enter your referrer's code before you pay — both families get +6 months the moment you upgrade.",
+    "premium.referPlaceholder": "REFXXXXXX",
+    "premium.applyRefer": "APPLY",
+    "premium.referApplied": "Referral code applied! When you upgrade to Premium, both families get +6 months. 🎉",
+    "premium.referredBadge": "✓ Referral code applied — both families get +6 months when you upgrade",
+    "premium.refer.CODE_NOT_FOUND": "Referral code not found!",
+    "premium.refer.ALREADY_REFERRED": "You've already used a referral code.",
+    "premium.refer.SELF_REFERRAL": "You can't refer yourself.",
+    "premium.refer.INVALID": "Referral code format is invalid (REF + 6 characters).",
   },
 };
 

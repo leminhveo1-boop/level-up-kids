@@ -262,6 +262,18 @@ export function AuthProvider({ children }) {
     [supabase, user, refreshAccount]
   );
 
+  /** Referee applies a friend's referral code — both families get +6 months at first activation. */
+  const applyReferralCode = useCallback(
+    async (code) => {
+      if (!supabase || !user) return { success: false, error: "NOT_AUTHENTICATED" };
+      const { data, error } = await supabase.rpc("apply_referral_code", { p_code: code });
+      if (error) return { success: false, error: error.message };
+      if (data?.success) await refreshAccount();
+      return data;
+    },
+    [supabase, user, refreshAccount]
+  );
+
   const activeChild = isDemo
     ? DEMO_CHILD
     : childProfiles.find((c) => c.id === activeChildId) || null;
@@ -291,6 +303,7 @@ export function AuthProvider({ children }) {
         setChildUiMode,
         uiMode: activeChild?.ui_mode || "kid",
         redeemActivationCode,
+        applyReferralCode,
         refreshAccount,
       }}
     >
