@@ -111,6 +111,10 @@ export function migrateState(data) {
     screenMinutesUsedToday: data.screenMinutesUsedToday || 0,
     screenRedeemsThisWeek: data.screenRedeemsThisWeek || 0,
     cosmetics: data.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
+    history: data.history || [],
+    graduatedHabits: data.graduatedHabits || [],
+    lastGraduation: data.lastGraduation || null,
+    childMessages: data.childMessages || [],
     savedAt: data.savedAt || 0,
   };
 }

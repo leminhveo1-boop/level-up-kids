@@ -24,6 +24,8 @@ import {
   PHOTO_SPOTCHECK_RATE,
   PHOTO_SPOTCHECK_RATE_TRUSTED,
   NUDGE_LIMIT_PER_DAY,
+  HISTORY_LIMIT_DAYS,
+  GRADUATION_DAYS,
 } from "./constants";
 
 /** Streak → points multiplier (balanced against inflation). */
@@ -533,7 +535,7 @@ export function claimReward(state, rewardId, rng = Math.random) {
  * @param {object} state
  * @param {() => number} [rng] injected for deterministic spot-check tests
  */
-export function resetDailyTasks(state, rng = Math.random) {
+export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
   // Day is over — any still-pending approvals default to TRUST before reset
   const settled = approveAllPending(state, { auto: true }).state;
 
@@ -559,13 +561,51 @@ export function resetDailyTasks(state, rng = Math.random) {
   const spotRate =
     (settled.trustScore || 0) >= TRUST_HIGH_THRESHOLD ? PHOTO_SPOTCHECK_RATE_TRUSTED : PHOTO_SPOTCHECK_RATE;
 
+  // 📊 V1.2: daily snapshot of the closing day (feeds the weekly report)
+  const mandatoryTotal = settled.tasks.filter((t) => t.isMandatory).length;
+  const snapshot = {
+    date: closingDate || settled.lastResetDate || "",
+    completed: completedCount,
+    total: settled.tasks.length,
+    mandatoryDone: settled.tasks.filter((t) => t.isMandatory && t.completed).length,
+    mandatoryTotal,
+    screenMinutes: settled.screenMinutesUsedToday || 0,
+    trustScore: settled.trustScore || 0,
+    streak,
+  };
+  const history = [...(settled.history || []), snapshot].slice(-HISTORY_LIMIT_DAYS);
+
+  // 🎓 V1.2: habit tracking — consecutive completion days per task;
+  // at GRADUATION_DAYS the habit "graduates" into a permanent hero instinct
+  // (Overjustification defense: fade out extrinsic reward with a ceremony).
+  const graduatedNow = [];
+  const tasksWithHabits = settled.tasks.map((t) => ({
+    ...t,
+    habitStreak: t.completed ? (t.habitStreak || 0) + 1 : 0,
+  }));
+  const remainingTasks = tasksWithHabits.filter((t) => {
+    if ((t.habitStreak || 0) >= GRADUATION_DAYS) {
+      graduatedNow.push({
+        title: t.title,
+        category: t.category,
+        graduatedAt: Date.now(),
+        days: t.habitStreak,
+      });
+      return false; // leaves the daily list — it's an instinct now
+    }
+    return true;
+  });
+
   return {
     ...settled,
     streak,
     streakFreezes,
     lastFreezeUsed: freezeUsed,
     approvalNudges: [],
-    tasks: settled.tasks.map((t) => ({
+    history,
+    graduatedHabits: [...(settled.graduatedHabits || []), ...graduatedNow],
+    lastGraduation: graduatedNow.length > 0 ? { ...graduatedNow[0], timestamp: Date.now() } : settled.lastGraduation,
+    tasks: remainingTasks.map((t) => ({
       ...t,
       completed: false,
       approval: undefined,

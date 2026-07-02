@@ -20,9 +20,22 @@ const RARITY_BADGE = {
 /** Góc Của Tớ 🏠 — avatar/pet cosmetics shop (Octalysis CD4, sibling identity). */
 export default function MyCornerPage() {
   const router = useRouter();
-  const { isLoaded, charName, heroCoins, cosmetics, buyCosmetic, equipCosmetic, pets, activePet, activeMount } = useGame();
+  const {
+    isLoaded,
+    charName,
+    heroCoins,
+    cosmetics,
+    buyCosmetic,
+    equipCosmetic,
+    pets,
+    activePet,
+    activeMount,
+    sendChildMessage,
+    graduatedHabits,
+  } = useGame();
 
   const [flash, setFlash] = useState(null); // { ok, text }
+  const [letterText, setLetterText] = useState("");
 
   useEffect(() => {
     if (isLoaded && !charName) router.push("/");
@@ -119,6 +132,68 @@ export default function MyCornerPage() {
             {flash.text}
           </p>
         )}
+
+        {/* 🎓 Graduated habits — permanent hero instincts */}
+        {graduatedHabits?.length > 0 && (
+          <div className="bg-white border-2 border-amber/40 p-4 rounded-3xl shadow-game-flat space-y-2.5">
+            <h3 className="text-scale-xs font-black text-amber-dark uppercase tracking-wider">
+              🎓 Bản Năng Anh Hùng ({graduatedHabits.length})
+            </h3>
+            <p className="text-scale-2xs text-gray-400 font-medium">
+              Những thói quen con đã rèn 30 ngày liên tục — giờ là một phần con người con, mãi mãi!
+            </p>
+            <div className="space-y-1.5">
+              {graduatedHabits.map((h, i) => (
+                <div key={i} className="bg-amber-light/40 border border-amber/30 rounded-xl px-3 py-2 flex items-center gap-2">
+                  <span className="text-lg">🏅</span>
+                  <div className="min-w-0">
+                    <p className="text-scale-2xs font-black text-forest-dark truncate">{h.title}</p>
+                    <p className="text-[9px] text-gray-400 font-bold">
+                      {h.days} ngày liên tục · {new Date(h.graduatedAt).toLocaleDateString("vi-VN")}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 💌 Two-way pigeon: child writes to parents */}
+        <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-2.5">
+          <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">💌 Gửi Thư Cho Bố Mẹ</h3>
+          <p className="text-scale-2xs text-gray-400 font-medium">
+            Con muốn nói gì với bố mẹ hôm nay? Lời cảm ơn, điều con vui, hay điều con mong ước...
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const r = sendChildMessage(letterText);
+              if (r.success) {
+                setLetterText("");
+                showFlash(true, "Bồ câu đã mang thư đến bố mẹ! 🕊️");
+              }
+            }}
+            className="flex gap-2"
+          >
+            <input
+              type="text"
+              value={letterText}
+              onChange={(e) => setLetterText(e.target.value)}
+              placeholder="Con cảm ơn bố mẹ vì..."
+              className="flex-grow min-h-tap bg-sand-light border-2 border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
+              maxLength={200}
+            />
+            <button
+              type="submit"
+              disabled={!letterText.trim()}
+              className={`min-w-tap min-h-tap rounded-xl text-lg flex items-center justify-center active:scale-95 transition-transform ${
+                letterText.trim() ? "bg-sky text-white" : "bg-gray-100 text-gray-300"
+              }`}
+            >
+              🕊️
+            </button>
+          </form>
+        </div>
 
         {/* SHOP by slot */}
         {Object.entries(SLOT_LABELS).map(([slot, label]) => (

@@ -154,7 +154,10 @@ export function GameProvider({ children }) {
     if (!isLoaded || !state) return;
     const todayStr = new Date().toLocaleDateString("vi-VN");
     if (state.lastResetDate && state.lastResetDate !== todayStr) {
-      setState((prev) => ({ ...economy.resetDailyTasks(prev), lastResetDate: todayStr }));
+      setState((prev) => ({
+        ...economy.resetDailyTasks(prev, Math.random, prev.lastResetDate),
+        lastResetDate: todayStr,
+      }));
     } else if (!state.lastResetDate) {
       setState((prev) => ({ ...prev, lastResetDate: todayStr }));
     }
@@ -579,6 +582,37 @@ export function GameProvider({ children }) {
     );
   }, []);
 
+  // ---------------- V1.2: two-way pigeon — child writes back ----------------
+  const sendChildMessage = useCallback((text) => {
+    const trimmed = (text || "").trim();
+    if (!trimmed) return { success: false };
+    playSound("complete");
+    setState((prev) =>
+      prev
+        ? {
+            ...prev,
+            childMessages: [
+              { id: "cmsg_" + Date.now(), text: trimmed.slice(0, 200), read: false, timestamp: Date.now() },
+              ...(prev.childMessages || []),
+            ].slice(0, 30),
+          }
+        : prev
+    );
+    return { success: true };
+  }, []);
+
+  const readAllChildMessages = useCallback(() => {
+    setState((prev) =>
+      prev
+        ? { ...prev, childMessages: (prev.childMessages || []).map((m) => ({ ...m, read: true })) }
+        : prev
+    );
+  }, []);
+
+  const clearLastGraduation = useCallback(() => {
+    setState((prev) => (prev ? { ...prev, lastGraduation: null } : prev));
+  }, []);
+
   const readAllMessages = useCallback(() => {
     setState((prev) =>
       prev ? { ...prev, encouragements: prev.encouragements.map((m) => ({ ...m, read: true })) } : prev
@@ -631,6 +665,13 @@ export function GameProvider({ children }) {
         cosmetics: s.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
         buyCosmetic,
         equipCosmetic,
+        history: s.history || [],
+        graduatedHabits: s.graduatedHabits || [],
+        lastGraduation: s.lastGraduation || null,
+        clearLastGraduation,
+        childMessages: s.childMessages || [],
+        sendChildMessage,
+        readAllChildMessages,
         energy: s.energy,
         setEnergy: makeFieldSetter("energy"),
         stats: s.stats,

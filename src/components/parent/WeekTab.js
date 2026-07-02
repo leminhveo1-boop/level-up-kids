@@ -30,6 +30,9 @@ export default function WeekTab() {
     heroCoins,
     points,
     sendEncouragement,
+    history,
+    childMessages,
+    readAllChildMessages,
   } = useGame();
 
   const [flash, setFlash] = useState("");
@@ -135,6 +138,81 @@ export default function WeekTab() {
           {rejectedToday > 0 && ` · ${rejectedToday} bị bác ⚠️`} · Ví: {points} ⭐ / {heroCoins} 🪙
         </p>
       </div>
+
+      {/* ===== V1.2: 7-day chart (history snapshots + today live) ===== */}
+      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
+        <h3 className="text-scale-sm font-black text-forest-dark">📊 7 ngày gần nhất</h3>
+        {(() => {
+          const days = [
+            ...history.slice(-6),
+            { date: "Hôm nay", completed: completedToday, total: tasks.length, live: true },
+          ];
+          const maxTotal = Math.max(1, ...days.map((d) => d.total || 1));
+          return (
+            <div className="flex items-end gap-1.5 h-28">
+              {days.map((d, i) => {
+                const pct = Math.round(((d.completed || 0) / Math.max(1, d.total || 1)) * 100);
+                return (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                    <span className="text-[10px] font-black text-forest-dark">{d.completed || 0}</span>
+                    <div className="w-full bg-sand rounded-t-lg relative overflow-hidden" style={{ height: "72px" }}>
+                      <div
+                        className={`absolute bottom-0 inset-x-0 rounded-t-lg transition-all ${d.live ? "bg-amber" : "bg-forest-medium"}`}
+                        style={{ height: `${Math.max(4, pct * 0.72)}px` }}
+                        title={`${d.date}: ${d.completed}/${d.total} (${pct}%)`}
+                      />
+                    </div>
+                    <span className="text-[9px] font-bold text-gray-400 truncate w-full text-center">
+                      {d.live ? "Nay" : String(d.date).split("/").slice(0, 2).join("/")}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+        {history.length === 0 && (
+          <p className="text-scale-2xs text-gray-400 text-center">
+            Biểu đồ sẽ đầy dần sau mỗi ngày sử dụng — dữ liệu chốt lúc sang ngày mới.
+          </p>
+        )}
+      </div>
+
+      {/* ===== V1.2: Thư con gửi 💌 (two-way pigeon) ===== */}
+      {childMessages.length > 0 && (
+        <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-scale-sm font-black text-forest-dark">
+              💌 Thư {charName} gửi bố mẹ
+              {childMessages.some((m) => !m.read) && (
+                <span className="ml-1.5 bg-terracotta text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                  {childMessages.filter((m) => !m.read).length} mới
+                </span>
+              )}
+            </h3>
+            {childMessages.some((m) => !m.read) && (
+              <button
+                onClick={readAllChildMessages}
+                className="text-scale-2xs font-bold text-sky-dark underline"
+              >
+                Đã đọc hết
+              </button>
+            )}
+          </div>
+          <div className="space-y-1.5 max-h-44 overflow-y-auto">
+            {childMessages.slice(0, 10).map((m) => (
+              <div
+                key={m.id}
+                className={`rounded-xl px-3 py-2 text-scale-2xs font-medium leading-relaxed border ${
+                  m.read ? "bg-sand-light border-sand text-gray-500" : "bg-amber-light/50 border-amber/30 text-forest-dark"
+                }`}
+              >
+                {m.text}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats bars */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">

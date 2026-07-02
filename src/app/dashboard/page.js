@@ -36,7 +36,18 @@ export default function DashboardPage() {
     pendingCount,
     nudgeParents,
     cosmetics,
+    rewards,
+    lastGraduation,
+    clearLastGraduation,
   } = useGame();
+
+  // 🎯 V1.2 Goal gradient: nearest big reward the child is saving coins for
+  const coinGoal = React.useMemo(() => {
+    const candidates = (rewards || [])
+      .filter((r) => r.currency === "heroCoins" && r.type === "perk" && r.cost > heroCoins)
+      .sort((a, b) => a.cost - b.cost);
+    return candidates[0] || null;
+  }, [rewards, heroCoins]);
 
   const [activeTab, setActiveTab] = useState("adventure"); // Current bottom navigation tab
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -496,6 +507,47 @@ export default function DashboardPage() {
             {verifyToast && (
               <div className="w-full bg-rose-50 border border-red-200 p-2.5 rounded-xl text-[11px] text-terracotta font-bold text-center animate-fade-in">
                 {verifyToast}
+              </div>
+            )}
+
+            {/* 🎓 Graduation ceremony banner (Overjustification defense) */}
+            {lastGraduation && (
+              <div className="w-full bg-amber-light border-2 border-amber p-3.5 rounded-2xl text-center space-y-2 animate-fade-in">
+                <p className="text-2xl">🎓✨</p>
+                <p className="text-[12px] font-black text-amber-dark leading-snug">
+                  &ldquo;{lastGraduation.title}&rdquo; đã trở thành BẢN NĂNG ANH HÙNG!
+                </p>
+                <p className="text-[10px] text-gray-500 font-medium">
+                  Con đã tự giác làm việc này {lastGraduation.days} ngày liên tục — giờ nó là một phần con người con rồi, không cần điểm thưởng nữa! Huy hiệu vĩnh viễn ở 🏠 Góc Của Tớ.
+                </p>
+                <button
+                  onClick={clearLastGraduation}
+                  className="min-h-tap bg-amber text-white text-[10px] font-black px-5 rounded-xl active:scale-95 transition-transform"
+                >
+                  TUYỆT VỜI! 🙌
+                </button>
+              </div>
+            )}
+
+            {/* 🎯 Goal gradient — visible progress to the next big reward */}
+            {coinGoal && (
+              <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">🎯 Mục tiêu lớn</span>
+                  <span className="text-[10px] font-black text-amber-dark">
+                    {heroCoins}/{coinGoal.cost} 🪙 ({Math.round((heroCoins / coinGoal.cost) * 100)}%)
+                  </span>
+                </div>
+                <p className="text-[11px] font-black text-forest-dark truncate">{coinGoal.title}</p>
+                <div className="h-3 bg-sand rounded-full overflow-hidden border border-sand">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber to-amber-dark rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.round((heroCoins / coinGoal.cost) * 100))}%` }}
+                  />
+                </div>
+                <p className="text-[9px] text-gray-400 font-bold">
+                  Còn {coinGoal.cost - heroCoins} 🪙 nữa — đào mỏ thôi! ⛏️
+                </p>
               </div>
             )}
 

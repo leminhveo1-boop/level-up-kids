@@ -31,6 +31,10 @@ export const PHOTO_SPOTCHECK_RATE = 1 / 3; // tỷ lệ việc photo bị cắm 
 export const PHOTO_SPOTCHECK_RATE_TRUSTED = 1 / 6; // khi Uy Tín >= 80
 export const NUDGE_LIMIT_PER_DAY = 2; // trẻ nhắc bố mẹ duyệt tối đa 2 lần/ngày
 
+// ===== V1.2 =====
+export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
+export const GRADUATION_DAYS = 30; // thói quen 30 ngày liên tục → tốt nghiệp 🎓 thành "Bản Năng Anh Hùng"
+
 export const DEFAULT_PARENT_CONFIG = {
   screenMaxMinutesPerDay: 60,
   screenRedeemMaxPerWeek: 5,
@@ -148,5 +152,9 @@ export function createInitialState(opts = {}) {
     screenMinutesUsedToday: 0,
     screenRedeemsThisWeek: 0,
     cosmetics: { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
+    history: [],
+    graduatedHabits: [],
+    lastGraduation: null,
+    childMessages: [],
   };
 }

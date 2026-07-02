@@ -442,6 +442,55 @@ describe("P0 escrow & trust (PDCA Check)", () => {
   });
 });
 
+describe("V1.2: daily history & habit graduation 🎓", () => {
+  test("reset appends a snapshot of the closing day (capped 60)", () => {
+    let state = freshState({ streak: 2, screenMinutesUsedToday: 35 });
+    state = completeTask(state, "t1", rngQueue(0.99)).state;
+    state = completeTask(state, "t2", rngQueue(0.99)).state;
+
+    const next = resetDailyTasks(state, rngQueue(0.99), "01/07/2026");
+
+    expect(next.history).toHaveLength(1);
+    expect(next.history[0]).toMatchObject({
+      date: "01/07/2026",
+      completed: 2,
+      screenMinutes: 35,
+    });
+
+    // cap at 60
+    let s = { ...next, history: Array.from({ length: 60 }, (_, i) => ({ date: `d${i}` })) };
+    const capped = resetDailyTasks(s, rngQueue(0.99), "x");
+    expect(capped.history).toHaveLength(60);
+    expect(capped.history[59].date).toBe("x");
+  });
+
+  test("habitStreak increments on completion, resets on miss", () => {
+    let state = freshState();
+    state = completeTask(state, "t1", rngQueue(0.99)).state;
+    let next = resetDailyTasks(state, rngQueue(0.99));
+    expect(next.tasks.find((t) => t.id === "t1").habitStreak).toBe(1);
+
+    // missed day → back to 0
+    next = resetDailyTasks(next, rngQueue(0.99));
+    expect(next.tasks.find((t) => t.id === "t1").habitStreak).toBe(0);
+  });
+
+  test("30-day habit graduates: leaves task list, becomes permanent badge", () => {
+    let state = freshState();
+    state = {
+      ...state,
+      tasks: state.tasks.map((t) => (t.id === "t1" ? { ...t, habitStreak: 29, completed: true, approval: "auto", earnedPoints: 5 } : t)),
+    };
+
+    const next = resetDailyTasks(state, rngQueue(0.99));
+
+    expect(next.tasks.find((t) => t.id === "t1")).toBeUndefined(); // gone from dailies
+    expect(next.graduatedHabits).toHaveLength(1);
+    expect(next.graduatedHabits[0].days).toBe(30);
+    expect(next.lastGraduation.title).toContain("Dậy đúng giờ");
+  });
+});
+
 describe("same-day approved re-tick grace 🔁", () => {
   const approveFirst = (state, taskId) => {
     // complete → approve (simulating parent)
