@@ -4,12 +4,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
 
 export default function MiningCavePage() {
   const router = useRouter();
+  const { t } = useLang();
   const { uiMode } = useAuth();
   const isTeen = uiMode === "teen";
+  const m = isTeen ? "teen" : "kid";
   const {
     isLoaded,
     charName,
@@ -31,7 +34,8 @@ export default function MiningCavePage() {
 
   const [isStriking, setIsStriking] = useState(false); // Rock shake animation
   const [floatingTexts, setFloatingTexts] = useState([]); // Flying text list [{ id, text, type, x, y }]
-  const [caveLog, setCaveLog] = useState("Chào mừng dũng sĩ đến Động Khai Thác! Hãy dùng Năng Lượng ⚡ đập đá ma thuật để tìm kho báu nhé! ⛏️");
+  // null = show the welcome line (kept out of state so it follows the current locale)
+  const [caveLog, setCaveLog] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [activeTab, setActiveTab] = useState("mine"); // 'mine' or 'pet'
@@ -54,7 +58,7 @@ export default function MiningCavePage() {
         setShowHatchSuccess(true);
         setSelectedEgg(null);
         setSelectedPotion(null);
-        setCaveLog(`🥚 Kỳ diệu! Dũng sĩ ${charName} đã ấp nở thành công Thú cưng: ${res.pet.name} ${res.pet.emoji}! 🎉`);
+        setCaveLog(t("game.mine.hatchLog", { name: charName, pet: `${res.pet.name} ${res.pet.emoji}` }));
       } else {
         setErrorMessage(res.message);
         setTimeout(() => setErrorMessage(""), 3500);
@@ -82,7 +86,7 @@ export default function MiningCavePage() {
     return (
       <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
-        <p className="mt-4 text-forest font-medium">Đang tải hang động ma thuật...</p>
+        <p className="mt-4 text-forest font-medium">{t("game.mine.loading")}</p>
       </div>
     );
   }
@@ -95,7 +99,7 @@ export default function MiningCavePage() {
   // Handle Mining Click
   const handleMineClick = (e) => {
     if (energy < 1) {
-      setErrorMessage("Hết Năng Lượng rồi dũng sĩ ơi! Hãy hoàn thành nhiệm vụ ngoài đời để nạp đầy bình ⚡");
+      setErrorMessage(t("game.mine.noEnergy"));
       setTimeout(() => setErrorMessage(""), 4500);
       return;
     }
@@ -121,7 +125,7 @@ export default function MiningCavePage() {
 
       const newFloatingText = {
         id: Date.now() + Math.random(),
-        text: `${prefix}${result.coinReward} 🪙 ${result.isCritical ? "💪 SỨC MẠNH!" : ""}`,
+        text: `${prefix}${result.coinReward} 🪙 ${result.isCritical ? t("game.mine.crit") : ""}`,
         styleColor,
         x: clickX,
         y: clickY - 20,
@@ -131,11 +135,11 @@ export default function MiningCavePage() {
 
       // Log update
       if (result.lootType === "legendary") {
-        setCaveLog(`🎉 QUÁ KHỦNG KHIẾP! ${charName} đã đào được ${result.title} cực hiếm và nhận ngay +${result.coinReward} 🪙! 🎉`);
+        setCaveLog(t("game.mine.logLegendary", { name: charName, title: result.title, coins: result.coinReward }));
       } else if (result.lootType === "epic") {
-        setCaveLog(`👑 Tuyệt vời! Con đã đào được ${result.title} nhận +${result.coinReward} 🪙!`);
+        setCaveLog(t("game.mine.logEpic", { title: result.title, coins: result.coinReward }));
       } else {
-        setCaveLog(`⛏️ Con đập đá và thu được ${result.title} (+${result.coinReward} 🪙).`);
+        setCaveLog(t("game.mine.logCommon", { title: result.title, coins: result.coinReward }));
       }
 
       // Re-cleanup floating text after 1.5s
@@ -164,13 +168,13 @@ export default function MiningCavePage() {
             {/* Points Wallet */}
             <div className="bg-forest-light/35 border border-forest/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">⭐</span>
-              <span className="text-[9px] font-black text-forest-dark">{points} ĐIỂM</span>
+              <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
             </div>
             
             {/* Hero Coin Wallet */}
             <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs animate-bounce">🪙</span>
-              <span className="text-[9px] font-black text-amber-dark">{heroCoins} COIN</span>
+              <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
             </div>
           </div>
         </div>
@@ -179,11 +183,11 @@ export default function MiningCavePage() {
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat text-center space-y-1">
           <h2 className="text-sm font-black text-forest-dark uppercase tracking-widest flex items-center justify-center gap-1">
             <span>⛏️</span>
-            <span>{isTeen ? "GRIND ZONE" : "ĐỘNG KHAI THÁC ANH HÙNG"}</span>
+            <span>{t(`game.mine.caveTitle.${m}`)}</span>
             <span>⛏️</span>
           </h2>
           <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">
-            {isTeen ? "1 Energy ⚡ = 1 lượt farm coin 💎" : "Tiêu hao 1 Năng Lượng ⚡ = 1 Click Đào Kho Báu 💎"}
+            {t(`game.mine.caveSub.${m}`)}
           </p>
         </div>
 
@@ -198,7 +202,7 @@ export default function MiningCavePage() {
             }`}
             type="button"
           >
-            ⛏️ Đập Đá Đào Mỏ
+            {t("game.mine.tabMine")}
           </button>
           <button
             onClick={() => setActiveTab("pet")}
@@ -209,7 +213,7 @@ export default function MiningCavePage() {
             }`}
             type="button"
           >
-            {isTeen ? "🐾 Bộ Sưu Tập" : "🐾 Khu Thú Cưng"}
+            {t(`game.mine.tabPet.${m}`)}
           </button>
         </div>
 
@@ -220,7 +224,7 @@ export default function MiningCavePage() {
               
               {/* Left: Mana / Energy Elixir Bottle */}
               <div className="col-span-1 bg-white border-2 border-sand p-3.5 rounded-3xl shadow-game-flat flex flex-col items-center justify-center text-center space-y-3.5 relative select-none">
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Năng Lượng</span>
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">{t("game.mine.energyLabel")}</span>
                 
                 {/* Bottle graphic representation */}
                 <div className="w-10 h-16 bg-gray-100 border-2 border-sand rounded-b-2xl rounded-t-lg relative overflow-hidden shadow-inner flex flex-col justify-end">
@@ -238,7 +242,7 @@ export default function MiningCavePage() {
                 {/* Counter */}
                 <div className="space-y-0.5">
                   <p className="text-base font-black text-sky-dark">{energy}<span className="text-xs opacity-75">/100</span></p>
-                  <p className="text-[8px] font-extrabold text-gray-400 uppercase tracking-wide">⚡ Năng lượng</p>
+                  <p className="text-[8px] font-extrabold text-gray-400 uppercase tracking-wide">{t("game.mine.energyUnit")}</p>
                 </div>
               </div>
 
@@ -285,7 +289,7 @@ export default function MiningCavePage() {
 
                 {/* Anti-spam text helper */}
                 <div className="absolute bottom-2 text-[8px] font-bold text-gray-400 select-none">
-                  {energy > 0 ? "👉 Click liên tục lên đá để đào kho báu!" : "❌ Hết năng lượng!"}
+                  {energy > 0 ? t("game.mine.clickHelp") : t("game.mine.clickEmpty")}
                 </div>
               </div>
             </div>
@@ -301,7 +305,7 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-2.5">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🛡️</span>
-                <span>Ấn Pháp Anh Hùng (Hero Runes) 🛡️</span>
+                <span>{t("game.mine.runesTitle")}</span>
               </h3>
               
               <div className="grid grid-cols-3 gap-2 text-center text-[9px] font-bold">
@@ -313,21 +317,21 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">🏃</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">Ấn Pháp Thể Lực</span>
+                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.str")}</span>
                   </div>
-                  
+
                   {/* Detailed Description */}
                   <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
-                    <p className="text-rose-600 font-extrabold">• Hiệu quả: 💪 Cú Đập Sức Mạnh x2 xu (20%)</p>
-                    <p className="text-gray-400 font-medium">• Rèn luyện: Tập thể dục 15 phút 🏃‍♂️</p>
+                    <p className="text-rose-600 font-extrabold">{t("game.mine.rune.strEffect")}</p>
+                    <p className="text-gray-400 font-medium">{t("game.mine.rune.strTrain")}</p>
                   </div>
 
                   <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
-                    hasExerciseBuff 
-                      ? "bg-rose-100 border-red-200 text-terracotta animate-pulse" 
+                    hasExerciseBuff
+                      ? "bg-rose-100 border-red-200 text-terracotta animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
                   }`}>
-                    {hasExerciseBuff ? "ĐANG BẬT 🔥" : "Khóa 🔒"}
+                    {hasExerciseBuff ? t("game.mine.runeOn") : t("game.mine.runeOff")}
                   </span>
                 </div>
 
@@ -339,21 +343,21 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">🧠</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">Ấn Pháp Trí Tuệ</span>
+                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.int")}</span>
                   </div>
-                  
+
                   {/* Detailed Description */}
                   <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
-                    <p className="text-blue-600 font-extrabold">• Hiệu quả: 👁️ Mắt Tinh Anh dễ tìm rương hiếm</p>
-                    <p className="text-gray-400 font-medium">• Rèn luyện: Đọc sách tinh hoa 20 phút 📚</p>
+                    <p className="text-blue-600 font-extrabold">{t("game.mine.rune.intEffect")}</p>
+                    <p className="text-gray-400 font-medium">{t("game.mine.rune.intTrain")}</p>
                   </div>
 
                   <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
-                    hasReadingBuff 
-                      ? "bg-blue-100 border-blue-200 text-sky-dark animate-pulse" 
+                    hasReadingBuff
+                      ? "bg-blue-100 border-blue-200 text-sky-dark animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
                   }`}>
-                    {hasReadingBuff ? "ĐANG BẬT 🔥" : "Khóa 🔒"}
+                    {hasReadingBuff ? t("game.mine.runeOn") : t("game.mine.runeOff")}
                   </span>
                 </div>
 
@@ -365,42 +369,42 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">💎</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">Ấn Pháp Chuyên Cần</span>
+                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.dil")}</span>
                   </div>
-                  
+
                   {/* Detailed Description */}
                   <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
-                    <p className="text-amber-600 font-extrabold">• Hiệu quả: 🔥 Ngọn Lửa Kiên Trì tăng tỷ lệ bạc/vàng</p>
-                    <p className="text-gray-400 font-medium">• Rèn luyện: Duy trì Streak ≥ 3 ngày 🔥</p>
+                    <p className="text-amber-600 font-extrabold">{t("game.mine.rune.dilEffect")}</p>
+                    <p className="text-gray-400 font-medium">{t("game.mine.rune.dilTrain")}</p>
                   </div>
 
                   <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
-                    hasStreakBuff 
-                      ? "bg-amber-100 border-yellow-200 text-amber-dark animate-pulse" 
+                    hasStreakBuff
+                      ? "bg-amber-100 border-yellow-200 text-amber-dark animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
                   }`}>
-                    {hasStreakBuff ? "ĐANG BẬT 🔥" : `Khóa 🔒 (${streak}/3 ngày)`}
+                    {hasStreakBuff ? t("game.mine.runeOn") : t("game.mine.runeOffStreak", { n: streak })}
                   </span>
                 </div>
               </div>
               <p className="text-[8px] text-gray-400 font-medium leading-normal text-center pt-1 select-none">
-                💡 <strong>Mẹo anh hùng:</strong> Chăm chỉ hoàn thành nhiệm vụ đọc sách, thể dục và duy trì chuỗi Streak mỗi ngày ngoài đời để kích hoạt các Ấn Pháp Anh Hùng cực mạnh khi đào mỏ!
+                💡 <strong>{t("game.mine.runeTipLabel")}</strong> {t("game.mine.runeTip")}
               </p>
             </div>
 
             {/* LOG CONSOLE: Realtime actions display */}
             <div className="bg-sand-dark/15 border-2 border-sand p-3.5 rounded-2xl text-[10px] font-extrabold text-forest-dark italic leading-relaxed text-center select-none">
-              {caveLog}
+              {caveLog ?? t("game.mine.welcome")}
             </div>
 
             {/* MINING HISTORY LOG BOX */}
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
-              <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">📦 Kho Báu Đã Đào Được</h3>
+              <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider">{t("game.mine.historyTitle")}</h3>
               
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                 {miningHistory.length === 0 ? (
                   <div className="text-center py-6 text-[10.5px] text-gray-400 font-bold">
-                    📭 Thùng gỗ rỗng! Hãy bắt đầu click đập đá để thu thập kho báu...
+                    {t("game.mine.historyEmpty")}
                   </div>
                 ) : (
                   miningHistory.map((item) => {
@@ -441,37 +445,37 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🎒</span>
-                <span>Túi Đồ Vật Phẩm Thú Cưng</span>
+                <span>{t("game.mine.invTitle")}</span>
               </h3>
               
               <div className="grid grid-cols-3 gap-2 select-none">
                 {/* Eggs section */}
                 <div className="bg-sand-light border border-sand p-2 rounded-2xl flex flex-col items-center justify-center text-center space-y-1 select-none">
-                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">🥚 Trứng</span>
+                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">{t("game.mine.eggs")}</span>
                   <div className="text-[10px] text-gray-500 font-bold space-y-0.5">
-                    <p>Thường: <span className="text-forest font-black">{inventory?.eggs?.base || 0}</span></p>
-                    <p>Sói: <span className="text-amber font-black">{inventory?.eggs?.wolf || 0}</span></p>
-                    <p>Rồng: <span className="text-terracotta font-black">{inventory?.eggs?.dragon || 0}</span></p>
+                    <p>{t("game.mine.eggBase")} <span className="text-forest font-black">{inventory?.eggs?.base || 0}</span></p>
+                    <p>{t("game.mine.eggWolf")} <span className="text-amber font-black">{inventory?.eggs?.wolf || 0}</span></p>
+                    <p>{t("game.mine.eggDragon")} <span className="text-terracotta font-black">{inventory?.eggs?.dragon || 0}</span></p>
                   </div>
                 </div>
 
                 {/* Potions section */}
                 <div className="bg-sand-light border border-sand p-2 rounded-2xl flex flex-col items-center justify-center text-center space-y-1 select-none">
-                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">🧪 Thuốc Ấp</span>
+                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">{t("game.mine.potions")}</span>
                   <div className="text-[10px] text-gray-500 font-bold space-y-0.5">
-                    <p>🔥 Lửa: <span className="text-terracotta font-black">{inventory?.potions?.fire || 0}</span></p>
-                    <p>❄️ Băng: <span className="text-sky-dark font-black">{inventory?.potions?.ice || 0}</span></p>
-                    <p>✨ Phép: <span className="text-clay font-black">{inventory?.potions?.magic || 0}</span></p>
+                    <p>{t("game.mine.potFire")} <span className="text-terracotta font-black">{inventory?.potions?.fire || 0}</span></p>
+                    <p>{t("game.mine.potIce")} <span className="text-sky-dark font-black">{inventory?.potions?.ice || 0}</span></p>
+                    <p>{t("game.mine.potMagic")} <span className="text-clay font-black">{inventory?.potions?.magic || 0}</span></p>
                   </div>
                 </div>
 
                 {/* Foods section */}
                 <div className="bg-sand-light border border-sand p-2 rounded-2xl flex flex-col items-center justify-center text-center space-y-1 select-none">
-                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">🥩 Thức Ăn</span>
+                  <span className="text-[10px] font-black text-forest-dark uppercase tracking-wider">{t("game.mine.foods")}</span>
                   <div className="text-[10px] text-gray-500 font-bold space-y-0.5">
-                    <p>🥩 Thịt: <span className="text-terracotta font-black">{inventory?.foods?.meat || 0}</span></p>
-                    <p>🍬 Kẹo: <span className="text-amber font-black">{inventory?.foods?.candy || 0}</span></p>
-                    <p>🌿 Lá: <span className="text-forest font-black">{inventory?.foods?.leaf || 0}</span></p>
+                    <p>{t("game.mine.foodMeat")} <span className="text-terracotta font-black">{inventory?.foods?.meat || 0}</span></p>
+                    <p>{t("game.mine.foodCandy")} <span className="text-amber font-black">{inventory?.foods?.candy || 0}</span></p>
+                    <p>{t("game.mine.foodLeaf")} <span className="text-forest font-black">{inventory?.foods?.leaf || 0}</span></p>
                   </div>
                 </div>
               </div>
@@ -481,7 +485,7 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🧪</span>
-                <span>Lò Ấp Trứng Ma Thuật</span>
+                <span>{t("game.mine.hatchTitle")}</span>
               </h3>
 
               {isHatching ? (
@@ -490,13 +494,13 @@ export default function MiningCavePage() {
                   <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden border border-sand">
                     <div className="h-full bg-forest animate-shimmer" style={{ width: "100%" }}></div>
                   </div>
-                  <p className="text-[10.5px] font-black text-forest animate-pulse uppercase tracking-wider">Đang truyền ma thuật ấp trứng...</p>
+                  <p className="text-[10.5px] font-black text-forest animate-pulse uppercase tracking-wider">{t("game.mine.hatching")}</p>
                 </div>
               ) : showHatchSuccess ? (
                 <div className="flex flex-col items-center justify-center py-6 text-center space-y-3 bg-forest-light/20 border border-forest/10 rounded-2xl p-4 select-none">
                   <span className="text-5xl animate-bounce">🎉</span>
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-gray-400 uppercase">Ấp nở thành công!</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase">{t("game.mine.hatchOk")}</p>
                     <h4 className="text-base font-black text-forest-dark">{hatchedPetName}</h4>
                   </div>
                   <button
@@ -504,7 +508,7 @@ export default function MiningCavePage() {
                     className="bg-forest text-white font-extrabold text-[10px] py-1.5 px-5 rounded-full border border-forest active:scale-95 transition-transform"
                     type="button"
                   >
-                    ĐÓNG
+                    {t("game.mine.close")}
                   </button>
                 </div>
               ) : (
@@ -518,31 +522,31 @@ export default function MiningCavePage() {
                   <div className="grid grid-cols-2 gap-3">
                     {/* Select Egg */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">1. Chọn Trứng</label>
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickEgg")}</label>
                       <select
                         value={selectedEgg || ""}
                         onChange={(e) => setSelectedEgg(e.target.value || null)}
                         className="w-full bg-sand-light border-2 border-sand text-xs font-extrabold text-forest-dark rounded-xl p-2.5 focus:outline-none"
                       >
-                        <option value="">-- Chọn Trứng --</option>
-                        {inventory?.eggs?.base > 0 && <option value="base">🥚 Trứng Thường ({inventory.eggs.base})</option>}
-                        {inventory?.eggs?.wolf > 0 && <option value="wolf">🐺 Trứng Sói ({inventory.eggs.wolf})</option>}
-                        {inventory?.eggs?.dragon > 0 && <option value="dragon">🐉 Trứng Rồng ({inventory.eggs.dragon})</option>}
+                        <option value="">{t("game.mine.pickEggPh")}</option>
+                        {inventory?.eggs?.base > 0 && <option value="base">{t("game.mine.optEggBase", { n: inventory.eggs.base })}</option>}
+                        {inventory?.eggs?.wolf > 0 && <option value="wolf">{t("game.mine.optEggWolf", { n: inventory.eggs.wolf })}</option>}
+                        {inventory?.eggs?.dragon > 0 && <option value="dragon">{t("game.mine.optEggDragon", { n: inventory.eggs.dragon })}</option>}
                       </select>
                     </div>
 
                     {/* Select Potion */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">2. Chọn Thuốc Ấp</label>
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickPotion")}</label>
                       <select
                         value={selectedPotion || ""}
                         onChange={(e) => setSelectedPotion(e.target.value || null)}
                         className="w-full bg-sand-light border-2 border-sand text-xs font-extrabold text-forest-dark rounded-xl p-2.5 focus:outline-none"
                       >
-                        <option value="">-- Chọn Thuốc --</option>
-                        {inventory?.potions?.fire > 0 && <option value="fire">🔥 Thuốc Lửa ({inventory.potions.fire})</option>}
-                        {inventory?.potions?.ice > 0 && <option value="ice">❄️ Thuốc Băng ({inventory.potions.ice})</option>}
-                        {inventory?.potions?.magic > 0 && <option value="magic">✨ Thuốc Phép ({inventory.potions.magic})</option>}
+                        <option value="">{t("game.mine.pickPotionPh")}</option>
+                        {inventory?.potions?.fire > 0 && <option value="fire">{t("game.mine.optPotFire", { n: inventory.potions.fire })}</option>}
+                        {inventory?.potions?.ice > 0 && <option value="ice">{t("game.mine.optPotIce", { n: inventory.potions.ice })}</option>}
+                        {inventory?.potions?.magic > 0 && <option value="magic">{t("game.mine.optPotMagic", { n: inventory.potions.magic })}</option>}
                       </select>
                     </div>
                   </div>
@@ -557,7 +561,7 @@ export default function MiningCavePage() {
                     }`}
                     type="button"
                   >
-                    ẤP TRỨNG NGAY! 🧪✨
+                    {t("game.mine.hatchBtn")}
                   </button>
                 </div>
               )}
@@ -567,12 +571,12 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🐾</span>
-                <span>{isTeen ? `Bộ Sưu Tập Của ${charName} (${pets?.length || 0})` : `Thú Cưng Của ${charName} (${pets?.length || 0})`}</span>
+                <span>{t(`game.mine.petsTitle.${m}`, { name: charName, n: pets?.length || 0 })}</span>
               </h3>
 
               {pets?.length === 0 ? (
                 <div className="text-center py-8 text-[11px] text-gray-400 font-bold uppercase tracking-wider select-none">
-                  {isTeen ? "🍃 Trống trơn! Hãy ấp trứng để mở khóa vật phẩm đầu tiên..." : "🍃 Chuồng trống! Hãy ấp trứng để mở khóa thú cưng đầu tiên..."}
+                  {t(`game.mine.petsEmpty.${m}`)}
                 </div>
               ) : (
                 <div className="space-y-3.5">
@@ -590,7 +594,7 @@ export default function MiningCavePage() {
                         {/* Active Badge */}
                         {isActive && (
                           <span className="absolute top-2 right-2 bg-forest text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            {petRole === "mount" ? "🏇 Đang Cưỡi" : "🐾 Đồng Hành"}
+                            {petRole === "mount" ? t("game.mine.badgeMount") : t("game.mine.badgePet")}
                           </span>
                         )}
 
@@ -603,7 +607,7 @@ export default function MiningCavePage() {
                           <div className="flex-grow min-w-0 select-none">
                             <h4 className="text-xs font-black text-forest-dark truncate uppercase tracking-wider">{pet.name}</h4>
                             <p className="text-[8.5px] font-extrabold text-gray-400 uppercase tracking-wide">
-                              Hệ {pet.element === "fire" ? "🔥 Lửa" : pet.element === "ice" ? "❄️ Băng" : "✨ Thần Kỳ"} • {pet.type}
+                              {t("game.mine.elemPrefix")} {pet.element === "fire" ? t("game.mine.elemFire") : pet.element === "ice" ? t("game.mine.elemIce") : t("game.mine.elemMagic")} • {pet.type}
                             </p>
                           </div>
                         </div>
@@ -611,7 +615,7 @@ export default function MiningCavePage() {
                         {/* Intimacy / Feed Progress bar */}
                         <div className="space-y-1 select-none">
                           <div className="flex items-center justify-between text-[8px] font-black text-gray-400 uppercase tracking-wider">
-                            <span>Độ Thân Mật (Tiến hóa)</span>
+                            <span>{t("game.mine.intimacy")}</span>
                             <span className="text-forest-medium">{pet.feedProgress}%</span>
                           </div>
                           
@@ -628,7 +632,7 @@ export default function MiningCavePage() {
                           {/* Feed triggers if intimacy < 100 */}
                           {pet.feedProgress < 100 ? (
                             <div className="flex items-center gap-1.5 flex-grow">
-                              <span className="text-[8px] font-black text-gray-400 uppercase select-none">Cho ăn:</span>
+                              <span className="text-[8px] font-black text-gray-400 uppercase select-none">{t("game.mine.feed")}</span>
                               
                               <button
                                 onClick={() => handleFeed(pet.id, "meat")}
@@ -671,7 +675,7 @@ export default function MiningCavePage() {
                             </div>
                           ) : (
                             <span className="text-[9px] font-black text-amber-dark uppercase tracking-widest animate-pulse flex-grow select-none">
-                              👑 ĐÃ TIẾN HÓA THÀNH THÚ CƯỠI! 👑
+                              {t("game.mine.evolved")}
                             </span>
                           )}
 
@@ -684,7 +688,7 @@ export default function MiningCavePage() {
                                   className="bg-forest hover:bg-forest-dark text-white font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-forest active:scale-95 transition-transform uppercase tracking-wider shadow-sm"
                                   type="button"
                                 >
-                                  Cưỡi Lên 🏇
+                                  {t("game.mine.ride")}
                                 </button>
                               ) : (
                                 <button
@@ -692,7 +696,7 @@ export default function MiningCavePage() {
                                   className="bg-white hover:bg-sand-light text-forest font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
                                   type="button"
                                 >
-                                  Đi Theo 🐾
+                                  {t("game.mine.follow")}
                                 </button>
                               )
                             ) : (
@@ -701,7 +705,7 @@ export default function MiningCavePage() {
                                 className="bg-sand hover:bg-sand-dark text-gray-500 font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
                                 type="button"
                               >
-                                Thu Hồi 🏠
+                                {t("game.mine.recall")}
                               </button>
                             )}
                           </div>
@@ -723,7 +727,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Phiêu Lưu</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -731,7 +735,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Đổi Quà</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -739,7 +743,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">⛏️</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">Đào Mỏ</span>
+          <span className="text-[9px] font-black uppercase tracking-wider">{t("nav.mining")}</span>
         </button>
 
         <button
@@ -747,7 +751,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">Bố Mẹ</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>
