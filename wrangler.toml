@@ -1,10 +1,14 @@
-# Cloudflare Pages config for Level Up Kids (Next.js via @cloudflare/next-on-pages)
+# Cloudflare Worker config for Level Up Kids (Next.js via @opennextjs/cloudflare)
 name = "level-up-kids"
+main = ".open-next/worker.js"
 compatibility_date = "2026-06-01"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output/static"
 
-# Secrets (set via `wrangler pages secret put <NAME>` or CF dashboard — NEVER commit values):
+[assets]
+binding = "ASSETS"
+directory = ".open-next/assets"
+
+# Secrets (set via `wrangler secret put <NAME>` or CF dashboard — NEVER commit values):
 #   SUPABASE_SERVICE_ROLE_KEY
 #   SEPAY_WEBHOOK_API_KEY
 #   SEPAY_WEBHOOK_SECRET

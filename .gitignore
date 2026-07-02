@@ -39,5 +39,8 @@ next-env.d.ts
 .env
 .wrangler
 
+# opennextjs-cloudflare build output
+.open-next
+
 # supabase CLI temp
 supabase/.temp/

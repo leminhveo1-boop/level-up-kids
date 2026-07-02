@@ -1,8 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
-// Cloudflare Pages requires edge runtime for API routes
-export const runtime = "edge";
-
 const SIGNATURE_MAX_AGE_SEC = 300; // reject webhooks older than 5 minutes (replay guard)
 
 /**

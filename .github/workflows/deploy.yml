@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 on:
   push:
@@ -28,8 +28,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Build (vercel output)
-        run: npx vercel@latest build --yes
+      - name: Build for Cloudflare Workers
+        run: npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion
         env:
           # Public build-time vars (baked into the client bundle)
           NEXT_PUBLIC_SUPABASE_URL: https://mqgfdotuywgxpoiezpmj.supabase.co
@@ -40,12 +40,9 @@ jobs:
           NEXT_PUBLIC_BANK_HOLDER: BUI THE LONG
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
 
-      - name: Transform for Cloudflare Pages
-        run: npx @cloudflare/next-on-pages@1 --skip-build
-
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --branch main
+          command: deploy

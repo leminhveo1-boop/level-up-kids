@@ -9,7 +9,9 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pages:build": "npx @cloudflare/next-on-pages",
+    "cf:build": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
+    "cf:preview": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion && opennextjs-cloudflare deploy",
     "generate:codes": "node scripts/generate-codes.mjs",
     "generate:icons": "node scripts/generate-icons.mjs"
   },
@@ -24,6 +26,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.1",
     "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
@@ -33,6 +36,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "wrangler": "^4.106.0"
   }
 }
