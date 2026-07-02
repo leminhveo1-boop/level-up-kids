@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
+import { useLang } from "@/context/LanguageContext";
 
 /** 🎯 V1.2 Goal gradient — visible progress to the nearest big coin reward. */
 export default function GoalBar({ rewards, heroCoins }) {
+  const { t } = useLang();
   const coinGoal = React.useMemo(() => {
     const candidates = (rewards || [])
       .filter((r) => r.currency === "heroCoins" && r.type === "perk" && r.cost > heroCoins)
@@ -18,7 +20,7 @@ export default function GoalBar({ rewards, heroCoins }) {
   return (
     <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">🎯 Mục tiêu lớn</span>
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">{t("game.goal.title")}</span>
         <span className="text-[10px] font-black text-amber-dark">
           {heroCoins}/{coinGoal.cost} 🪙 ({pct}%)
         </span>
@@ -31,7 +33,7 @@ export default function GoalBar({ rewards, heroCoins }) {
         />
       </div>
       <p className="text-[9px] text-gray-400 font-bold">
-        Còn {coinGoal.cost - heroCoins} 🪙 nữa — đào mỏ thôi! ⛏️
+        {t("game.goal.remain", { n: coinGoal.cost - heroCoins })}
       </p>
     </div>
   );

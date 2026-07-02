@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
 import StatusBar from "@/components/dashboard/StatusBar";
 import HeroCard from "@/components/dashboard/HeroCard";
@@ -20,6 +21,7 @@ import BottomNav from "@/components/dashboard/BottomNav";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { t } = useLang();
   const { childProfiles, activeChildId, selectChild, isDemo } = useAuth();
   const {
     isLoaded,
@@ -103,7 +105,7 @@ export default function DashboardPage() {
     const focusEarned = isFocused && elapsedSeconds >= requiredSec;
 
     completeTask(taskId, { focusEarned });
-    if (focusEarned) showVerifyToast(`Tuyệt vời! Con đã tập trung đủ lâu — nhận thêm điểm thưởng tập trung! 🌳✨`);
+    if (focusEarned) showVerifyToast(t("game.toast.focusBonus"));
 
     if (isFocused) {
       setFocusTaskId(null);
@@ -134,9 +136,9 @@ export default function DashboardPage() {
       const { saveLocalPhoto } = await import("@/lib/localPhotos");
       const dataUrl = await compressImageFile(file);
       saveLocalPhoto(activeChildId, photoTaskId, dataUrl);
-      showVerifyToast("Đã lưu ảnh vào máy (chỉ bố mẹ trên máy này xem được). 📸");
+      showVerifyToast(t("game.toast.photoSaved"));
     } catch {
-      showVerifyToast("Không đọc được ảnh, con thử lại nhé! 📸");
+      showVerifyToast(t("game.toast.photoError"));
     }
     setPhotoTaskId(null);
   };
@@ -148,11 +150,7 @@ export default function DashboardPage() {
 
   const handleNudge = () => {
     const r = nudgeParents();
-    showVerifyToast(
-      r.success
-        ? "Đã gửi lời nhắc đến bố mẹ! Bồ câu đang bay đi đây 🕊️"
-        : "Hôm nay con đã nhắc đủ 2 lần rồi — bố mẹ sẽ duyệt sớm thôi! 🌸"
-    );
+    showVerifyToast(r.success ? t("game.toast.nudgeSent") : t("game.toast.nudgeLimit"));
   };
 
   // Companion pet/mount objects
@@ -202,7 +200,7 @@ export default function DashboardPage() {
   const totalTasksCount = tasks.length;
   const completionPercentage = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
 
-  const filteredTasks = tasks.filter((t) => taskFilter === "all" || t.category === taskFilter);
+  const filteredTasks = tasks.filter((task) => taskFilter === "all" || task.category === taskFilter);
 
   const unreadLetters = encouragements.filter((e) => !e.read);
 
@@ -220,11 +218,12 @@ export default function DashboardPage() {
 
   // Kanban lanes (B6): WIP-1 focus lane → today → waiting → done.
   // Tap-to-move instead of drag — better for young motor skills.
+  // NOTE: `t` here is the translator; lane filter args are renamed `task` to avoid shadowing.
   const TASK_LANES = [
-    { key: "doing", label: "🌳 ĐANG TẬP TRUNG", filter: (t) => !t.completed && t.id === focusTaskId },
-    { key: "today", label: "📋 HÔM NAY", filter: (t) => !t.completed && t.id !== focusTaskId },
-    { key: "waiting", label: "⏳ CHỜ BỐ MẸ DUYỆT", filter: (t) => t.completed && t.approval === "pending" },
-    { key: "done", label: "✅ HOÀN THÀNH", filter: (t) => t.completed && t.approval !== "pending" },
+    { key: "doing", labelKey: "game.lane.doing", filter: (task) => !task.completed && task.id === focusTaskId },
+    { key: "today", labelKey: "game.lane.today", filter: (task) => !task.completed && task.id !== focusTaskId },
+    { key: "waiting", labelKey: "game.lane.waiting", filter: (task) => task.completed && task.approval === "pending" },
+    { key: "done", labelKey: "game.lane.done", filter: (task) => task.completed && task.approval !== "pending" },
   ];
 
   return (
@@ -262,30 +261,30 @@ export default function DashboardPage() {
         <div className="space-y-3">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">🎯 Nhiệm Vụ Hôm Nay</h3>
+              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">{t("game.tasks.title")}</h3>
               <span className="text-[10px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full">
-                Xong: {completedTasksCount}/{totalTasksCount} ({completionPercentage}%)
+                {t("game.tasks.progress", { done: completedTasksCount, total: totalTasksCount, pct: completionPercentage })}
               </span>
             </div>
 
             {/* Daily Reset Hint */}
             <div className="w-full bg-amber-light border border-amber/30 p-2 rounded-xl text-[10px] text-amber-dark font-medium flex items-center gap-1">
               <span>💡</span>
-              <span><strong>Mẹo:</strong> Hoàn thành từ 3 nhiệm vụ để duy trì ngọn lửa Streak 🔥.</span>
+              <span><strong>{t("game.tasks.tipLabel")}</strong> {t("game.tasks.tip")}</span>
             </div>
 
             {/* P0: Pending approval summary + child-initiated nudge */}
             {pendingCount > 0 && (
               <div className="w-full bg-sky-light/60 border border-sky/30 p-2.5 rounded-xl flex items-center justify-between gap-2">
                 <span className="text-[11px] text-sky-dark font-bold flex items-center gap-1">
-                  ⏳ {pendingCount} nhiệm vụ chờ bố mẹ duyệt điểm ⭐
+                  {t("game.tasks.pending", { n: pendingCount })}
                 </span>
                 <button
                   type="button"
                   onClick={handleNudge}
                   className="min-h-tap flex-shrink-0 bg-white border border-sky/40 text-sky-dark text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
                 >
-                  Nhắc bố mẹ 🕊️
+                  {t("game.tasks.nudge")}
                 </button>
               </div>
             )}
@@ -293,17 +292,17 @@ export default function DashboardPage() {
             {/* 🎁 D3: unread gifts from siblings */}
             {receivedGifts?.some((g) => !g.read) && (
               <div className="w-full bg-purple-50 border-2 border-purple-200 p-3 rounded-2xl space-y-1.5">
-                <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">🎁 Quà Từ Anh Chị Em</span>
+                <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">{t("game.tasks.giftsTitle")}</span>
                 {receivedGifts.filter((g) => !g.read).slice(0, 3).map((g) => (
                   <p key={g.id} className="text-[11px] font-bold text-purple-800">
-                    {g.emoji} {g.fromName} đã tặng con {g.label}!
+                    {t("game.tasks.gaveYou", { emoji: g.emoji, name: g.fromName, label: g.label })}
                   </p>
                 ))}
                 <button
                   onClick={markReceivedGiftsRead}
                   className="min-h-tap bg-white border border-purple-200 text-purple-700 text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
                 >
-                  Đã xem, cảm ơn! 💜
+                  {t("game.tasks.thanks")}
                 </button>
               </div>
             )}
@@ -320,16 +319,16 @@ export default function DashboardPage() {
               <div className="w-full bg-amber-light border-2 border-amber p-3.5 rounded-2xl text-center space-y-2 animate-fade-in">
                 <p className="text-2xl">🎓✨</p>
                 <p className="text-[12px] font-black text-amber-dark leading-snug">
-                  &ldquo;{lastGraduation.title}&rdquo; đã trở thành BẢN NĂNG ANH HÙNG!
+                  {t("game.grad.instinct", { title: lastGraduation.title })}
                 </p>
                 <p className="text-[10px] text-gray-500 font-medium">
-                  Con đã tự giác làm việc này {lastGraduation.days} ngày liên tục — giờ nó là một phần con người con rồi, không cần điểm thưởng nữa! Huy hiệu vĩnh viễn ở 🏠 Góc Của Tớ.
+                  {t("game.grad.desc", { days: lastGraduation.days })}
                 </p>
                 <button
                   onClick={clearLastGraduation}
                   className="min-h-tap bg-amber text-white text-[10px] font-black px-5 rounded-xl active:scale-95 transition-transform"
                 >
-                  TUYỆT VỜI! 🙌
+                  {t("game.grad.cta")}
                 </button>
               </div>
             )}
@@ -353,10 +352,10 @@ export default function DashboardPage() {
           <div className="space-y-3.5">
             {filteredTasks.length === 0 ? (
               <div className="bg-white border-2 border-sand border-dashed p-8 rounded-2xl text-center text-xs text-gray-400 font-bold">
-                📭 Không có nhiệm vụ nào trong danh mục này!
+                {t("game.tasks.empty")}
               </div>
             ) : (
-              TASK_LANES.map(({ key, label, filter }) => {
+              TASK_LANES.map(({ key, labelKey, filter }) => {
                 const group = filteredTasks
                   .filter(filter)
                   .sort((a, b) => (a.isMandatory === b.isMandatory ? 0 : a.isMandatory ? -1 : 1));
@@ -364,7 +363,7 @@ export default function DashboardPage() {
                 return (
                   <div key={key} className="space-y-2">
                     <div className="flex items-center justify-between px-1">
-                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{label}</span>
+                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{t(labelKey)}</span>
                       <span className="text-[10px] font-black text-gray-300">{group.length}</span>
                     </div>
                     {group.map((task) => (

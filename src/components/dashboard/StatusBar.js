@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import SoundToggle from "@/components/SoundToggle";
+import { useLang } from "@/context/LanguageContext";
 
 /** Top strip: energy, wallets, pigeon alert, streak+freeze, sound, guide. */
 export default function StatusBar({
@@ -17,6 +18,7 @@ export default function StatusBar({
   onOpenGuide,
 }) {
   const router = useRouter();
+  const { t } = useLang();
 
   return (
     <div className="flex items-center justify-between gap-1 flex-wrap select-none">
@@ -37,7 +39,7 @@ export default function StatusBar({
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
       >
         <span className="text-xs">⭐</span>
-        <span className="text-[9px] font-black text-forest-dark">{points} ĐIỂM</span>
+        <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
       </div>
 
       {/* Hero Coin Wallet */}
@@ -46,7 +48,7 @@ export default function StatusBar({
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
       >
         <span className="text-xs animate-bounce">🪙</span>
-        <span className="text-[9px] font-black text-amber-dark">{heroCoins} COIN</span>
+        <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
       </div>
 
       {/* Messages Bird (Carrier Pigeon Alert) */}
@@ -54,7 +56,7 @@ export default function StatusBar({
         <button
           onClick={() => onOpenLetter(encouragements[0])}
           className="relative p-1 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
-          title="Thư động viên từ bố mẹ!"
+          title={t("game.status.pigeonTitle")}
         >
           <span className="text-xs">🕊️</span>
           {unreadCount > 0 && (
@@ -68,7 +70,7 @@ export default function StatusBar({
       {/* Streak Flame + Freeze cards */}
       <div
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat"
-        title={`Streak ${streak} ngày — ${streakFreezes} thẻ đóng băng ❄️`}
+        title={t("game.status.streakTitle", { d: streak, f: streakFreezes })}
       >
         <span className="text-xs animate-flame">🔥</span>
         <span className="text-[9px] font-black text-amber">{streak}N</span>
@@ -84,7 +86,7 @@ export default function StatusBar({
       <button
         onClick={onOpenGuide}
         className="flex items-center justify-center p-1.5 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-forest transition-colors text-xs active:scale-90"
-        title="Cẩm nang chiến binh"
+        title={t("game.status.guideTitle")}
       >
         📜
       </button>

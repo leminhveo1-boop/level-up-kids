@@ -3,14 +3,15 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { getEquipped } from "@/lib/game/cosmetics";
+import { useLang } from "@/context/LanguageContext";
 
-const getLevelTitle = (lvl) => {
-  if (lvl >= 100) return "Anh Hùng Mùa Hè 👑";
-  if (lvl >= 50) return "Hiệp Sĩ Ánh Sáng 🌟";
-  if (lvl >= 20) return "Thủ Lĩnh Nhỏ 🎯";
-  if (lvl >= 10) return "Chiến Binh Kỷ Luật ⚡";
-  if (lvl >= 5) return "Người Khám Phá 🗺️";
-  return "Tân Binh Tập Sự 🛡️";
+const levelTitleKey = (lvl) => {
+  if (lvl >= 100) return "game.levelTitle.100";
+  if (lvl >= 50) return "game.levelTitle.50";
+  if (lvl >= 20) return "game.levelTitle.20";
+  if (lvl >= 10) return "game.levelTitle.10";
+  if (lvl >= 5) return "game.levelTitle.5";
+  return "game.levelTitle.1";
 };
 
 const getClassConfig = (cls) => {
@@ -57,6 +58,7 @@ const getClassConfig = (cls) => {
 /** Avatar + cosmetics + companions + level/EXP progress bar. */
 export default function HeroCard({ charName, charClass, level, exp, expToNextLevel, cosmetics, activePetObj, activeMountObj }) {
   const router = useRouter();
+  const { t } = useLang();
   const classConfig = getClassConfig(charClass);
   const equipped = getEquipped({ cosmetics });
 
@@ -101,17 +103,17 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
             <button
               onClick={() => router.push("/me")}
               className="min-h-tap text-[10px] font-black px-2 rounded-full bg-clay-light text-clay border border-clay/30 active:scale-95 transition-transform"
-              title="Góc Của Tớ — tùy biến avatar"
+              title={t("game.hero.myCornerTitle")}
             >
-              🏠 Của Tớ
+              {t("game.hero.myCorner")}
             </button>
             <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
-              CẤP {level}
+              {t("game.hero.level", { n: level })}
             </span>
           </div>
         </div>
 
-        <p className="text-[11px] font-bold text-gray-500">{getLevelTitle(level)}</p>
+        <p className="text-[11px] font-bold text-gray-500">{t(levelTitleKey(level))}</p>
 
         {/* EXP Progress bar */}
         <div className="space-y-1">
@@ -122,8 +124,8 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
             ></div>
           </div>
           <div className="flex justify-between text-[8.5px] font-black text-gray-400">
-            <span>EXP: {exp}</span>
-            <span>YÊU CẦU: {expToNextLevel}</span>
+            <span>{t("game.hero.exp", { n: exp })}</span>
+            <span>{t("game.hero.req", { n: expToNextLevel })}</span>
           </div>
         </div>
       </div>

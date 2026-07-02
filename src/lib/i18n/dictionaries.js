@@ -1,11 +1,15 @@
 /**
  * i18n dictionaries — VI (default) + EN.
- * V1 coverage: auth, onboarding, child profiles, premium/paywall, common navigation.
- * Game screens keep Vietnamese-first copy; keys can be extended incrementally.
+ * Coverage: auth, onboarding, child profiles, premium/paywall, common navigation,
+ * and the game-screen chrome (merged from ./game). Game DATA (pet/item/boss names,
+ * pet quotes, parent-entered task titles) stays as-is — proper nouns / user data.
  */
+
+import { gameDict } from "./game";
 
 export const dictionaries = {
   vi: {
+    ...gameDict.vi,
     // Common
     "common.appName": "Level Up Kids",
     "common.loading": "Đang tải...",
@@ -72,6 +76,7 @@ export const dictionaries = {
   },
 
   en: {
+    ...gameDict.en,
     // Common
     "common.appName": "Level Up Kids",
     "common.loading": "Loading...",

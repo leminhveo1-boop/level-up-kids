@@ -2,11 +2,13 @@
 
 import React, { useState } from "react";
 import { GIFT_CATALOG } from "@/lib/game/gifting";
+import { useLang } from "@/context/LanguageContext";
 
 const CLASS_EMOJI = { Mage: "🔮", Druid: "🌱" };
 
 /** 👨‍👩‍👧‍👦 D3: siblings strip — switch player + send gifts (family circle V1). */
 export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, onSelectChild, sendGift }) {
+  const { t } = useLang();
   const [giftPickerFor, setGiftPickerFor] = useState(null);
   const [giftFlash, setGiftFlash] = useState("");
 
@@ -19,7 +21,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
 
   return (
     <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-2">
-      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">👨‍👩‍👧‍👦 Nhà Mình</span>
+      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">{t("game.family.title")}</span>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {childProfiles.map((sib) => {
           const isMe = sib.id === activeChildId;
@@ -28,7 +30,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
             <div key={sib.id} className="flex-shrink-0 flex items-center gap-1">
               <button
                 onClick={() => {
-                  if (!isMe && confirm(`Đổi sang người chơi ${sib.name}?`)) {
+                  if (!isMe && confirm(t("game.family.switchConfirm", { name: sib.name }))) {
                     onSelectChild(sib.id);
                   }
                 }}
@@ -38,14 +40,14 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
               >
                 <span className="text-lg">{sibEmoji}</span>
                 <span className="text-[11px] font-black text-forest-dark">
-                  {sib.name} {isMe && "(tớ)"}
+                  {sib.name} {isMe && t("game.family.me")}
                 </span>
               </button>
               {!isMe && (
                 <button
                   onClick={() => setGiftPickerFor(giftPickerFor === sib.id ? null : sib.id)}
                   className="min-h-tap min-w-tap flex items-center justify-center rounded-xl border-2 border-purple-200 bg-purple-50 text-base active:scale-95 transition-transform"
-                  title={`Tặng quà cho ${sib.name}`}
+                  title={t("game.family.giftFor", { name: sib.name })}
                 >
                   🎁
                 </button>
@@ -58,7 +60,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
       {giftPickerFor && (
         <div className="border-t border-sand pt-2 space-y-1.5">
           <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">
-            Tặng {childProfiles.find((c) => c.id === giftPickerFor)?.name} món gì?
+            {t("game.family.giftTitle", { name: childProfiles.find((c) => c.id === giftPickerFor)?.name })}
           </span>
           <div className="grid grid-cols-2 gap-1.5">
             {GIFT_CATALOG.map((g) => (

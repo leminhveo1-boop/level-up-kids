@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
-import { Save, RotateCcw, Lock, Palette, Bell, BellOff } from "lucide-react";
+import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe } from "lucide-react";
 
 /** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
 export default function SystemTab() {
@@ -179,6 +180,9 @@ export default function SystemTab() {
         </div>
       </form>
 
+      {/* Language (global) */}
+      <LanguageCard />
+
       {/* UI mode per child */}
       <UiModeCard showFlash={showFlash} />
 
@@ -261,6 +265,37 @@ function PushCard({ showFlash }) {
       >
         {busy ? "Đang xử lý..." : enabled ? "TẮT THÔNG BÁO 🔕" : "BẬT THÔNG BÁO 🔔"}
       </button>
+    </div>
+  );
+}
+
+/** App language switcher — global (persisted per device via LanguageContext). */
+function LanguageCard() {
+  const { locale, setLocale, t } = useLang();
+  const options = [
+    { code: "vi", labelKey: "game.lang.vi" },
+    { code: "en", labelKey: "game.lang.en" },
+  ];
+
+  return (
+    <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+      <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+        <Globe size={16} /> {t("game.lang.title")}
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        {options.map(({ code, labelKey }) => (
+          <button
+            key={code}
+            onClick={() => setLocale(code)}
+            className={`min-h-tap rounded-xl border-2 text-scale-2xs font-black transition-all ${
+              locale === code ? "border-forest bg-forest-light/20 text-forest-dark" : "border-sand text-gray-500"
+            }`}
+          >
+            {t(labelKey)}
+          </button>
+        ))}
+      </div>
+      <p className="text-scale-2xs text-gray-400">{t("game.lang.desc")}</p>
     </div>
   );
 }

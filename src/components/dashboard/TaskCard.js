@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
+import { useLang } from "@/context/LanguageContext";
 
 const CATEGORY_META = {
-  discipline: { emoji: "⚡", statText: "Kỷ luật" },
-  strength: { emoji: "❤️", statText: "Thể lực" },
-  intellect: { emoji: "🧠", statText: "Trí tuệ" },
-  creative: { emoji: "🎨", statText: "Sáng tạo" },
-  help: { emoji: "🤝", statText: "Giúp đỡ" },
-  connection: { emoji: "💞", statText: "Kết nối" },
+  discipline: { emoji: "⚡", statKey: "game.stat.discipline" },
+  strength: { emoji: "❤️", statKey: "game.stat.strength" },
+  intellect: { emoji: "🧠", statKey: "game.stat.intellect" },
+  creative: { emoji: "🎨", statKey: "game.stat.creative" },
+  help: { emoji: "🤝", statKey: "game.stat.help" },
+  connection: { emoji: "💞", statKey: "game.stat.connection" },
 };
 
 const formatStopwatch = (totalSecs) => {
@@ -30,7 +31,10 @@ export default function TaskCard({
   onStopFocus,
   onAttachPhoto,
 }) {
-  const { emoji, statText } = CATEGORY_META[task.category] || { emoji: "🛡️", statText: "EXP" };
+  const { t } = useLang();
+  const meta = CATEGORY_META[task.category];
+  const emoji = meta?.emoji || "🛡️";
+  const statText = meta ? t(meta.statKey) : t("game.stat.exp");
 
   let itemStyle = "border-sand shadow-game-flat hover:border-sand-dark";
   if (task.isMandatory && !task.completed) {
@@ -69,24 +73,24 @@ export default function TaskCard({
               </span>
               {/* V1.3: soft hint (never a gate) */}
               {task.verifyType === "parent" && (
-                <span className="text-[9px] font-bold text-gray-400 select-none">👨‍👩‍👧 bố mẹ ghi nhận</span>
+                <span className="text-[9px] font-bold text-gray-400 select-none">{t("game.task.parentNote")}</span>
               )}
               {focusable && (
-                <span className="text-[9px] font-bold text-forest-medium select-none">🌳 {task.durationMin}p</span>
+                <span className="text-[9px] font-bold text-forest-medium select-none">{t("game.task.minutes", { n: task.durationMin })}</span>
               )}
               {task.isMandatory && !task.completed && (
                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
-                  Bắt buộc 🔴
+                  {t("game.task.mandatory")}
                 </span>
               )}
               {task.custom && (
                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
-                  Bố mẹ giao 👑
+                  {t("game.task.parentAssigned")}
                 </span>
               )}
               {task.approval === "pending" && (
                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-sky-light text-sky-dark border border-sky/30 uppercase select-none">
-                  ⏳ Chờ duyệt
+                  {t("game.task.waiting")}
                 </span>
               )}
             </div>
@@ -111,7 +115,7 @@ export default function TaskCard({
             <>
               <div className="flex items-center gap-2 text-xs font-black text-forest">
                 <span className="animate-pulse text-sm">🌳</span>
-                <span className="font-mono text-sm tracking-wider">Tập trung: {formatStopwatch(elapsedSeconds)}</span>
+                <span className="font-mono text-sm tracking-wider">{t("game.task.focusLabel", { time: formatStopwatch(elapsedSeconds) })}</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -119,14 +123,14 @@ export default function TaskCard({
                   onClick={() => onToggleComplete(task.id)}
                   className="min-h-tap bg-forest text-white text-[10px] font-black px-3 rounded-xl border border-forest shadow-game-forest active:scale-95 transition-all"
                 >
-                  XONG ✅
+                  {t("game.task.focusDone")}
                 </button>
                 <button
                   type="button"
                   onClick={onStopFocus}
                   className="min-h-tap bg-sand-light text-gray-500 text-[10px] font-black px-2.5 rounded-xl border border-sand active:scale-95 transition-all"
                 >
-                  Dừng
+                  {t("game.task.focusStop")}
                 </button>
               </div>
             </>
@@ -134,16 +138,16 @@ export default function TaskCard({
             <>
               {focusable ? (
                 <span className="text-[10px] text-gray-400 font-bold">
-                  🌳 Bật tập trung để nhận <b className="text-forest-medium">điểm thưởng</b> (tùy chọn)
+                  {t("game.task.focusHintA")}<b className="text-forest-medium">{t("game.task.focusHintBold")}</b>{t("game.task.focusHintB")}
                 </span>
               ) : (
-                <span className="text-[10px] text-gray-300 font-bold">✓ Làm xong thì tích ô bên trên</span>
+                <span className="text-[10px] text-gray-300 font-bold">{t("game.task.tickHint")}</span>
               )}
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => onAttachPhoto(task.id)}
-                  title="Đính ảnh (tùy chọn, lưu trên máy)"
+                  title={t("game.task.photoTitle")}
                   className="min-h-tap w-9 flex items-center justify-center bg-white text-gray-400 rounded-xl border border-sand active:scale-95 transition-all"
                 >
                   📸
@@ -154,7 +158,7 @@ export default function TaskCard({
                     onClick={() => onStartFocus(task.id)}
                     className="min-h-tap text-[10px] font-black px-3 rounded-xl border-2 border-forest text-forest bg-white shadow-game-forest active:scale-95 transition-all flex items-center gap-1"
                   >
-                    🌳 Tập trung
+                    {t("game.task.startFocus")}
                   </button>
                 )}
               </div>
