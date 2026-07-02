@@ -3,23 +3,69 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 // Cloudflare Pages requires edge runtime for API routes
 export const runtime = "edge";
 
+const SIGNATURE_MAX_AGE_SEC = 300; // reject webhooks older than 5 minutes (replay guard)
+
 /**
- * SePay webhook — bank transfer IPN.
- * Config in SePay dashboard: URL = /api/webhooks/sepay, Auth = "Apikey <SEPAY_WEBHOOK_API_KEY>".
- * Flow: parent transfers with content containing their payment_code (LUKXXXXXXXX)
- *       → webhook matches profile → RPC activates premium (idempotent per tx id).
+ * Verify SePay HMAC-SHA256 signature (Web Crypto, edge-compatible).
+ * signature = "sha256=" + HMAC_SHA256(timestamp + "." + rawBody, secret)
+ */
+async function verifyHmac(signatureHeader, timestampHeader, rawBody, secret) {
+  if (!signatureHeader || !timestampHeader || !secret) return false;
+
+  const ts = parseInt(timestampHeader, 10);
+  if (!Number.isFinite(ts) || Math.abs(Date.now() / 1000 - ts) > SIGNATURE_MAX_AGE_SEC) {
+    return false;
+  }
+
+  const expectedHex = signatureHeader.replace(/^sha256=/, "").toLowerCase();
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const mac = await crypto.subtle.sign("HMAC", key, encoder.encode(`${timestampHeader}.${rawBody}`));
+  const computedHex = [...new Uint8Array(mac)].map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  // constant-time-ish compare
+  if (computedHex.length !== expectedHex.length) return false;
+  let diff = 0;
+  for (let i = 0; i < computedHex.length; i++) diff |= computedHex.charCodeAt(i) ^ expectedHex.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * SePay webhook — bank transfer IPN (https://developer.sepay.vn).
+ * Auth: HMAC-SHA256 headers (X-Sepay-Signature/X-Sepay-Timestamp) — preferred,
+ *       or legacy "Authorization: Apikey <key>".
+ * Response contract: HTTP 200 + {"success": true} for every processed event
+ * (business-level rejections are logged to `payments` for reconciliation).
  */
 export async function POST(request) {
-  // ---- authenticate webhook caller ----
-  const authHeader = request.headers.get("authorization") || "";
-  const expectedKey = process.env.SEPAY_WEBHOOK_API_KEY;
-  if (!expectedKey || authHeader !== `Apikey ${expectedKey}`) {
+  const rawBody = await request.text();
+
+  // ---- authenticate: HMAC first, legacy Apikey fallback ----
+  const hmacOk = await verifyHmac(
+    request.headers.get("x-sepay-signature"),
+    request.headers.get("x-sepay-timestamp"),
+    rawBody,
+    process.env.SEPAY_WEBHOOK_SECRET
+  );
+
+  const legacyKey = process.env.SEPAY_WEBHOOK_API_KEY;
+  const apikeyOk = Boolean(
+    legacyKey && legacyKey !== "CHANGE_ME" && request.headers.get("authorization") === `Apikey ${legacyKey}`
+  );
+
+  if (!hmacOk && !apikeyOk) {
     return Response.json({ success: false, error: "UNAUTHORIZED" }, { status: 401 });
   }
 
   let payload;
   try {
-    payload = await request.json();
+    payload = JSON.parse(rawBody);
   } catch {
     return Response.json({ success: false, error: "INVALID_JSON" }, { status: 400 });
   }
@@ -31,7 +77,7 @@ export async function POST(request) {
 
   const amount = Number(payload.transferAmount) || 0;
   const txId = String(payload.id ?? payload.referenceCode ?? "");
-  const content = String(payload.content ?? payload.description ?? "");
+  const content = String(payload.content ?? payload.description ?? payload.code ?? "");
 
   if (!txId) {
     return Response.json({ success: false, error: "MISSING_TX_ID" }, { status: 400 });
@@ -75,6 +121,7 @@ export async function POST(request) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
 
-  // Always 200 so SePay does not retry storms on business-level rejections
-  return Response.json(data ?? { success: true });
+  // SePay contract: 200 + success=true means "received & processed" —
+  // business rejections (amount too low, code not found) are logged, not retried
+  return Response.json({ success: true, ...(data ?? {}) });
 }
