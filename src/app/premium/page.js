@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { Suspense, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { track } from "@/lib/analytics";
@@ -11,19 +11,44 @@ const BANK_ID = process.env.NEXT_PUBLIC_BANK_ID || ""; // e.g. "MB", "VCB" (Viet
 const BANK_ACCOUNT = process.env.NEXT_PUBLIC_BANK_ACCOUNT || "";
 const BANK_HOLDER = process.env.NEXT_PUBLIC_BANK_HOLDER || "";
 
-export default function PremiumPage() {
+function PremiumContent() {
   const router = useRouter();
   const { t, locale } = useLang();
   const { authLoaded, cloudEnabled, user, profile, isPremium, redeemActivationCode } = useAuth();
 
-  const [codeInput, setCodeInput] = useState("");
+  const searchParams = useSearchParams();
+  const prefillCode = searchParams.get("code") || "";
+  const [codeInput, setCodeInput] = useState(prefillCode.toUpperCase());
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(null); // { ok: boolean, text: string }
+  const autoRedeemDone = useRef(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (authLoaded) track("paywall_view", { paid: isPremium });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoaded]);
+
+  // Auto-redeem when arriving via deep-link ?code=LUKID-XXXX-XXXX
+  useEffect(() => {
+    if (!prefillCode || autoRedeemDone.current) return;
+    if (!authLoaded || !cloudEnabled || !user) return;
+    autoRedeemDone.current = true;
+    (async () => {
+      setBusy(true);
+      const res = await redeemActivationCode(prefillCode.trim());
+      setBusy(false);
+      if (res?.success) {
+        track("code_redeemed", { duration_days: res.duration_days, source: "deeplink" });
+        setMessage({ ok: true, text: t("premium.codeSuccess") });
+        setCodeInput("");
+      } else {
+        const key = `premium.code.${res?.error}`;
+        const translated = t(key);
+        setMessage({ ok: false, text: translated === key ? t("common.error") : translated });
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoaded, cloudEnabled, user, prefillCode]);
 
   if (!authLoaded) {
     return (
@@ -183,5 +208,19 @@ export default function PremiumPage() {
         )}
       </form>
     </div>
+  );
+}
+
+export default function PremiumPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center flex-grow p-6">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest" />
+        </div>
+      }
+    >
+      <PremiumContent />
+    </Suspense>
   );
 }
