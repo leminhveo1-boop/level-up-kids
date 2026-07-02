@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
-import { Save, RotateCcw, Lock, Palette } from "lucide-react";
+import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
+import { Save, RotateCcw, Lock, Palette, Bell, BellOff } from "lucide-react";
 
 /** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
 export default function SystemTab() {
@@ -162,6 +163,9 @@ export default function SystemTab() {
       {/* UI mode per child */}
       <UiModeCard showFlash={showFlash} />
 
+      {/* Push notifications */}
+      <PushCard showFlash={showFlash} />
+
       {/* Daily reset */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
         <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
@@ -182,6 +186,62 @@ export default function SystemTab() {
           GIẢ LẬP NGÀY MỚI 🔄
         </button>
       </div>
+    </div>
+  );
+}
+
+/** Push notification opt-in for THIS device (parent audience). */
+function PushCard({ showFlash }) {
+  const { cloudEnabled, user } = useAuth();
+  const [enabled, setEnabled] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    getPushStatus().then(setEnabled);
+  }, []);
+
+  if (!cloudEnabled || !user || !isPushSupported()) return null;
+
+  const handleToggle = async () => {
+    setBusy(true);
+    try {
+      if (enabled) {
+        await disablePush();
+        setEnabled(false);
+        showFlash("Đã tắt thông báo trên thiết bị này. 🔕");
+      } else {
+        const r = await enablePush("parent");
+        if (r.success) {
+          setEnabled(true);
+          showFlash("Đã bật thông báo! Bố mẹ sẽ được nhắc duyệt điểm lúc 20h. 🔔");
+        } else if (r.error === "PERMISSION_DENIED") {
+          showFlash("Trình duyệt đã chặn thông báo — mở cài đặt site để cho phép lại. ⚠️");
+        } else {
+          showFlash("Không bật được thông báo: " + r.error);
+        }
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+      <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+        {enabled ? <Bell size={16} /> : <BellOff size={16} />} Thông báo đẩy (thiết bị này)
+      </h3>
+      <p className="text-scale-2xs text-gray-500">
+        Nhận nhắc nhở khi con xin duyệt điểm và tóm tắt cuối ngày. Không gửi sau 20h30.
+      </p>
+      <button
+        onClick={handleToggle}
+        disabled={busy}
+        className={`w-full min-h-tap rounded-xl text-scale-xs font-black active:scale-[0.98] transition-transform ${
+          enabled ? "bg-sand text-gray-500" : "bg-forest text-white"
+        }`}
+      >
+        {busy ? "Đang xử lý..." : enabled ? "TẮT THÔNG BÁO 🔕" : "BẬT THÔNG BÁO 🔔"}
+      </button>
     </div>
   );
 }

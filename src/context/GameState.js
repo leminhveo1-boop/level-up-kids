@@ -33,6 +33,7 @@ export function GameProvider({ children }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const syncTimerRef = useRef(null);
   const loadedChildRef = useRef(null);
+  const lastSavedAtRef = useRef(0); // realtime echo guard
 
   // ---------------- LOAD (per active child; cloud-newest-wins) ----------------
   useEffect(() => {
@@ -111,6 +112,7 @@ export function GameProvider({ children }) {
     if (activeChildId === DEMO_CHILD_ID) return; // demo is never persisted
 
     const toSave = { ...state, savedAt: Date.now() };
+    lastSavedAtRef.current = toSave.savedAt;
     try {
       localStorage.setItem(stateKeyFor(activeChildId), JSON.stringify(toSave));
     } catch {
@@ -128,6 +130,34 @@ export function GameProvider({ children }) {
     }
     return () => clearTimeout(syncTimerRef.current);
   }, [state, isLoaded, activeChildId, cloudEnabled, supabase, user]);
+
+  // ---------------- V1.2: Realtime remote updates (remote approve 📲) ----------------
+  // Another device on the same family account (e.g. parent's phone) writes to
+  // game_states → this device adopts the newer state live, no reload needed.
+  useEffect(() => {
+    if (!isLoaded || !cloudEnabled || !supabase || !user) return;
+    if (!activeChildId || String(activeChildId).startsWith("local_") || activeChildId === DEMO_CHILD_ID) return;
+
+    const channel = supabase
+      .channel(`gs_${activeChildId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "game_states", filter: `child_id=eq.${activeChildId}` },
+        (payload) => {
+          const remote = payload.new?.state;
+          if (!remote) return;
+          // ignore our own echo & anything not strictly newer than our last write
+          if ((remote.savedAt || 0) <= lastSavedAtRef.current) return;
+          lastSavedAtRef.current = remote.savedAt || Date.now();
+          setState((prev) => (prev ? migrateState(remote) : prev));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isLoaded, cloudEnabled, supabase, user, activeChildId]);
 
   // ---------------- Screen-time absolute timer tick ----------------
   useEffect(() => {
