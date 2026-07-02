@@ -8,7 +8,7 @@
 
 ## PHẦN 1 — SỔ NỢ TÍNH NĂNG (đối chiếu roadmap đã cam kết)
 
-> **CẬP NHẬT 02/07/2026:** Đã trả xong D1–D3 (Đợt Sức Sống), Teen reframe, D8 (so-với-chính-mình + auto-duyệt Uy Tín), **referral 2 chiều +6 tháng**, và **D5 Cây Thế Giới + D6 Căn Cứ Anh Hùng + D7 Mùa**. Nợ kỹ thuật đã trả: tách dashboard, E2E luồng tiền, i18n VI/EN toàn màn game. Còn lại: D4 habit stacking, D9 friend V2, a11y audit chính thức, và **chạy migration 0009_referral.sql trên Supabase** để referral hoạt động.
+> **CẬP NHẬT 02/07/2026:** Đã trả xong D1–D3 (Đợt Sức Sống), Teen reframe, D8 (so-với-chính-mình + auto-duyệt Uy Tín), **referral 2 chiều +6 tháng**, **D5 Cây Thế Giới + D6 Căn Cứ Anh Hùng + D7 Mùa**, và **D4 chia nhỏ việc hay bỏ (Fogg)**. Nợ kỹ thuật đã trả: tách dashboard, E2E luồng tiền, i18n VI/EN toàn màn game. **Còn lại DUY NHẤT: D9 friend V2** — hoãn tới đợt audit an toàn/kiểm duyệt trước launch (trẻ kết nối xuyên gia đình). Cần **chạy migration 0009_referral.sql trên Supabase** để referral hoạt động.
 
 ### ✅ Đã làm (điểm qua)
 Escrow/Uy Tín (đã redesign V1.3), Kanban, Goal bar, Bồ câu 2 chiều, Tốt nghiệp thói quen 🎓, Streak freeze, Onboarding wizard, Analytics, Báo cáo tuần + chart, Push, Email tuần, Duyệt từ xa realtime, Avatar cosmetics (Góc Của Tớ), Sổ Vàng, Thẻ Khoe Con, Teen Mode, Parent-log, đa gia đình/đa con, Demo→Paid, SePay HMAC.
