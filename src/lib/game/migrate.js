@@ -47,8 +47,12 @@ export function migrateState(data) {
     if (next.energy === undefined) {
       next.energy = next.gold !== undefined && next.gold > 0 ? next.gold * 5 : next.exp || 15;
     }
-    // P0: verification type defaults to trust for legacy tasks
+    // V1.3: normalize old gated verify types → soft hints, drop gate-era fields
+    const verifyMap = { timer: "focus", photo: "trust", witness: "parent" };
+    if (verifyMap[next.verifyType]) next.verifyType = verifyMap[next.verifyType];
     if (!next.verifyType) next.verifyType = "trust";
+    delete next.photoRequiredToday;
+    delete next.evidencePhoto;
     // P0: tasks completed before escrow existed were paid instantly → treat as approved
     if (next.completed && !next.approval) {
       next.approval = "auto";

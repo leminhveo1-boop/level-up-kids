@@ -427,18 +427,31 @@ describe("P0 escrow & trust (PDCA Check)", () => {
     expect(r.result.error).toBe("NUDGE_LIMIT");
   });
 
-  test("photo spot-check flags declared at day start; high trust checks less", () => {
-    // rng 0.2 < 1/3 ⇒ flagged for normal trust
-    const normal = resetDailyTasks(freshState({ trustScore: 50 }), rngQueue(0.2));
-    const photoTasks = normal.tasks.filter((t) => t.verifyType === "photo");
-    expect(photoTasks.length).toBeGreaterThan(0);
-    expect(photoTasks.every((t) => t.photoRequiredToday === true)).toBe(true);
-    // trust-only tasks never flagged
-    expect(normal.tasks.filter((t) => t.verifyType !== "photo").every((t) => !t.photoRequiredToday)).toBe(true);
+  test("V1.3: no synchronous gates remain — daily reset never flags photo/gate fields", () => {
+    const next = resetDailyTasks(freshState({ trustScore: 50 }), rngQueue(0.2));
+    expect(next.tasks.every((t) => t.photoRequiredToday === undefined)).toBe(true);
+    expect(next.tasks.every((t) => t.focusEarnedToday === false)).toBe(true);
+  });
+});
 
-    // same roll 0.2 > 1/6 ⇒ NOT flagged for high trust (lighter checking)
-    const trusted = resetDailyTasks(freshState({ trustScore: 85 }), rngQueue(0.2));
-    expect(trusted.tasks.filter((t) => t.verifyType === "photo").every((t) => !t.photoRequiredToday)).toBe(true);
+describe("V1.3: optional focus bonus 🌳", () => {
+  test("focusEarned adds a bonus on top of normal claim (into escrow)", () => {
+    const state = freshState();
+    const task = state.tasks.find((t) => t.id === "t3"); // points 10
+    // no focus → normal pending points
+    const plain = completeTask(state, "t3", rngQueue(0.99));
+    // with focus → bonus = max(2, round(10 * 0.5)) = 5
+    const focused = completeTask(state, "t3", rngQueue(0.99), { focusEarned: true });
+    const plainPts = plain.state.tasks.find((t) => t.id === "t3").pendingPoints;
+    const focusPts = focused.state.tasks.find((t) => t.id === "t3").pendingPoints;
+    expect(focusPts).toBe(plainPts + 5);
+    expect(focused.events.focusBonus).toBe(5);
+  });
+
+  test("no focus flag = zero bonus", () => {
+    const state = freshState();
+    const { events } = completeTask(state, "t1", rngQueue(0.99));
+    expect(events.focusBonus).toBe(0);
   });
 });
 

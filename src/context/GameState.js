@@ -216,65 +216,27 @@ export function GameProvider({ children }) {
 
   // ---------------- Game actions ----------------
   /**
-   * Complete/uncomplete a task with verification gates (P0).
+   * Complete/uncomplete a task. V1.3: NO synchronous gates — every task is a
+   * frictionless 1-tap claim → escrow. `focusEarned` grants the optional
+   * focus-session bonus. Photos are stored device-only by the caller.
    * @param {string} id
-   * @param {{ elapsedSeconds?: number, pin?: string, photo?: string }} [opts]
-   * @returns {{ success: boolean, error?: string, requiredMin?: number }}
+   * @param {{ focusEarned?: boolean }} [opts]
+   * @returns {{ success: boolean }}
    */
   const completeTask = useCallback((id, opts = {}) => {
-    let outcome = { success: true };
+    const outcome = { success: true };
     setState((prev) => {
       if (!prev) return prev;
       const task = prev.tasks.find((t) => t.id === id);
       if (!task) return prev;
 
       if (!task.completed) {
-        // Same-day grace: re-ticking a previously-approved task skips gates
-        if (!task.wasApprovedToday) {
-        // ===== VERIFICATION GATES (declared up-front, never retroactive) =====
-        if (task.verifyType === "timer") {
-          const requiredSec = (task.durationMin || 10) * 60 * 0.8;
-          if ((opts.elapsedSeconds || 0) < requiredSec) {
-            outcome = {
-              success: false,
-              error: "TIMER_REQUIRED",
-              requiredMin: task.durationMin || 10,
-              message: `Nhiệm vụ này cần bấm "BẮT ĐẦU LÀM" và tập trung đủ ${task.durationMin || 10} phút (⏱️ tối thiểu ${Math.ceil(requiredSec / 60)} phút) mới hoàn thành được nhé!`,
-            };
-            return prev;
-          }
-        }
-        if (task.verifyType === "witness") {
-          if (opts.pin !== prev.parentPin) {
-            outcome = {
-              success: false,
-              error: "PIN_REQUIRED",
-              message: "Việc này cần bố mẹ có mặt xác nhận bằng mã PIN! 👀",
-            };
-            return prev;
-          }
-        }
-        if (task.verifyType === "photo" && task.photoRequiredToday && !opts.photo) {
-          outcome = {
-            success: false,
-            error: "PHOTO_REQUIRED",
-            message: "Hôm nay việc này cần chụp ảnh kết quả để làm bằng chứng nhé! 📸",
-          };
-          return prev;
-        }
-        }
-
         playSound("complete");
-        let { state: next, events } = economy.completeTask(prev, id);
-        if (opts.photo) {
-          next = {
-            ...next,
-            tasks: next.tasks.map((t) => (t.id === id ? { ...t, evidencePhoto: opts.photo } : t)),
-          };
-        }
-        // Witness tasks are parent-confirmed on the spot → instant approval
-        if (task.verifyType === "witness") {
-          next = economy.approveTask(next, id).state;
+        const { state: next, events } = economy.completeTask(prev, id, Math.random, {
+          focusEarned: Boolean(opts.focusEarned),
+        });
+        if (events?.focusBonus > 0) {
+          setTimeout(() => fireConfetti({ particleCount: 40, spread: 50, colors: ["#2E7D32", "#A7F3D0"] }), 120);
         }
         if (events?.leveledUp) {
           setTimeout(() => {
@@ -302,6 +264,24 @@ export function GameProvider({ children }) {
 
       playSound("uncomplete");
       return economy.uncompleteTask(prev, id).state;
+    });
+    return outcome;
+  }, []);
+
+  // V1.3: Parent-log — parent marks a task done FOR the child (Token Economy
+  // model: adult observes & credits; child never touches the phone). Completes
+  // then auto-approves in one step, so points land immediately.
+  const parentCompleteTask = useCallback((id) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const task = prev.tasks.find((t) => t.id === id);
+      if (!task || task.completed) return prev;
+      const { state: done } = economy.completeTask(prev, id);
+      const { state: next } = economy.approveTask(done, id);
+      outcome = { success: true };
+      playSound("coin");
+      return next;
     });
     return outcome;
   }, []);
@@ -691,6 +671,7 @@ export function GameProvider({ children }) {
         approveTask,
         approveAllPending,
         rejectTask,
+        parentCompleteTask,
         nudgeParents,
         cosmetics: s.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },
         buyCosmetic,

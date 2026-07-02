@@ -21,11 +21,11 @@ import {
   TRUST_GAIN_ON_APPROVE,
   TRUST_LOSS_ON_REJECT,
   TRUST_HIGH_THRESHOLD,
-  PHOTO_SPOTCHECK_RATE,
-  PHOTO_SPOTCHECK_RATE_TRUSTED,
   NUDGE_LIMIT_PER_DAY,
   HISTORY_LIMIT_DAYS,
   GRADUATION_DAYS,
+  FOCUS_BONUS_MIN,
+  FOCUS_BONUS_RATIO,
 } from "./constants";
 
 /** Streak → points multiplier (balanced against inflation). */
@@ -59,7 +59,7 @@ export function applyExpGain(level, exp, gained) {
  * @param {() => number} [rng]
  * @returns {{ state: object, events: { leveledUp: boolean, levelsGained: number, isCritical: boolean, pointsAdded: number, energyAdded: number, bossDefeated: boolean } | null }}
  */
-export function completeTask(state, taskId, rng = Math.random) {
+export function completeTask(state, taskId, rng = Math.random, opts = {}) {
   const task = state.tasks.find((t) => t.id === taskId);
   if (!task || task.completed) return { state, events: null };
 
@@ -68,9 +68,12 @@ export function completeTask(state, taskId, rng = Math.random) {
 
   // Points: crit 15% then streak multiplier
   const isCritical = rng() < CRIT_POINT_CHANCE;
-  let basePoints = task.points !== undefined ? task.points : task.exp;
+  const rawPoints = task.points !== undefined ? task.points : task.exp;
+  let basePoints = rawPoints;
   if (isCritical) basePoints *= 2;
-  const pointsAdded = Math.ceil(basePoints * getStreakMultiplier(state.streak));
+  // V1.3: optional focus-session bonus (never required — Forest-style reward)
+  const focusBonus = opts.focusEarned ? Math.max(FOCUS_BONUS_MIN, Math.round(rawPoints * FOCUS_BONUS_RATIO)) : 0;
+  const pointsAdded = Math.ceil(basePoints * getStreakMultiplier(state.streak)) + focusBonus;
 
   // Energy (mount bonus)
   let energyAdded = task.energy || 0;
@@ -130,6 +133,7 @@ export function completeTask(state, taskId, rng = Math.random) {
       levelsGained: expResult.levelsGained,
       isCritical,
       pointsAdded,
+      focusBonus,
       pointsPending: !instantApproved,
       energyAdded,
       bossDefeated: bossJustDefeated,
@@ -198,7 +202,7 @@ export function rejectTask(state, taskId) {
       ...state,
       tasks: state.tasks.map((t) =>
         t.id === taskId
-          ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedEnergy: 0, evidencePhoto: undefined, wasRejected: true }
+          ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedEnergy: 0, wasRejected: true }
           : t
       ),
       stats: nextStats,
@@ -556,11 +560,6 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     }
   }
 
-  // 🔍 Spot-check: flag a fraction of photo-tasks for today (declared UP FRONT,
-  // never demanded retroactively). High trust ⇒ lighter checking.
-  const spotRate =
-    (settled.trustScore || 0) >= TRUST_HIGH_THRESHOLD ? PHOTO_SPOTCHECK_RATE_TRUSTED : PHOTO_SPOTCHECK_RATE;
-
   // 📊 V1.2: daily snapshot of the closing day (feeds the weekly report)
   const mandatoryTotal = settled.tasks.filter((t) => t.isMandatory).length;
   const snapshot = {
@@ -612,10 +611,9 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
       pendingPoints: 0,
       earnedPoints: 0,
       earnedEnergy: 0,
-      evidencePhoto: undefined,
       wasRejected: false,
       wasApprovedToday: undefined, // grace window is same-day only
-      photoRequiredToday: t.verifyType === "photo" ? rng() < spotRate : false,
+      focusEarnedToday: false, // reset the optional focus-session flag
     })),
     energy: Math.min(ENERGY_CAP, settled.energy + DAILY_ENERGY_BONUS),
     rewards: settled.rewards.map((r) => ({ ...r, parentApproved: false })),

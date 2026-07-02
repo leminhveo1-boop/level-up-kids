@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
-import { Check, X, ShieldCheck, Camera, Clock, Eye, HandHeart, Send } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { getLocalPhoto } from "@/lib/localPhotos";
+import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle } from "lucide-react";
 
 const VERIFY_META = {
-  trust: { icon: HandHeart, label: "Tự giác" },
-  timer: { icon: Clock, label: "Hẹn giờ" },
-  photo: { icon: Camera, label: "Chụp ảnh" },
-  witness: { icon: Eye, label: "Chứng kiến" },
+  trust: { icon: HandHeart, label: "Con tự ghi nhận" },
+  parent: { icon: Users, label: "Bố mẹ ghi nhận" },
+  focus: { icon: Trees, label: "Có tập trung" },
 };
 
 /**
@@ -25,12 +26,14 @@ export default function ApprovalTab() {
     approveTask,
     approveAllPending,
     rejectTask,
+    parentCompleteTask,
     heroCoins,
     setHeroCoins,
     points,
     setPoints,
     sendEncouragement,
   } = useGame();
+  const { activeChildId } = useAuth();
 
   const [photoPreview, setPhotoPreview] = useState(null); // dataURL being viewed
   const [flash, setFlash] = useState("");
@@ -38,7 +41,14 @@ export default function ApprovalTab() {
   const [bonusAmount, setBonusAmount] = useState(20);
 
   const pending = tasks.filter((t) => t.approval === "pending");
+  // Tasks the child hasn't claimed yet — parent can log them directly
+  const notDone = tasks.filter((t) => !t.completed);
   const todayNudges = approvalNudges.length;
+
+  const handleParentLog = (task) => {
+    parentCompleteTask(task.id);
+    showFlash(`Đã ghi nhận & duyệt "${task.title}" giúp ${charName}! ✅`);
+  };
 
   const showFlash = (text) => {
     setFlash(text);
@@ -101,7 +111,7 @@ export default function ApprovalTab() {
         </div>
         <p className="text-scale-2xs text-gray-400">
           {trustScore >= 80
-            ? "Uy Tín cao — con được nới lỏng kiểm tra ảnh (1/6 thay vì 1/3). Hãy khen con nhé!"
+            ? "Uy Tín cao — con làm thật, báo thật. Hãy khen con nhé!"
             : "Duyệt đúng mỗi ngày giúp Uy Tín tăng; bác nhiệm vụ khai sai sẽ trừ mạnh."}
         </p>
       </div>
@@ -129,19 +139,20 @@ export default function ApprovalTab() {
         ) : (
           <div className="space-y-2">
             {pending.map((task) => {
-              const meta = VERIFY_META[task.verifyType || "trust"];
+              const meta = VERIFY_META[task.verifyType] || VERIFY_META.trust;
               const MetaIcon = meta.icon;
+              const localPhoto = getLocalPhoto(activeChildId, task.id);
               return (
                 <div key={task.id} className="border border-sand rounded-xl p-3 flex items-center gap-3">
-                  {/* Evidence thumbnail if any */}
-                  {task.evidencePhoto ? (
+                  {/* Optional device-only photo, if the child attached one on this device */}
+                  {localPhoto ? (
                     <button
-                      onClick={() => setPhotoPreview(task.evidencePhoto)}
+                      onClick={() => setPhotoPreview(localPhoto)}
                       className="w-12 h-12 rounded-lg overflow-hidden border border-sand flex-shrink-0"
-                      title="Xem ảnh bằng chứng"
+                      title="Xem ảnh con đính (lưu trên máy này)"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={task.evidencePhoto} alt="bằng chứng" className="w-full h-full object-cover" />
+                      <img src={localPhoto} alt="ảnh con đính" className="w-full h-full object-cover" />
                     </button>
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-sand-light border border-sand flex items-center justify-center flex-shrink-0">
@@ -176,6 +187,37 @@ export default function ApprovalTab() {
                 </div>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      {/* Parent-log — mark a task done for the child (Token Economy) */}
+      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
+        <div className="space-y-0.5">
+          <h3 className="text-scale-sm font-black text-forest-dark">✍️ Tick giúp con</h3>
+          <p className="text-scale-2xs text-gray-400">
+            Nhiều việc (dậy sớm, cùng nhau đọc sách...) bố mẹ tự ghi nhận là tiện nhất — con không cần chạm điện thoại.
+          </p>
+        </div>
+        {notDone.length === 0 ? (
+          <p className="text-scale-2xs text-gray-400 text-center py-3">Hôm nay con đã làm hết nhiệm vụ rồi! 🎉</p>
+        ) : (
+          <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+            {notDone.map((task) => (
+              <div key={task.id} className="border border-sand rounded-xl px-3 py-2 flex items-center gap-2">
+                <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{task.title}</span>
+                {task.verifyType === "parent" && (
+                  <span className="text-[10px] text-forest-medium font-black flex-shrink-0">👨‍👩‍👧</span>
+                )}
+                <button
+                  onClick={() => handleParentLog(task)}
+                  className="min-h-tap flex items-center gap-1 bg-forest-light text-forest border border-forest/30 text-[11px] font-black px-3 rounded-xl active:scale-95 transition-transform flex-shrink-0"
+                  title="Ghi nhận & duyệt giúp con"
+                >
+                  <PlusCircle size={14} /> Xong
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>

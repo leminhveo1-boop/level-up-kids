@@ -5,30 +5,30 @@ import { useGame } from "@/context/GameState";
 import { Trash2, Plus } from "lucide-react";
 
 const TASK_TEMPLATES = [
-  { title: "🧹 Rửa bát chén sạch sẽ", category: "help", exp: 15, energy: 15, verifyType: "photo" },
-  { title: "✨ Quét & lau nhà gọn gàng", category: "help", exp: 20, energy: 20, verifyType: "photo" },
-  { title: "🌿 Tưới cây & chăm vườn", category: "help", exp: 10, energy: 10, verifyType: "photo" },
+  { title: "🧹 Rửa bát chén sạch sẽ", category: "help", exp: 15, energy: 15, verifyType: "trust" },
+  { title: "✨ Quét & lau nhà gọn gàng", category: "help", exp: 20, energy: 20, verifyType: "trust" },
+  { title: "🌿 Tưới cây & chăm vườn", category: "help", exp: 10, energy: 10, verifyType: "trust" },
   { title: "🗑️ Tự giác đi đổ rác", category: "help", exp: 10, energy: 10, verifyType: "trust" },
-  { title: "📚 Đọc sách 20 phút", category: "intellect", exp: 25, energy: 20, verifyType: "timer", durationMin: 20 },
-  { title: "🇬🇧 Học Tiếng Anh 15 phút", category: "intellect", exp: 25, energy: 20, verifyType: "timer", durationMin: 15 },
-  { title: "✍️ Hoàn thành bài tập hè", category: "intellect", exp: 30, energy: 25, verifyType: "photo" },
-  { title: "🛌 Gấp chăn màn gọn gàng", category: "discipline", exp: 15, energy: 10, verifyType: "photo" },
-  { title: "💤 Đi ngủ trước 22h tối", category: "discipline", exp: 20, energy: 15, verifyType: "witness" },
-  { title: "🏃 Tập thể dục 15 phút", category: "strength", exp: 20, energy: 20, verifyType: "timer", durationMin: 15 },
-  { title: "🎨 Vẽ tranh hoặc tô màu", category: "creative", exp: 20, energy: 15, verifyType: "photo" },
-  { title: "🎹 Luyện đàn / nhạc cụ 15p", category: "creative", exp: 25, energy: 20, verifyType: "timer", durationMin: 15 },
+  { title: "📚 Đọc sách 20 phút", category: "intellect", exp: 25, energy: 20, verifyType: "focus", durationMin: 20 },
+  { title: "🇬🇧 Học Tiếng Anh 15 phút", category: "intellect", exp: 25, energy: 20, verifyType: "focus", durationMin: 15 },
+  { title: "✍️ Hoàn thành bài tập hè", category: "intellect", exp: 30, energy: 25, verifyType: "trust" },
+  { title: "🛌 Gấp chăn màn gọn gàng", category: "discipline", exp: 15, energy: 10, verifyType: "trust" },
+  { title: "💤 Đi ngủ trước 22h tối", category: "discipline", exp: 20, energy: 15, verifyType: "parent" },
+  { title: "🏃 Tập thể dục 15 phút", category: "strength", exp: 20, energy: 20, verifyType: "focus", durationMin: 15 },
+  { title: "🎨 Vẽ tranh hoặc tô màu", category: "creative", exp: 20, energy: 15, verifyType: "trust" },
+  { title: "🎹 Luyện đàn / nhạc cụ 15p", category: "creative", exp: 25, energy: 20, verifyType: "focus", durationMin: 15 },
   // 💞 Connection quests — parent & child together (both earn the moment)
-  { title: "💞 Đọc sách cùng bố mẹ 15 phút", category: "connection", exp: 25, energy: 20, verifyType: "witness" },
-  { title: "💞 Cùng nấu một món / làm việc nhà chung", category: "connection", exp: 25, energy: 20, verifyType: "witness" },
-  { title: "💞 Đi dạo & trò chuyện cùng nhau 15p", category: "connection", exp: 20, energy: 15, verifyType: "witness" },
-  { title: "💞 Ôm bố mẹ và nói một lời yêu thương", category: "connection", exp: 10, energy: 8, verifyType: "witness" },
+  { title: "💞 Đọc sách cùng bố mẹ 15 phút", category: "connection", exp: 25, energy: 20, verifyType: "parent" },
+  { title: "💞 Cùng nấu một món / làm việc nhà chung", category: "connection", exp: 25, energy: 20, verifyType: "parent" },
+  { title: "💞 Đi dạo & trò chuyện cùng nhau 15p", category: "connection", exp: 20, energy: 15, verifyType: "parent" },
+  { title: "💞 Ôm bố mẹ và nói một lời yêu thương", category: "connection", exp: 10, energy: 8, verifyType: "parent" },
 ];
 
+// V1.3: soft hints only (never a gate). "focus" enables an optional focus timer.
 const VERIFY_OPTIONS = [
-  { value: "trust", label: "🤝 Tự giác (tick là tính)" },
-  { value: "timer", label: "⏱️ Hẹn giờ tập trung" },
-  { value: "photo", label: "📸 Chụp ảnh kết quả" },
-  { value: "witness", label: "👀 Bố mẹ chứng kiến (PIN)" },
+  { value: "trust", label: "🤝 Con tự ghi nhận" },
+  { value: "parent", label: "👨‍👩‍👧 Bố mẹ ghi nhận" },
+  { value: "focus", label: "🌳 Có tập trung (thưởng thêm)" },
 ];
 
 const CATEGORY_OPTIONS = [
@@ -124,8 +124,8 @@ export default function ManageTab() {
   };
 
   const verifyBadge = (t) => {
-    const map = { trust: "🤝", timer: "⏱️", photo: "📸", witness: "👀" };
-    return map[t.verifyType || "trust"];
+    const map = { trust: "🤝", parent: "👨‍👩‍👧", focus: "🌳" };
+    return map[t.verifyType] || "🤝";
   };
 
   return (
@@ -209,7 +209,7 @@ export default function ManageTab() {
                 min={0}
               />
             </label>
-            {taskVerify === "timer" && (
+            {taskVerify === "focus" && (
               <label className="text-scale-2xs font-bold text-gray-500 space-y-1">
                 <span>Phút ⏱️</span>
                 <input

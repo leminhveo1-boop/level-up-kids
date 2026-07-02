@@ -13,7 +13,7 @@ export function generatePraiseSuggestions(state) {
   const suggestions = [];
 
   const completedToday = state.tasks.filter((t) => t.completed).length;
-  const timerTasksDone = state.tasks.filter((t) => t.completed && t.verifyType === "timer").length;
+  const timerTasksDone = state.tasks.filter((t) => t.completed && t.verifyType === "focus").length;
   const mandatoryDone = state.tasks.filter((t) => t.isMandatory && t.completed).length;
   const mandatoryTotal = state.tasks.filter((t) => t.isMandatory).length;
 

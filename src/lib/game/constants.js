@@ -27,9 +27,14 @@ export const TRUST_MIN = 0;
 export const TRUST_GAIN_ON_APPROVE = 1;
 export const TRUST_LOSS_ON_REJECT = 8;
 export const TRUST_HIGH_THRESHOLD = 80; // Uy Tín cao → ít bị spot-check, điểm nhả nhanh
-export const PHOTO_SPOTCHECK_RATE = 1 / 3; // tỷ lệ việc photo bị cắm cờ 🔍 mỗi ngày
-export const PHOTO_SPOTCHECK_RATE_TRUSTED = 1 / 6; // khi Uy Tín >= 80
 export const NUDGE_LIMIT_PER_DAY = 2; // trẻ nhắc bố mẹ duyệt tối đa 2 lần/ngày
+
+// ===== V1.3 Focus companion (Forest-style OPTIONAL reward) =====
+// Timer is never a gate. If the child chooses to run a focus session and
+// reaches the threshold, they earn a bonus on top of the normal claim.
+export const FOCUS_COMPLETION_RATIO = 0.8; // session must reach 80% of durationMin
+export const FOCUS_BONUS_RATIO = 0.5; // +50% points bonus for a focused session
+export const FOCUS_BONUS_MIN = 2;
 
 // ===== V1.2 =====
 export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
@@ -67,19 +72,24 @@ export const CHARACTER_CLASSES = [
   },
 ];
 
+// V1.3: verifyType is a soft HINT for the parent approval queue (NOT a gate).
+//   trust  = con tự ghi nhận
+//   parent = việc bố mẹ dễ xác nhận/tự tick giúp (dậy sớm, kết nối)
+//   focus  = có thể bật timer tập trung TÙY CHỌN để nhận thưởng (durationMin)
+// Every task claims with a single frictionless tap; verification is async.
 export const DEFAULT_TASKS = [
-  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false, verifyType: "witness" },
-  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 4, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 15 },
-  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 20 },
-  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "timer", durationMin: 20 },
-  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 5, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "photo" },
+  { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false, verifyType: "parent" },
+  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 4, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 15 },
+  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20 },
+  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 4, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20 },
+  { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 5, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "trust" },
   { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 8, energy: 3, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false, verifyType: "trust" },
-  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 4, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false, verifyType: "photo" },
-  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false, verifyType: "photo" },
-  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false, verifyType: "photo" },
-  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true, verifyType: "trust" },
-  // Connection quest 💞 — child & parent do it TOGETHER (witness = parent is right there)
-  { id: "tc1", title: "Kể cho bố mẹ nghe 3 điều về ngày hôm nay 💞", exp: 20, points: 10, energy: 4, category: "connection", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "witness" },
+  { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 4, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false, verifyType: "trust" },
+  { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false, verifyType: "trust" },
+  { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false, verifyType: "trust" },
+  { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true, verifyType: "parent" },
+  // Connection quest 💞 — the value IS the connection; the tap is an afterthought
+  { id: "tc1", title: "Kể cho bố mẹ nghe 3 điều về ngày hôm nay 💞", exp: 20, points: 10, energy: 4, category: "connection", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "parent" },
 ];
 
 export const DEFAULT_REWARDS = [

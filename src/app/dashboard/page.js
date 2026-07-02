@@ -55,34 +55,33 @@ export default function DashboardPage() {
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
   const [showGuideModal, setShowGuideModal] = useState(false); // Guideline for child
 
-  const [activeTaskId, setActiveTaskId] = useState(null); // Task currently being actively tracked
-  const [activeTaskStartTime, setActiveTaskStartTime] = useState(0); // Unix start time
-  const [elapsedSeconds, setElapsedSeconds] = useState(0); // Elapsed focus seconds
+  // V1.3: OPTIONAL focus companion — the child may run it for a bonus, but it
+  // never gates completion and never blocks other tasks.
+  const [focusTaskId, setFocusTaskId] = useState(null); // task with an active focus session
+  const [focusStartTime, setFocusStartTime] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  // P0 verification UI states
-  const [verifyToast, setVerifyToast] = useState(""); // gate error message
-  const [witnessTask, setWitnessTask] = useState(null); // task waiting for parent PIN
-  const [witnessPin, setWitnessPin] = useState("");
+  const [verifyToast, setVerifyToast] = useState(""); // small info toast
   const photoInputRef = React.useRef(null);
-  const [photoTaskId, setPhotoTaskId] = useState(null); // task waiting for evidence photo
+  const [photoTaskId, setPhotoTaskId] = useState(null); // task the optional photo is for
 
   const showVerifyToast = (msg) => {
     setVerifyToast(msg);
     setTimeout(() => setVerifyToast(""), 4500);
   };
 
-  // Real-time Active Task Stopwatch Effect
+  // Focus stopwatch (only runs when the child chose to start one)
   useEffect(() => {
     let interval = null;
-    if (activeTaskId && activeTaskStartTime > 0) {
+    if (focusTaskId && focusStartTime > 0) {
       interval = setInterval(() => {
-        setElapsedSeconds(Math.floor((Date.now() - activeTaskStartTime) / 1000));
+        setElapsedSeconds(Math.floor((Date.now() - focusStartTime) / 1000));
       }, 500);
     } else {
       setElapsedSeconds(0);
     }
     return () => clearInterval(interval);
-  }, [activeTaskId, activeTaskStartTime]);
+  }, [focusTaskId, focusStartTime]);
 
   const formatStopwatch = (totalSecs) => {
     const m = Math.floor(totalSecs / 60);
@@ -94,64 +93,59 @@ export default function DashboardPage() {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
-    // Un-ticking has no gates
     if (task.completed) {
-      completeTask(taskId);
+      completeTask(taskId); // un-tick
       return;
     }
 
-    // ===== P0 verification gates (routed to the right UI affordance) =====
-    // Same-day grace: re-tick of a previously-approved task skips all gates
-    if (!task.wasApprovedToday) {
-      if (task.verifyType === "witness") {
-        setWitnessTask(task);
-        setWitnessPin("");
-        return;
-      }
-      if (task.verifyType === "photo" && task.photoRequiredToday) {
-        setPhotoTaskId(taskId);
-        photoInputRef.current?.click();
-        return;
-      }
-    }
+    // Optional focus bonus: earned only if a focus session for THIS task reached
+    // the threshold. No session = normal claim, zero friction.
+    const isFocused = taskId === focusTaskId;
+    const requiredSec = (task.durationMin || 10) * 60 * 0.8;
+    const focusEarned = isFocused && elapsedSeconds >= requiredSec;
 
-    const isActive = taskId === activeTaskId;
-    const result = completeTask(taskId, { elapsedSeconds: isActive ? elapsedSeconds : 0 });
-    if (result && !result.success) {
-      showVerifyToast(result.message);
-      return;
-    }
-    if (isActive) {
-      setActiveTaskId(null);
-      setActiveTaskStartTime(0);
+    completeTask(taskId, { focusEarned });
+    if (focusEarned) showVerifyToast(`Tuyệt vời! Con đã tập trung đủ lâu — nhận thêm điểm thưởng tập trung! 🌳✨`);
+
+    if (isFocused) {
+      setFocusTaskId(null);
+      setFocusStartTime(0);
       setElapsedSeconds(0);
     }
   };
 
-  const handleWitnessSubmit = (e) => {
-    e.preventDefault();
-    const result = completeTask(witnessTask.id, { pin: witnessPin });
-    if (result && !result.success) {
-      showVerifyToast(result.message);
-    } else {
-      setWitnessTask(null);
-    }
-    setWitnessPin("");
+  const handleStartFocus = (taskId) => {
+    setFocusTaskId(taskId);
+    setFocusStartTime(Date.now());
+    setElapsedSeconds(0);
   };
 
+  const handleStopFocus = () => {
+    setFocusTaskId(null);
+    setFocusStartTime(0);
+    setElapsedSeconds(0);
+  };
+
+  // Optional device-only photo attach (never synced, never a gate)
   const handlePhotoSelected = async (e) => {
     const file = e.target.files?.[0];
-    e.target.value = ""; // allow re-choosing same file
+    e.target.value = "";
     if (!file || !photoTaskId) return;
     try {
       const { compressImageFile } = await import("@/lib/image");
+      const { saveLocalPhoto } = await import("@/lib/localPhotos");
       const dataUrl = await compressImageFile(file);
-      const result = completeTask(photoTaskId, { photo: dataUrl });
-      if (result && !result.success) showVerifyToast(result.message);
+      saveLocalPhoto(activeChildId, photoTaskId, dataUrl);
+      showVerifyToast("Đã lưu ảnh vào máy (chỉ bố mẹ trên máy này xem được). 📸");
     } catch {
-      showVerifyToast("Không đọc được ảnh, con thử chụp lại nhé! 📸");
+      showVerifyToast("Không đọc được ảnh, con thử lại nhé! 📸");
     }
     setPhotoTaskId(null);
+  };
+
+  const handleAttachPhoto = (taskId) => {
+    setPhotoTaskId(taskId);
+    photoInputRef.current?.click();
   };
 
   const handleNudge = () => {
@@ -652,8 +646,8 @@ export default function DashboardPage() {
               </div>
             ) : (
               [
-                { key: "doing", label: "⚡ ĐANG LÀM (tập trung 1 việc thôi!)", filter: (t) => !t.completed && t.id === activeTaskId },
-                { key: "today", label: "📋 HÔM NAY", filter: (t) => !t.completed && t.id !== activeTaskId },
+                { key: "doing", label: "🌳 ĐANG TẬP TRUNG", filter: (t) => !t.completed && t.id === focusTaskId },
+                { key: "today", label: "📋 HÔM NAY", filter: (t) => !t.completed && t.id !== focusTaskId },
                 { key: "waiting", label: "⏳ CHỜ BỐ MẸ DUYỆT", filter: (t) => t.completed && t.approval === "pending" },
                 { key: "done", label: "✅ HOÀN THÀNH", filter: (t) => t.completed && t.approval !== "pending" },
               ].map(({ key, label, filter }) => {
@@ -699,8 +693,8 @@ export default function DashboardPage() {
                     itemStyle = "border-sand opacity-60 line-through bg-gray-50 shadow-none translate-y-[2px]";
                   }
 
-                  const isTaskActive = activeTaskId === task.id;
-                  const isAnotherTaskActive = activeTaskId !== null && activeTaskId !== task.id;
+                  const focusable = Boolean(task.durationMin);
+                  const isFocusing = focusTaskId === task.id;
 
                   return (
                     <div
@@ -732,12 +726,13 @@ export default function DashboardPage() {
                               <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
                                 {emoji} {statText}
                               </span>
-                              {/* P0: verification type badge */}
-                              <span className="text-[9px] font-bold text-gray-400 select-none" title="Cách xác nhận">
-                                {task.verifyType === "timer" && `⏱️ ${task.durationMin || 10}p`}
-                                {task.verifyType === "photo" && (task.photoRequiredToday ? "📸🔍 cần ảnh" : "📸")}
-                                {task.verifyType === "witness" && "👀 bố mẹ"}
-                              </span>
+                              {/* V1.3: soft hint (never a gate) */}
+                              {task.verifyType === "parent" && (
+                                <span className="text-[9px] font-bold text-gray-400 select-none">👨‍👩‍👧 bố mẹ ghi nhận</span>
+                              )}
+                              {focusable && (
+                                <span className="text-[9px] font-bold text-forest-medium select-none">🌳 {task.durationMin}p</span>
+                              )}
                               {task.isMandatory && !task.completed && (
                                 <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
                                   Bắt buộc 🔴
@@ -767,62 +762,61 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* Bottom Row: Active Timer Stopwatch Controller */}
+                      {/* Bottom Row: OPTIONAL focus companion (reward) + optional photo.
+                          Never blocks; the checkbox above always completes the task. */}
                       {!task.completed && (
-                        <div className="flex items-center justify-between border-t border-sand pt-3 mt-1 select-none">
-                          {isTaskActive ? (
+                        <div className="flex items-center justify-between border-t border-sand pt-2.5 mt-1 select-none gap-2">
+                          {isFocusing ? (
                             <>
-                              {/* Stopwatch Timer Display */}
-                              <div className="flex items-center gap-2 text-xs font-black text-forest animate-pulse">
-                                <span className="animate-spin text-sm">⏱️</span>
+                              <div className="flex items-center gap-2 text-xs font-black text-forest">
+                                <span className="animate-pulse text-sm">🌳</span>
                                 <span className="font-mono text-sm tracking-wider">Tập trung: {formatStopwatch(elapsedSeconds)}</span>
                               </div>
-                              
-                              {/* Active actions */}
                               <div className="flex items-center gap-2">
                                 <button
                                   type="button"
                                   onClick={() => handleTaskComplete(task.id)}
-                                  className="bg-forest text-white text-[9px] font-black px-3 py-2 rounded-xl border border-forest shadow-game-forest active:scale-95 transition-all"
+                                  className="min-h-tap bg-forest text-white text-[10px] font-black px-3 rounded-xl border border-forest shadow-game-forest active:scale-95 transition-all"
                                 >
-                                  HOÀN THÀNH ✅
+                                  XONG ✅
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    setActiveTaskId(null);
-                                    setActiveTaskStartTime(0);
-                                    setElapsedSeconds(0);
-                                  }}
-                                  className="bg-sand-light text-terracotta text-[9px] font-black px-2 py-2 rounded-xl border border-sand hover:bg-rose-50 active:scale-95 transition-all"
+                                  onClick={handleStopFocus}
+                                  className="min-h-tap bg-sand-light text-gray-500 text-[10px] font-black px-2.5 rounded-xl border border-sand active:scale-95 transition-all"
                                 >
-                                  HỦY ⏹️
+                                  Dừng
                                 </button>
                               </div>
                             </>
                           ) : (
                             <>
-                              <span className="text-[10px] text-gray-400 font-bold">
-                                {isAnotherTaskActive ? "🔒 Đang làm việc khác..." : "💡 Hãy tập trung để làm nhanh hơn"}
-                              </span>
-                              
-                              <button
-                                type="button"
-                                disabled={isAnotherTaskActive}
-                                onClick={() => {
-                                  setActiveTaskId(task.id);
-                                  setActiveTaskStartTime(Date.now());
-                                  setElapsedSeconds(0);
-                                }}
-                                className={`text-[9px] font-black px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 flex items-center gap-1 ${
-                                  isAnotherTaskActive
-                                    ? "bg-gray-50 border-sand text-gray-300 cursor-not-allowed shadow-none"
-                                    : "bg-white border-forest text-forest shadow-game-forest hover:bg-forest hover:text-white"
-                                }`}
-                              >
-                                <span>⏱️</span>
-                                <span>BẮT ĐẦU LÀM</span>
-                              </button>
+                              {focusable ? (
+                                <span className="text-[10px] text-gray-400 font-bold">
+                                  🌳 Bật tập trung để nhận <b className="text-forest-medium">điểm thưởng</b> (tùy chọn)
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-gray-300 font-bold">✓ Làm xong thì tích ô bên trên</span>
+                              )}
+                              <div className="flex items-center gap-1.5 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleAttachPhoto(task.id)}
+                                  title="Đính ảnh (tùy chọn, lưu trên máy)"
+                                  className="min-h-tap w-9 flex items-center justify-center bg-white text-gray-400 rounded-xl border border-sand active:scale-95 transition-all"
+                                >
+                                  📸
+                                </button>
+                                {focusable && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartFocus(task.id)}
+                                    className="min-h-tap text-[10px] font-black px-3 rounded-xl border-2 border-forest text-forest bg-white shadow-game-forest active:scale-95 transition-all flex items-center gap-1"
+                                  >
+                                    🌳 Tập trung
+                                  </button>
+                                )}
+                              </div>
                             </>
                           )}
                         </div>
@@ -835,7 +829,7 @@ export default function DashboardPage() {
   function renderModals() {
     return (
       <>
-      {/* Hidden photo evidence input */}
+      {/* Hidden optional photo input (device-only, never a gate) */}
       <input
         ref={photoInputRef}
         type="file"
@@ -844,52 +838,6 @@ export default function DashboardPage() {
         onChange={handlePhotoSelected}
         className="hidden"
       />
-
-      {/* Witness PIN Modal (👀 parent confirms on the spot) */}
-      {witnessTask && (
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 z-50 animate-fade-in">
-          <form
-            onSubmit={handleWitnessSubmit}
-            className="bg-white border-4 border-sky rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4"
-          >
-            <div className="w-16 h-16 bg-sky-light rounded-full border-2 border-sky mx-auto flex items-center justify-center text-3xl">
-              👀
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-black text-sky-dark uppercase tracking-wider">Bố Mẹ Chứng Kiến</h3>
-              <p className="text-[11px] text-gray-500">
-                &ldquo;{witnessTask.title}&rdquo; — bố mẹ có mặt xác nhận bằng mã PIN nhé!
-              </p>
-            </div>
-            <input
-              type="password"
-              pattern="[0-9]*"
-              inputMode="numeric"
-              maxLength={6}
-              value={witnessPin}
-              onChange={(e) => setWitnessPin(e.target.value)}
-              placeholder="Mã PIN của bố mẹ..."
-              className="w-full min-h-tap text-center bg-sand-light border-2 border-sand rounded-xl text-lg font-black text-forest-dark focus:outline-none focus:border-sky transition-colors"
-              autoFocus
-            />
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setWitnessTask(null)}
-                className="w-1/2 min-h-tap bg-white text-gray-400 font-extrabold text-xs rounded-xl border-2 border-sand"
-              >
-                ĐỂ SAU
-              </button>
-              <button
-                type="submit"
-                className="w-1/2 min-h-tap bg-sky text-white font-black text-xs rounded-xl border-2 border-sky shadow-game-sky active:shadow-game-pressed btn-game-transition"
-              >
-                XÁC NHẬN ✅
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Pigeon Encouragement Letter Modal */}
       {selectedMessage && (
