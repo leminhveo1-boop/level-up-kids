@@ -59,10 +59,16 @@
 [data-ui-mode="teen"] .animate-pulse,
 [data-ui-mode="teen"] .animate-flame { animation: none; }
 
+html {
+  /* Stop iOS Safari from auto-inflating text on orientation/zoom changes */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: var(--font-outfit), Arial, sans-serif;
+  font-family: var(--font-outfit), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
 }

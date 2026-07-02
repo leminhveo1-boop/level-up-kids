@@ -1,4 +1,4 @@
-import { Outfit } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import { GameProvider } from "@/context/GameState";
 import { AuthProvider } from "@/context/AuthContext";
@@ -7,10 +7,16 @@ import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import DemoBanner from "@/components/DemoBanner";
 import UiModeApplier from "@/components/UiModeApplier";
 
-const outfit = Outfit({
-  subsets: ["latin"],
+// Be Vietnam Pro — designed for Vietnamese; includes the `vietnamese` subset
+// (U+1EA0–1EF9 etc.) that Outfit lacked, which broke every accented char on
+// iOS Safari. Keep the --font-outfit variable name to avoid touching every
+// consumer of the `font-outfit` utility.
+const appFont = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-outfit",
+  display: "swap",
+  fallback: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
 });
 
 export const metadata = {
@@ -38,7 +44,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi">
-      <body className={`${outfit.variable} font-outfit antialiased bg-sand-light text-forest-dark`}>
+      <body className={`${appFont.variable} font-outfit antialiased bg-sand-light text-forest-dark`}>
         <div className="min-h-screen flex flex-col max-w-md mx-auto bg-sand-light shadow-2xl relative border-x border-sand">
           <LanguageProvider>
             <AuthProvider>
