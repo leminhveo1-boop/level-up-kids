@@ -123,6 +123,11 @@ export const gameDict = {
     "game.crit.desc": "Đã nhân đôi Điểm Tích Lũy và nhân hệ số Streak! 🎉",
     "game.crit.cta": "QUÁ TUYỆT VỜI! 🚀",
 
+    // D7 Season (Fresh Start)
+    "game.season.label": "Mùa {n}",
+    "game.season.status": "Tuần {week}/{total} · còn {days} ngày",
+    "game.season.freshStart": "Mùa mới sắp bắt đầu — cơ hội làm lại từ đầu! 🌱",
+
     // D5 World Tree (family shared mission)
     "game.tree.title": "🌍 Cây Thế Giới nhà mình",
     "game.tree.stage.0": "Hạt Mầm",
@@ -456,6 +461,11 @@ export const gameDict = {
     "game.crit.reward": "Quest Reward",
     "game.crit.desc": "Points doubled and multiplied by your Streak! 🎉",
     "game.crit.cta": "AMAZING! 🚀",
+
+    // D7 Season (Fresh Start)
+    "game.season.label": "Season {n}",
+    "game.season.status": "Week {week}/{total} · {days} days left",
+    "game.season.freshStart": "A new season is coming — a fresh start awaits! 🌱",
 
     // D5 World Tree (family shared mission)
     "game.tree.title": "🌍 Our Family World Tree",
