@@ -55,7 +55,8 @@ export default function StatusBar({
       {encouragements.length > 0 && (
         <button
           onClick={() => onOpenLetter(encouragements[0])}
-          className="relative p-1 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
+          aria-label={t("game.status.pigeonTitle")}
+          className="hit-target relative p-2 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
           title={t("game.status.pigeonTitle")}
         >
           <span className="text-xs">🕊️</span>
@@ -85,7 +86,8 @@ export default function StatusBar({
       {/* Guide Button for child */}
       <button
         onClick={onOpenGuide}
-        className="flex items-center justify-center p-1.5 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-forest transition-colors text-xs active:scale-90"
+        aria-label={t("game.status.guideTitle")}
+        className="hit-target flex items-center justify-center p-2 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-forest transition-colors text-xs active:scale-90"
         title={t("game.status.guideTitle")}
       >
         📜

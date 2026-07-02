@@ -234,7 +234,9 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col flex-grow relative pb-20">
+    // Demo mode: reserve extra bottom space so the floating paywall banner never
+    // covers the last task/card (Nielsen error-prevention / reachability).
+    <div className={`flex flex-col flex-grow relative ${isDemo ? "pb-44" : "pb-20"}`}>
       {/* Scrollable Main Area */}
       <div className="flex-grow p-5 space-y-5 overflow-y-auto">
         <StatusBar

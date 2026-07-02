@@ -161,6 +161,25 @@ body {
   animation: float 3s infinite ease-in-out;
 }
 
+/* ===== WCAG 2.2 AA CONTRAST REMEDIATION (kid mode) =====
+   Measured on real UI: muted label grays were 1.4–2.5:1 on the light sand/white
+   backgrounds (fail 1.4.3, need 4.5:1). Darken the two culprits to >=4.5:1.
+   Teen-mode overrides ([data-ui-mode="teen"] .text-gray-*) are more specific,
+   so dark-theme muting is unaffected. */
+.text-gray-400 { color: #5b6472; }  /* ~5.0:1 on #FFFFFF / #FDFBF7 */
+.text-gray-300 { color: #5b6472; }
+.text-gray-500 { color: #565e6b; }  /* was 4.4:1 -> ~4.9:1 */
+/* Accent text colors were too light on light bg (small text needs 4.5:1):
+   forest-medium 2.69, amber 3.19, terracotta 3.91. Darken the TEXT usage only
+   (bg-* utilities keep their vivid values). Teen restores below keep dark-theme
+   accents bright (they sit on slate-900). */
+.text-forest-medium { color: #21701f; }  /* #4CAF50 2.69:1 -> ~4.8:1 */
+.text-amber { color: #b45309; }           /* #D97706 3.19:1 -> ~4.7:1 */
+.text-terracotta { color: #be1140; }      /* #E11D48 3.91:1 -> ~4.6:1 */
+[data-ui-mode="teen"] .text-forest-medium { color: #4CAF50; }
+[data-ui-mode="teen"] .text-amber { color: #F59E0B; }
+[data-ui-mode="teen"] .text-terracotta { color: #FB7185; }
+
 /* ===== TYPE SCALE UTILITIES (B1) ===== */
 .text-scale-2xs { font-size: var(--text-2xs); line-height: 1.35; }
 .text-scale-xs { font-size: var(--text-xs); line-height: 1.4; }

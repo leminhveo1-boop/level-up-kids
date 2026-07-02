@@ -19,7 +19,7 @@ export default function DemoBanner() {
     <button
       type="button"
       onClick={() => router.push("/premium")}
-      className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2.5rem)] max-w-sm bg-amber text-white border-2 border-amber-dark rounded-2xl px-4 py-2.5 shadow-game-amber flex items-center justify-between gap-2 active:scale-[0.98] transition-transform animate-fade-in"
+      className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2.5rem)] max-w-sm bg-amber-dark text-white border-2 border-amber-dark rounded-2xl px-4 py-2.5 shadow-game-amber flex items-center justify-between gap-2 active:scale-[0.98] transition-transform animate-fade-in"
     >
       <span className="flex items-center gap-2 text-left">
         <span className="text-lg">🎫</span>

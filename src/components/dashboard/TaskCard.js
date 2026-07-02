@@ -50,13 +50,16 @@ export default function TaskCard({
       {/* Top Row: Checkbox, Title, and Rewards */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-grow">
+          {/* Primary action — Fitts/HIG: 28px visual, 44px hit area via hit-target */}
           <button
             type="button"
+            aria-label={task.completed ? "Bỏ đánh dấu hoàn thành" : "Đánh dấu hoàn thành"}
+            aria-pressed={task.completed}
             onClick={() => onToggleComplete(task.id)}
-            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
+            className={`hit-target flex-shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center text-sm font-black transition-all active:scale-90 ${
               task.completed
                 ? "bg-forest-medium border-forest-medium text-white"
-                : "border-sand bg-sand-light text-transparent hover:border-forest"
+                : "border-sand-dark bg-sand-light text-transparent hover:border-forest"
             }`}
           >
             ✓
