@@ -213,7 +213,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -221,7 +221,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -229,7 +229,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">👾</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">{t(`game.boss.tab.${m}`)}</span>
+          <span className="text-[11px] font-black uppercase tracking-wider">{t(`game.boss.tab.${m}`)}</span>
         </button>
 
         <button
@@ -237,7 +237,7 @@ export default function BossPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>

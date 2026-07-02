@@ -242,7 +242,7 @@ function PremiumContent() {
             )}
 
             <div className="bg-sand-light border-2 border-dashed border-amber rounded-xl p-3 text-center space-y-1">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">{t("premium.payContent")}</p>
+              <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{t("premium.payContent")}</p>
               <p className="text-lg font-black text-amber-dark font-mono tracking-widest select-all">{paymentCode}</p>
             </div>
 
@@ -309,7 +309,7 @@ function PremiumContent() {
           <h3 className="text-xs font-black text-amber-dark uppercase tracking-wider">{t("premium.referTitle")}</h3>
           <p className="text-[10.5px] text-gray-600 leading-relaxed font-medium">{t("premium.referDesc")}</p>
           <div className="bg-white border-2 border-dashed border-amber rounded-xl p-3 text-center space-y-1">
-            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">{t("premium.yourCode")}</p>
+            <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider">{t("premium.yourCode")}</p>
             <p className="text-lg font-black text-amber-dark font-mono tracking-widest select-all">{profile.referral_code}</p>
           </div>
           <button

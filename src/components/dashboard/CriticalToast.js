@@ -30,7 +30,7 @@ export default function CriticalToast({ toast, charName, onClose }) {
             <span>+ {toast.amount}</span>
             <span className="text-2xl">⭐</span>
           </div>
-          <p className="text-[9px] text-forest font-bold uppercase tracking-wider">{t("game.crit.desc")}</p>
+          <p className="text-[11px] text-forest font-bold uppercase tracking-wider">{t("game.crit.desc")}</p>
         </div>
 
         {/* Close Button */}

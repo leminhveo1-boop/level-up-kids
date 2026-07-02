@@ -16,6 +16,7 @@ import GoalBar from "@/components/dashboard/GoalBar";
 import FamilyStrip from "@/components/dashboard/FamilyStrip";
 import TaskFilterBar from "@/components/dashboard/TaskFilterBar";
 import TaskCard from "@/components/dashboard/TaskCard";
+import JourneyCard from "@/components/dashboard/JourneyCard";
 import LetterModal from "@/components/dashboard/LetterModal";
 import CriticalToast from "@/components/dashboard/CriticalToast";
 import GuideModal from "@/components/dashboard/GuideModal";
@@ -54,6 +55,9 @@ export default function DashboardPage() {
     treeGrowth,
     lastGraduation,
     clearLastGraduation,
+    journey,
+    lastJourneyCompleted,
+    clearJourneyCelebration,
     receivedGifts,
     markReceivedGiftsRead,
     sendGift,
@@ -260,6 +264,9 @@ export default function DashboardPage() {
 
         <SeasonBanner />
 
+        {/* 🛤️ B-lite: active journey — the child's guided path */}
+        {journey && <JourneyCard journey={journey} tasks={tasks} />}
+
         <WorldTreeCard treeGrowth={treeGrowth} />
 
         <StatsGrid stats={stats} />
@@ -318,6 +325,28 @@ export default function DashboardPage() {
             {verifyToast && (
               <div className="w-full bg-rose-50 border border-red-200 p-2.5 rounded-xl text-[11px] text-terracotta font-bold text-center animate-fade-in">
                 {verifyToast}
+              </div>
+            )}
+
+            {/* 🏆 Journey conquered banner (B-lite Lộ Trình) */}
+            {lastJourneyCompleted && (
+              <div className="w-full bg-forest-light/30 border-2 border-forest p-3.5 rounded-2xl text-center space-y-2 animate-fade-in">
+                <p className="text-2xl">{lastJourneyCompleted.icon}🏆</p>
+                <p className="text-[12px] font-black text-forest-dark leading-snug">
+                  {t("game.journey.done.title", { title: lastJourneyCompleted.title })}
+                </p>
+                <p className="text-[10px] text-gray-500 font-medium">
+                  {t("game.journey.done.desc", {
+                    success: lastJourneyCompleted.successDays,
+                    total: lastJourneyCompleted.totalDays,
+                  })}
+                </p>
+                <button
+                  onClick={clearJourneyCelebration}
+                  className="min-h-tap bg-forest text-white text-[10px] font-black px-5 rounded-xl active:scale-95 transition-transform"
+                >
+                  {t("game.journey.done.cta")}
+                </button>
               </div>
             )}
 
@@ -422,7 +451,7 @@ export default function DashboardPage() {
           title="Bồ câu đưa thư từ bố mẹ đang đợi con!"
         >
           🕊️
-          <span className="absolute -top-1 -right-1 bg-terracotta text-white font-extrabold text-[8px] h-4 w-4 rounded-full flex items-center justify-center border border-white animate-pulse">
+          <span className="absolute -top-1 -right-1 bg-terracotta text-white font-extrabold text-[10px] h-4 w-4 rounded-full flex items-center justify-center border border-white animate-pulse">
             !
           </span>
         </button>

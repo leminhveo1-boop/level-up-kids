@@ -39,7 +39,7 @@ export default function SeasonBanner() {
         />
       </div>
       {season.endingSoon && (
-        <p className="text-[9px] font-black text-sky-dark text-center">{t("game.season.freshStart")}</p>
+        <p className="text-[11px] font-black text-sky-dark text-center">{t("game.season.freshStart")}</p>
       )}
     </div>
   );

@@ -25,7 +25,7 @@ export default function DemoBanner() {
         <span className="text-lg">🎫</span>
         <span className="flex flex-col">
           <span className="text-[11px] font-black uppercase tracking-wider">{t("demo.banner")}</span>
-          <span className="text-[9px] font-bold opacity-90">{t("demo.bannerSub")}</span>
+          <span className="text-[11px] font-bold opacity-90">{t("demo.bannerSub")}</span>
         </span>
       </span>
       <span className="bg-white text-amber-dark text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider flex-shrink-0">

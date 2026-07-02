@@ -36,13 +36,13 @@ export default function WorldTreeCard({ treeGrowth }) {
               style={{ width: `${tree.progressPct}%` }}
             />
           </div>
-          <p className="text-[9px] font-bold text-gray-400 text-right">
+          <p className="text-[11px] font-bold text-gray-400 text-right">
             {t("game.tree.progress", { into: tree.intoStage, need: stageSpan })}
           </p>
         </div>
       )}
 
-      <p className="text-[9px] text-gray-400 font-medium leading-relaxed">{t("game.tree.note")}</p>
+      <p className="text-[11px] text-gray-400 font-medium leading-relaxed">{t("game.tree.note")}</p>
     </div>
   );
 }

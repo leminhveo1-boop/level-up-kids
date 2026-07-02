@@ -111,13 +111,13 @@ export default function RewardsPage() {
             {/* Points Wallet */}
             <div className="bg-forest-light/35 border border-forest/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">⭐</span>
-              <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
+              <span className="text-[11px] font-black text-forest-dark">{points} {t("game.points")}</span>
             </div>
             
             {/* Hero Coins Wallet */}
             <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">🪙</span>
-              <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+              <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function RewardsPage() {
             <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">
               {rewardsTab === "points" ? t("game.rw.storeTitlePoints") : t("game.rw.storeTitleCoins")}
             </h3>
-            <span className="text-[9px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[11px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full uppercase">
               {t("game.rw.wallet")} {rewardsTab === "points" ? `${points} ⭐` : `${heroCoins} 🪙`}
             </span>
           </div>
@@ -244,14 +244,14 @@ export default function RewardsPage() {
                     {/* Reward Info */}
                     <div className="flex-grow space-y-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`text-[8.5px] font-black px-2 py-0.5 rounded-full border uppercase ${badgeBg}`}>
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${badgeBg}`}>
                           {badgeText}
                         </span>
-                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase ${rarityBg}`}>
+                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border uppercase ${rarityBg}`}>
                           {rarityText}
                         </span>
                         {r.parentApproved && (
-                          <span className="text-[8px] font-black text-forest flex items-center gap-0.5">
+                          <span className="text-[10px] font-black text-forest flex items-center gap-0.5">
                             {t("game.rw.approved")}
                           </span>
                         )}
@@ -367,14 +367,14 @@ export default function RewardsPage() {
               <p className="text-xs font-black text-forest-dark truncate px-2">{shortageReward.title}</p>
               <div className="flex items-center justify-center gap-4 py-1.5 border-t border-sand mt-2 pt-2">
                 <div className="text-center">
-                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">{t("game.rw.have")}</p>
+                  <p className="text-[11px] text-gray-400 font-extrabold uppercase">{t("game.rw.have")}</p>
                   <p className="text-base font-black text-amber-dark">
                     {shortageReward.currency === "heroCoins" ? `${heroCoins} 🪙` : `${points} ⭐`}
                   </p>
                 </div>
                 <div className="text-xs text-gray-300 font-black">/</div>
                 <div className="text-center">
-                  <p className="text-[9px] text-gray-400 font-extrabold uppercase">{t("game.rw.need")}</p>
+                  <p className="text-[11px] text-gray-400 font-extrabold uppercase">{t("game.rw.need")}</p>
                   <p className="text-base font-black text-forest-medium">
                     {shortageReward.cost} {shortageReward.currency === "heroCoins" ? "🪙" : "⭐"}
                   </p>
@@ -409,7 +409,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -417,7 +417,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">{t("nav.rewards")}</span>
+          <span className="text-[11px] font-black uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -425,7 +425,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">⛏️</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.mining")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.mining")}</span>
         </button>
 
         <button
@@ -433,7 +433,7 @@ export default function RewardsPage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>

@@ -69,10 +69,53 @@ export function createDemoState() {
     history,
     stats: { strength: 24, intellect: 19, discipline: 22, creative: 15, help: 18 },
     bossHp: 34,
-    tasks: base.tasks.map((t, i) =>
-      // a few tasks already ticked so buffs light up
-      ["t2", "t3"].includes(t.id) ? { ...t, completed: true, earnedPoints: t.points, earnedEnergy: t.energy } : t
-    ),
+    // 🛤️ B-lite: mid-journey week 2 so the JourneyCard + parent tip show live
+    journey: {
+      id: "reading_79",
+      title: "Mê đọc sách 15 phút",
+      icon: "📚",
+      startedAt: now - 10 * dayMs,
+      seed: "demo",
+      stage: 1,
+      dayInStage: 3,
+      successDays: 8,
+      totalDays: 10,
+      stageSuccessDays: 2,
+    },
+    journeysCompleted: [
+      {
+        id: "school_bag_79",
+        title: "Tự soạn cặp sách",
+        icon: "🎒",
+        completedAt: now - 12 * dayMs,
+        successDays: 17,
+        totalDays: 21,
+        weeks: 3,
+      },
+    ],
+    tasks: [
+      ...base.tasks.map((t, i) =>
+        // a few tasks already ticked so buffs light up
+        ["t2", "t3"].includes(t.id) ? { ...t, completed: true, earnedPoints: t.points, earnedEnergy: t.energy } : t
+      ),
+      {
+        id: "j_reading_79_s1_0_demo",
+        title: "📚 Tự đọc sách 10 phút",
+        exp: 18,
+        points: 18,
+        energy: 12,
+        category: "intellect",
+        completed: false,
+        statKey: "intellect",
+        statVal: 2,
+        custom: true,
+        isMandatory: false,
+        verifyType: "focus",
+        durationMin: 10,
+        journeyId: "reading_79",
+        journeyStage: 1,
+      },
+    ],
     inventory: {
       eggs: { base: 1, dragon: 0, wolf: 1 },
       potions: { fire: 1, ice: 2, magic: 0 },

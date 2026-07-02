@@ -68,28 +68,33 @@ export default function TaskCard({
               {task.title}
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-0.5 select-none">
                 {emoji} {statText}
               </span>
               {/* V1.3: soft hint (never a gate) */}
               {task.verifyType === "parent" && (
-                <span className="text-[9px] font-bold text-gray-400 select-none">{t("game.task.parentNote")}</span>
+                <span className="text-[11px] font-bold text-gray-400 select-none">{t("game.task.parentNote")}</span>
               )}
               {focusable && (
-                <span className="text-[9px] font-bold text-forest-medium select-none">{t("game.task.minutes", { n: task.durationMin })}</span>
+                <span className="text-[11px] font-bold text-forest-medium select-none">{t("game.task.minutes", { n: task.durationMin })}</span>
               )}
               {task.isMandatory && !task.completed && (
-                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
+                <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-rose-100 text-terracotta border border-red-200 uppercase animate-pulse select-none">
                   {t("game.task.mandatory")}
                 </span>
               )}
-              {task.custom && (
-                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
+              {task.journeyId && (
+                <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-forest-light/40 text-forest-dark border border-forest/30 uppercase select-none">
+                  {t("game.task.journeyBadge")}
+                </span>
+              )}
+              {task.custom && !task.journeyId && (
+                <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-amber-light text-amber border border-amber/30 uppercase select-none">
                   {t("game.task.parentAssigned")}
                 </span>
               )}
               {task.approval === "pending" && (
-                <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-sky-light text-sky-dark border border-sky/30 uppercase select-none">
+                <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-sky-light text-sky-dark border border-sky/30 uppercase select-none">
                   {t("game.task.waiting")}
                 </span>
               )}
@@ -98,7 +103,7 @@ export default function TaskCard({
         </div>
 
         {/* EXP / Points / Energy Reward Tag */}
-        <div className="text-right flex flex-col items-end justify-center gap-0.5 font-black text-[9px] select-none">
+        <div className="text-right flex flex-col items-end justify-center gap-0.5 font-black text-[11px] select-none">
           <span className={task.completed ? "text-gray-400" : "text-forest"}>+{task.exp} EXP</span>
           <span className={task.completed ? "text-gray-400" : "text-forest-medium"}>+{task.points !== undefined ? task.points : task.exp} ⭐</span>
           {task.energy > 0 && (

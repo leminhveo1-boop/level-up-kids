@@ -187,7 +187,7 @@ export default function WeekTab() {
                         title={`${d.date}: ${d.completed}/${d.total} (${pct}%)`}
                       />
                     </div>
-                    <span className="text-[9px] font-bold text-gray-400 truncate w-full text-center">
+                    <span className="text-[11px] font-bold text-gray-400 truncate w-full text-center">
                       {d.live ? "Nay" : String(d.date).split("/").slice(0, 2).join("/")}
                     </span>
                   </div>

@@ -39,7 +39,7 @@ export default function StatusBar({
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
       >
         <span className="text-xs">⭐</span>
-        <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
+        <span className="text-[11px] font-black text-forest-dark">{points} {t("game.points")}</span>
       </div>
 
       {/* Hero Coin Wallet */}
@@ -48,7 +48,7 @@ export default function StatusBar({
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
       >
         <span className="text-xs animate-bounce">🪙</span>
-        <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+        <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
       </div>
 
       {/* Messages Bird (Carrier Pigeon Alert) */}
@@ -60,7 +60,7 @@ export default function StatusBar({
         >
           <span className="text-xs">🕊️</span>
           {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 bg-terracotta text-white font-extrabold text-[6px] h-3 w-3 rounded-full flex items-center justify-center border border-white animate-pulse">
+            <span className="absolute -top-0.5 -right-0.5 bg-terracotta text-white font-extrabold text-[10px] h-3 w-3 rounded-full flex items-center justify-center border border-white animate-pulse">
               !
             </span>
           )}
@@ -73,9 +73,9 @@ export default function StatusBar({
         title={t("game.status.streakTitle", { d: streak, f: streakFreezes })}
       >
         <span className="text-xs animate-flame">🔥</span>
-        <span className="text-[9px] font-black text-amber">{streak}N</span>
+        <span className="text-[11px] font-black text-amber">{streak}N</span>
         {streakFreezes > 0 && (
-          <span className="text-[9px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
+          <span className="text-[11px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
         )}
       </div>
 

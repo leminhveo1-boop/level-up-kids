@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
+import JourneySection from "@/components/parent/JourneySection";
 import { Trash2, Plus } from "lucide-react";
 
 const TASK_TEMPLATES = [
@@ -142,6 +143,9 @@ export default function ManageTab() {
         </p>
       )}
 
+      {/* 🛤️ B-lite: Lộ Trình — the guided path sits on top of everything */}
+      <JourneySection showFlash={showFlash} />
+
       {/* D4: at-risk tasks — gentle "make it tiny" nudge (Fogg) */}
       {atRiskTasks.length > 0 && (
         <div className="bg-amber-light/40 border-2 border-amber/40 rounded-xl p-4 space-y-2.5">
@@ -151,7 +155,7 @@ export default function ManageTab() {
             <div key={tk.id} className="bg-white border border-amber/30 rounded-xl px-3 py-2 flex items-center gap-2">
               <div className="flex-grow min-w-0">
                 <p className="text-scale-2xs font-black text-forest-dark truncate">{tk.title}</p>
-                <p className="text-[9px] font-bold text-terracotta">{t("game.habit.missDays", { n: tk.missStreak || 0 })}</p>
+                <p className="text-[11px] font-bold text-terracotta">{t("game.habit.missDays", { n: tk.missStreak || 0 })}</p>
               </div>
               <button
                 onClick={() => { splitTask(tk.id); showFlash(t("game.habit.splitDone")); }}

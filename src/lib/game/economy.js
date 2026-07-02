@@ -30,6 +30,7 @@ import {
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
 import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
+import { advanceJourneyDaily } from "./journeys";
 
 /** Streak → points multiplier (balanced against inflation). */
 export function getStreakMultiplier(streak) {
@@ -97,8 +98,16 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
     task.verifyType === "trust" &&
     (state.trustScore || 0) >= TRUST_HIGH_THRESHOLD &&
     state.parentConfig?.smartAutoApprove !== false;
-  const instantApproved = Boolean(task.wasApprovedToday) || trustAutoApproved;
-  const approvalStatus = task.wasApprovedToday ? "approved" : trustAutoApproved ? "auto" : "pending";
+  // B-lite: Tuần Bận — parent switched to full autopilot for a few days:
+  // EVERY claim releases instantly (approval "auto", trust untouched).
+  const busyAutoApproved =
+    !task.wasApprovedToday && (state.parentConfig?.busyUntil || 0) > (opts.now ?? Date.now());
+  const instantApproved = Boolean(task.wasApprovedToday) || trustAutoApproved || busyAutoApproved;
+  const approvalStatus = task.wasApprovedToday
+    ? "approved"
+    : trustAutoApproved || busyAutoApproved
+      ? "auto"
+      : "pending";
 
   const nextTasks = state.tasks.map((t) =>
     t.id === taskId
@@ -150,6 +159,7 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
       focusBonus,
       pointsPending: !instantApproved,
       trustAutoApproved,
+      busyAutoApproved,
       energyAdded,
       bossDefeated: bossJustDefeated,
     },
@@ -591,11 +601,15 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
   };
   const history = [...(settled.history || []), snapshot].slice(-HISTORY_LIMIT_DAYS);
 
+  // 🛤️ B-lite Lộ Trình: close the journey day while today's completed flags
+  // are still on the tasks (success counting), then maybe swap stage tasks.
+  const journeyed = advanceJourneyDaily(settled);
+
   // 🎓 V1.2: habit tracking — consecutive completion days per task;
   // at GRADUATION_DAYS the habit "graduates" into a permanent hero instinct
   // (Overjustification defense: fade out extrinsic reward with a ceremony).
   const graduatedNow = [];
-  const tasksWithHabits = settled.tasks.map((t) => ({
+  const tasksWithHabits = journeyed.tasks.map((t) => ({
     ...t,
     habitStreak: t.completed ? (t.habitStreak || 0) + 1 : 0,
     // D4: consecutive misses drive the "chia nhỏ" suggestion
@@ -616,7 +630,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
 
   // D1: pets get hungrier every day; D2: boss is a real weekly cycle now —
   // HP persists within the week and only respawns (harder) on a new week.
-  const hungered = decayPetsHunger(settled);
+  const hungered = decayPetsHunger(journeyed);
   const { state: bossAdvanced } = advanceBossWeek(hungered, new Date());
 
   return {
@@ -626,8 +640,8 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     lastFreezeUsed: freezeUsed,
     approvalNudges: [],
     history,
-    graduatedHabits: [...(settled.graduatedHabits || []), ...graduatedNow],
-    lastGraduation: graduatedNow.length > 0 ? { ...graduatedNow[0], timestamp: Date.now() } : settled.lastGraduation,
+    graduatedHabits: [...(journeyed.graduatedHabits || []), ...graduatedNow],
+    lastGraduation: graduatedNow.length > 0 ? { ...graduatedNow[0], timestamp: Date.now() } : journeyed.lastGraduation,
     tasks: remainingTasks.map((t) => ({
       ...t,
       completed: false,
@@ -639,8 +653,8 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
       wasApprovedToday: undefined, // grace window is same-day only
       focusEarnedToday: false, // reset the optional focus-session flag
     })),
-    energy: Math.min(ENERGY_CAP, settled.energy + DAILY_ENERGY_BONUS),
-    rewards: settled.rewards.map((r) => ({ ...r, parentApproved: false })),
+    energy: Math.min(ENERGY_CAP, journeyed.energy + DAILY_ENERGY_BONUS),
+    rewards: journeyed.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
   };
 }

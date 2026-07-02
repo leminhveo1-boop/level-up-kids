@@ -74,7 +74,7 @@ export default function FamilyPage() {
 
           {/* Plan badge */}
           <span
-            className={`text-[9px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wider ${
+            className={`text-[11px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wider ${
               isPremium
                 ? "bg-amber-light text-amber-dark border-amber"
                 : "bg-sand text-gray-500 border-sand-dark"
@@ -90,9 +90,9 @@ export default function FamilyPage() {
         <div className="bg-white border-2 border-sand rounded-2xl p-3.5 flex items-center justify-between shadow-game-flat">
           <div className="min-w-0">
             <p className="text-xs font-black text-forest-dark truncate">{profile?.display_name || user.email}</p>
-            <p className="text-[9.5px] text-gray-400 font-bold truncate">{user.email}</p>
+            <p className="text-[11px] text-gray-400 font-bold truncate">{user.email}</p>
             {isPremium && profile?.premium_until && (
-              <p className="text-[9px] text-amber-dark font-bold">
+              <p className="text-[11px] text-amber-dark font-bold">
                 {t("premium.activeUntil")}: {new Date(profile.premium_until).toLocaleDateString(locale === "vi" ? "vi-VN" : "en-US")}
               </p>
             )}
@@ -102,7 +102,7 @@ export default function FamilyPage() {
               await signOut();
               router.push("/auth");
             }}
-            className="text-[9.5px] font-black text-terracotta border border-red-200 bg-rose-50 px-3 py-1.5 rounded-xl uppercase tracking-wider active:scale-95 transition-transform flex-shrink-0"
+            className="text-[11px] font-black text-terracotta border border-red-200 bg-rose-50 px-3 py-1.5 rounded-xl uppercase tracking-wider active:scale-95 transition-transform flex-shrink-0"
           >
             {t("auth.signOut")}
           </button>
@@ -134,7 +134,7 @@ export default function FamilyPage() {
             </div>
             <div className="flex-grow min-w-0">
               <h3 className="text-sm font-black text-forest-dark truncate">{child.name}</h3>
-              <p className="text-[9.5px] text-gray-400 font-bold uppercase">{child.char_class}</p>
+              <p className="text-[11px] text-gray-400 font-bold uppercase">{child.char_class}</p>
             </div>
             <button
               onClick={() => handlePlay(child.id)}

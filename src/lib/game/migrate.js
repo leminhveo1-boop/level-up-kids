@@ -127,6 +127,9 @@ export function migrateState(data) {
     childMessages: data.childMessages || [],
     receivedGifts: data.receivedGifts || [],
     treeGrowth: data.treeGrowth || 0,
+    journey: data.journey || null,
+    journeysCompleted: data.journeysCompleted || [],
+    lastJourneyCompleted: data.lastJourneyCompleted || null,
     savedAt: data.savedAt || 0,
   };
 }

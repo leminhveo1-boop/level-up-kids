@@ -20,6 +20,7 @@ import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
 import { buildTinyTask } from "@/lib/game/habits";
+import * as journeySystem from "@/lib/game/journeys";
 import { deliverGiftToSibling } from "@/lib/siblingGift";
 import { playSound } from "@/lib/sound";
 
@@ -648,6 +649,37 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  // ---------------- B-lite: Lộ Trình (hành trình thói quen 3 tuần) ----------------
+  const startJourney = useCallback((journeyId) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = journeySystem.startJourney(prev, journeyId);
+      outcome = result;
+      if (result.success) {
+        playSound("reward");
+        fireConfetti({ particleCount: 70, spread: 60, colors: ["#2E7D32", "#4CAF50", "#D97706"] });
+      }
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const cancelJourney = useCallback(() => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = journeySystem.cancelJourney(prev);
+      outcome = result;
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const clearJourneyCelebration = useCallback(() => {
+    setState((prev) => (prev ? { ...prev, lastJourneyCompleted: null } : prev));
+  }, []);
+
   const addCustomReward = useCallback(
     (title, costVal, typeVal, minutes = 0, rarityVal = "rare", currencyVal = "points") => {
       setState((prev) => {
@@ -808,6 +840,12 @@ export function GameProvider({ children }) {
         deleteTask,
         splitTask,
         dismissAtRisk,
+        journey: s.journey || null,
+        journeysCompleted: s.journeysCompleted || [],
+        lastJourneyCompleted: s.lastJourneyCompleted || null,
+        startJourney,
+        cancelJourney,
+        clearJourneyCelebration,
         addCustomReward,
         deleteReward,
         resetDailyTasks,

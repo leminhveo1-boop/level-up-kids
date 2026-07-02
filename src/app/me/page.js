@@ -190,7 +190,7 @@ export default function MyCornerPage() {
                   <span className="text-lg">🏅</span>
                   <div className="min-w-0">
                     <p className="text-scale-2xs font-black text-forest-dark truncate">{h.title}</p>
-                    <p className="text-[9px] text-gray-400 font-bold">
+                    <p className="text-[11px] text-gray-400 font-bold">
                       {t("game.me.gradDays", { days: h.days, date: new Date(h.graduatedAt).toLocaleDateString("vi-VN") })}
                     </p>
                   </div>
@@ -219,11 +219,11 @@ export default function MyCornerPage() {
                   <div className={`text-3xl h-8 flex items-center justify-center ${owned ? "" : "grayscale opacity-30"}`}>
                     {owned ? entry.emoji : "❓"}
                   </div>
-                  <p className={`text-[9px] font-black leading-tight ${owned ? "text-forest-dark" : "text-gray-300"}`}>
+                  <p className={`text-[11px] font-black leading-tight ${owned ? "text-forest-dark" : "text-gray-300"}`}>
                     {owned ? entry.name : "???"}
                   </p>
                   {owned && (
-                    <span className="text-[9px] font-bold text-gray-400">
+                    <span className="text-[11px] font-bold text-gray-400">
                       {MOOD_EMOJI[mood]} {t(`game.me.mood.${mood}`)}
                     </span>
                   )}

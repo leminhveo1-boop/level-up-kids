@@ -39,6 +39,9 @@ export const FOCUS_BONUS_MIN = 2;
 // ===== Đợt Bằng Chứng: D8 so-với-chính-mình =====
 export const COMPARE_MIN_LAST_WEEK_DAYS = 4; // cần ≥4 ngày dữ liệu tuần trước mới đủ tin để so sánh
 
+// ===== B-lite: Tuần Bận — chế độ tự lái trọn gói cho bố mẹ =====
+export const BUSY_MODE_MS = 7 * 24 * 60 * 60 * 1000; // bật 1 lần = 7 ngày
+
 // ===== V1.2 =====
 export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
 export const GRADUATION_DAYS = 30; // thói quen 30 ngày liên tục → tốt nghiệp 🎓 thành "Bản Năng Anh Hùng"
@@ -63,6 +66,7 @@ export const DEFAULT_PARENT_CONFIG = {
   requireAllMandatory: true,
   maxCoinBalance: 7000,
   smartAutoApprove: true, // Uy Tín ≥80: việc tự-ghi-nhận nhả điểm ngay (chế độ tự lái)
+  busyUntil: 0, // Tuần Bận: trước mốc này MỌI việc nhả điểm ngay (0 = tắt)
 };
 
 export const DEFAULT_STATS = {
@@ -188,5 +192,8 @@ export function createInitialState(opts = {}) {
     childMessages: [],
     receivedGifts: [],
     treeGrowth: 0,
+    journey: null,
+    journeysCompleted: [],
+    lastJourneyCompleted: null,
   };
 }

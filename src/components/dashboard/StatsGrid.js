@@ -23,7 +23,7 @@ export default function StatsGrid({ stats }) {
         {STAT_CELLS.map(({ key, emoji, labelKey, cellCls, valueCls }) => (
           <div key={key} className={`${cellCls} border rounded-xl p-2 flex flex-col items-center justify-center text-center space-y-1`}>
             <span className="text-base">{emoji}</span>
-            <span className="text-[9px] font-bold text-gray-500">{t(labelKey)}</span>
+            <span className="text-[11px] font-bold text-gray-500">{t(labelKey)}</span>
             <span className={`text-xs font-black ${valueCls}`}>{stats[key]}</span>
           </div>
         ))}

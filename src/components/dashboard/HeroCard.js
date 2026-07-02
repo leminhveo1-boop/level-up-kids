@@ -107,7 +107,7 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
             >
               {t("game.hero.myCorner")}
             </button>
-            <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
+            <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-forest-accent text-forest border border-forest">
               {t("game.hero.level", { n: level })}
             </span>
           </div>
@@ -123,7 +123,7 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
               style={{ width: `${(exp / expToNextLevel) * 100}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-[8.5px] font-black text-gray-400">
+          <div className="flex justify-between text-[10px] font-black text-gray-400">
             <span>{t("game.hero.exp", { n: exp })}</span>
             <span>{t("game.hero.req", { n: expToNextLevel })}</span>
           </div>

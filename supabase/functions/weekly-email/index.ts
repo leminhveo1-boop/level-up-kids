@@ -23,6 +23,33 @@ interface Snapshot {
   streak?: number;
 }
 
+// D8 "so-với-chính-mình" — same rules as src/lib/game/progress.js (compareWeeks):
+// need ≥4 closed days last week and a non-zero baseline, praise process not person.
+function compareLine(fullHistory: Snapshot[]): string {
+  const thisWeekDays = fullHistory.slice(-7);
+  const lastWeekDays = fullHistory.slice(-14, -7);
+  const thisWeek = thisWeekDays.reduce((s, h) => s + (h.completed || 0), 0);
+  const lastWeek = lastWeekDays.reduce((s, h) => s + (h.completed || 0), 0);
+  if (lastWeekDays.length < 4 || lastWeek === 0) return "";
+
+  const deltaPct = Math.round(((thisWeek - lastWeek) / lastWeek) * 100);
+  const text =
+    deltaPct > 0
+      ? `📈 Tuần này hoàn thành <b>${thisWeek}</b> việc — <b>nhiều hơn ${deltaPct}%</b> so với tuần trước!`
+      : deltaPct < 0
+        ? `🌱 Tuần này ${thisWeek} việc — chậm hơn tuần trước một nhịp, tuần mới là cơ hội bứt phá.`
+        : `💪 Giữ vững phong độ như tuần trước — đều đặn chính là siêu năng lực.`;
+  return `<p style="margin:0 0 10px;padding:8px 12px;background:${deltaPct > 0 ? "#E8F5E9" : "#FFF8E1"};border-radius:10px;color:#333;font-size:13px;">${text}</p>`;
+}
+
+interface JourneyState {
+  title?: string;
+  icon?: string;
+  stage?: number;
+  stageSuccessDays?: number;
+  dayInStage?: number;
+}
+
 function childSection(name: string, state: Record<string, unknown>): string {
   const history = ((state.history as Snapshot[]) ?? []).slice(-7);
   const days = history.length;
@@ -32,6 +59,7 @@ function childSection(name: string, state: Record<string, unknown>): string {
   const streak = (state.streak as number) ?? 0;
   const trust = (state.trustScore as number) ?? 0;
   const graduated = ((state.graduatedHabits as unknown[]) ?? []).length;
+  const journey = (state.journey as JourneyState) || null;
 
   const bars = history
     .map((h) => {
@@ -45,13 +73,19 @@ function childSection(name: string, state: Record<string, unknown>): string {
     })
     .join("");
 
+  const journeyLine = journey?.title
+    ? `<p style="margin:0 0 10px;color:#555;font-size:13px;">🛤️ Lộ trình <b>${journey.icon || ""} ${journey.title}</b> — tuần ${(journey.stage ?? 0) + 1}/3, đạt <b>${journey.stageSuccessDays ?? 0}/${journey.dayInStage ?? 0}</b> ngày tuần này.</p>`
+    : "";
+
   return `
   <div style="background:#fff;border:1px solid #E4DCCF;border-radius:14px;padding:18px;margin:14px 0;">
     <h2 style="margin:0 0 6px;color:#1B5E20;font-size:17px;">🦸 ${name}</h2>
+    ${compareLine((state.history as Snapshot[]) ?? [])}
     <p style="margin:0 0 10px;color:#555;font-size:13px;">
       ${days} ngày ghi nhận · hoàn thành <b>${done}/${total}</b> nhiệm vụ (${rate}%) ·
       🔥 streak <b>${streak}</b> · 🤝 uy tín <b>${trust}/100</b>${graduated ? ` · 🎓 <b>${graduated}</b> thói quen đã thành bản năng` : ""}
     </p>
+    ${journeyLine}
     ${history.length ? `<table style="border-collapse:collapse;"><tr>${bars}</tr></table>` : `<p style="color:#999;font-size:12px;">Chưa đủ dữ liệu tuần này.</p>`}
   </div>`;
 }

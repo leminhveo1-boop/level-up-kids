@@ -5,7 +5,9 @@ import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
-import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe } from "lucide-react";
+import { BUSY_MODE_MS } from "@/lib/game/constants";
+import { track } from "@/lib/analytics";
+import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe, Plane } from "lucide-react";
 
 /** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
 export default function SystemTab() {
@@ -155,6 +157,9 @@ export default function SystemTab() {
         </div>
       </form>
 
+      {/* B-lite: Tuần Bận — full autopilot for a hard week */}
+      <BusyModeCard showFlash={showFlash} />
+
       {/* PIN */}
       <form onSubmit={handleChangePin} className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
@@ -209,6 +214,56 @@ export default function SystemTab() {
           GIẢ LẬP NGÀY MỚI 🔄
         </button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * ✈️ Tuần Bận — one tap turns on 7 days of full autopilot: every claim the
+ * child makes releases points instantly (no escrow queue, no evening review).
+ * The app must keep working for the family even when the parent can't.
+ */
+function BusyModeCard({ showFlash }) {
+  const { parentConfig, setParentConfig } = useGame();
+  const busyUntil = parentConfig?.busyUntil || 0;
+  const isActive = busyUntil > Date.now();
+  const daysLeft = Math.max(1, Math.ceil((busyUntil - Date.now()) / (24 * 60 * 60 * 1000)));
+
+  const handleToggle = () => {
+    if (isActive) {
+      setParentConfig((prev) => ({ ...prev, busyUntil: 0 }));
+      track("busy_mode_off", {});
+      showFlash("Đã tắt Tuần Bận — tối nay bố mẹ duyệt điểm lại như thường. ✅");
+    } else {
+      if (!confirm("Bật Tuần Bận 7 ngày? Mọi việc con tick sẽ được duyệt NGAY, không chờ bố mẹ.")) return;
+      setParentConfig((prev) => ({ ...prev, busyUntil: Date.now() + BUSY_MODE_MS }));
+      track("busy_mode_on", {});
+      showFlash("Đã bật Tuần Bận! App tự chạy 7 ngày — bố mẹ cứ yên tâm lo việc lớn. ✈️");
+    }
+  };
+
+  return (
+    <div className={`border rounded-xl p-4 space-y-2 ${isActive ? "bg-amber-light/30 border-amber/40" : "bg-white border-sand"}`}>
+      <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+        <Plane size={16} /> Tuần Bận (tự lái trọn gói)
+        {isActive && (
+          <span className="text-[11px] font-black text-white bg-amber rounded-full px-2 py-0.5">
+            CÒN {daysLeft} NGÀY
+          </span>
+        )}
+      </h3>
+      <p className="text-scale-2xs text-gray-500 leading-relaxed">
+        Tuần này quá bận? Bật 1 nút: mọi việc con ghi nhận được duyệt ngay lập tức — không hàng chờ, không phải mở app mỗi tối.
+        Tự tắt sau 7 ngày. Uy Tín của con giữ nguyên, báo cáo tuần vẫn ghi đầy đủ.
+      </p>
+      <button
+        onClick={handleToggle}
+        className={`w-full min-h-tap rounded-xl text-scale-xs font-black active:scale-[0.98] transition-transform ${
+          isActive ? "bg-sand text-gray-500" : "bg-amber text-white"
+        }`}
+      >
+        {isActive ? "TẮT TUẦN BẬN — DUYỆT TAY LẠI" : "BẬT TUẦN BẬN 7 NGÀY ✈️"}
+      </button>
     </div>
   );
 }

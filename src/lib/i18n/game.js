@@ -69,6 +69,17 @@ export const gameDict = {
     "game.grad.desc": "Con đã tự giác làm việc này {days} ngày liên tục — giờ nó là một phần con người con rồi, không cần điểm thưởng nữa! Huy hiệu vĩnh viễn ở 🏠 Góc Của Tớ.",
     "game.grad.cta": "TUYỆT VỜI! 🙌",
 
+    // 🛤️ Journey (Lộ Trình 3 tuần)
+    "game.journey.title": "🛤️ LỘ TRÌNH CỦA TỚ",
+    "game.journey.week": "TUẦN {week}/{weeks}",
+    "game.journey.progress": "Tuần này đạt {done} ngày · cả hành trình {success}/{total} ngày",
+    "game.journey.todayDone": "Hôm nay xong phần lộ trình rồi — giữ vững nhé! 🔥",
+    "game.journey.todayTodo": "Còn {n} việc lộ trình đang chờ con hôm nay!",
+    "game.journey.done.title": "“{title}” — CHINH PHỤC THÀNH CÔNG! 🏆",
+    "game.journey.done.desc": "{success}/{total} ngày đạt sau 3 tuần — thói quen mới đã là của con! Việc tuần cuối vẫn ở bảng để con giữ phong độ tới huy hiệu 🎓.",
+    "game.journey.done.cta": "QUÁ ĐÃ! 🏆",
+    "game.task.journeyBadge": "🛤️ LỘ TRÌNH",
+
     // Goal bar
     "game.goal.title": "🎯 Mục tiêu lớn",
     "game.goal.remain": "Còn {n} 🪙 nữa — đào mỏ thôi! ⛏️",
@@ -422,6 +433,17 @@ export const gameDict = {
     "game.grad.instinct": "“{title}” has become a HERO INSTINCT!",
     "game.grad.desc": "You did this on your own for {days} days in a row — it's part of who you are now, no more reward points needed! A permanent badge lives in 🏠 My Corner.",
     "game.grad.cta": "AWESOME! 🙌",
+
+    // 🛤️ Journey (3-week guided path)
+    "game.journey.title": "🛤️ MY JOURNEY",
+    "game.journey.week": "WEEK {week}/{weeks}",
+    "game.journey.progress": "{done} good days this week · {success}/{total} days overall",
+    "game.journey.todayDone": "Today's journey tasks are done — keep it up! 🔥",
+    "game.journey.todayTodo": "{n} journey task(s) still waiting for you today!",
+    "game.journey.done.title": "“{title}” — CONQUERED! 🏆",
+    "game.journey.done.desc": "{success}/{total} good days across 3 weeks — the new habit is yours! The final week's tasks stay on your board on the road to the 🎓 badge.",
+    "game.journey.done.cta": "SO COOL! 🏆",
+    "game.task.journeyBadge": "🛤️ JOURNEY",
 
     // Goal bar
     "game.goal.title": "🎯 Big goal",

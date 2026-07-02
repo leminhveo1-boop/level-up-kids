@@ -32,7 +32,7 @@ export default function GoalBar({ rewards, heroCoins }) {
           style={{ width: `${Math.min(100, pct)}%` }}
         />
       </div>
-      <p className="text-[9px] text-gray-400 font-bold">
+      <p className="text-[11px] text-gray-400 font-bold">
         {t("game.goal.remain", { n: coinGoal.cost - heroCoins })}
       </p>
     </div>

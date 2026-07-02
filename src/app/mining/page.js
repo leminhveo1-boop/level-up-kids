@@ -168,13 +168,13 @@ export default function MiningCavePage() {
             {/* Points Wallet */}
             <div className="bg-forest-light/35 border border-forest/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">⭐</span>
-              <span className="text-[9px] font-black text-forest-dark">{points} {t("game.points")}</span>
+              <span className="text-[11px] font-black text-forest-dark">{points} {t("game.points")}</span>
             </div>
             
             {/* Hero Coin Wallet */}
             <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs animate-bounce">🪙</span>
-              <span className="text-[9px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+              <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
             </div>
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function MiningCavePage() {
             <span>{t(`game.mine.caveTitle.${m}`)}</span>
             <span>⛏️</span>
           </h2>
-          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">
+          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
             {t(`game.mine.caveSub.${m}`)}
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function MiningCavePage() {
                 {/* Counter */}
                 <div className="space-y-0.5">
                   <p className="text-base font-black text-sky-dark">{energy}<span className="text-xs opacity-75">/100</span></p>
-                  <p className="text-[8px] font-extrabold text-gray-400 uppercase tracking-wide">{t("game.mine.energyUnit")}</p>
+                  <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">{t("game.mine.energyUnit")}</p>
                 </div>
               </div>
 
@@ -288,7 +288,7 @@ export default function MiningCavePage() {
                 </button>
 
                 {/* Anti-spam text helper */}
-                <div className="absolute bottom-2 text-[8px] font-bold text-gray-400 select-none">
+                <div className="absolute bottom-2 text-[10px] font-bold text-gray-400 select-none">
                   {energy > 0 ? t("game.mine.clickHelp") : t("game.mine.clickEmpty")}
                 </div>
               </div>
@@ -308,7 +308,7 @@ export default function MiningCavePage() {
                 <span>{t("game.mine.runesTitle")}</span>
               </h3>
               
-              <div className="grid grid-cols-3 gap-2 text-center text-[9px] font-bold">
+              <div className="grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
                 {/* Exercise Buff */}
                 <div className={`border rounded-2xl p-2.5 flex flex-col items-center justify-between min-h-[120px] transition-all duration-300 ${
                   hasExerciseBuff 
@@ -317,16 +317,16 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">🏃</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.str")}</span>
+                    <span className="font-extrabold text-[11px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.str")}</span>
                   </div>
 
                   {/* Detailed Description */}
-                  <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
+                  <div className="text-[10px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
                     <p className="text-rose-600 font-extrabold">{t("game.mine.rune.strEffect")}</p>
                     <p className="text-gray-400 font-medium">{t("game.mine.rune.strTrain")}</p>
                   </div>
 
-                  <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
                     hasExerciseBuff
                       ? "bg-rose-100 border-red-200 text-terracotta animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
@@ -343,16 +343,16 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">🧠</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.int")}</span>
+                    <span className="font-extrabold text-[11px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.int")}</span>
                   </div>
 
                   {/* Detailed Description */}
-                  <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
+                  <div className="text-[10px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
                     <p className="text-blue-600 font-extrabold">{t("game.mine.rune.intEffect")}</p>
                     <p className="text-gray-400 font-medium">{t("game.mine.rune.intTrain")}</p>
                   </div>
 
-                  <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
                     hasReadingBuff
                       ? "bg-blue-100 border-blue-200 text-sky-dark animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
@@ -369,16 +369,16 @@ export default function MiningCavePage() {
                 }`}>
                   <div className="flex flex-col items-center space-y-1">
                     <span className="text-base">💎</span>
-                    <span className="font-extrabold text-[9px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.dil")}</span>
+                    <span className="font-extrabold text-[11px] tracking-tight text-forest-dark uppercase">{t("game.mine.rune.dil")}</span>
                   </div>
 
                   {/* Detailed Description */}
-                  <div className="text-[7.5px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
+                  <div className="text-[10px] font-bold text-gray-500 space-y-0.5 my-1 text-left w-full pl-0.5">
                     <p className="text-amber-600 font-extrabold">{t("game.mine.rune.dilEffect")}</p>
                     <p className="text-gray-400 font-medium">{t("game.mine.rune.dilTrain")}</p>
                   </div>
 
-                  <span className={`text-[7.5px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase border select-none ${
                     hasStreakBuff
                       ? "bg-amber-100 border-yellow-200 text-amber-dark animate-pulse"
                       : "bg-gray-100 border-gray-200 text-gray-400"
@@ -387,7 +387,7 @@ export default function MiningCavePage() {
                   </span>
                 </div>
               </div>
-              <p className="text-[8px] text-gray-400 font-medium leading-normal text-center pt-1 select-none">
+              <p className="text-[10px] text-gray-400 font-medium leading-normal text-center pt-1 select-none">
                 💡 <strong>{t("game.mine.runeTipLabel")}</strong> {t("game.mine.runeTip")}
               </p>
             </div>
@@ -420,12 +420,12 @@ export default function MiningCavePage() {
                       >
                         <div className="flex flex-col truncate">
                           <span className="truncate max-w-[200px]">{item.title}</span>
-                          <span className="text-[7.5px] font-extrabold uppercase text-gray-400">
+                          <span className="text-[10px] font-extrabold uppercase text-gray-400">
                             {new Date(item.timestamp).toLocaleTimeString("vi-VN")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase ${badgeStyle}`}>
+                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border uppercase ${badgeStyle}`}>
                             {item.rarityText}
                           </span>
                           <span className="text-xs font-black text-amber-dark">
@@ -522,7 +522,7 @@ export default function MiningCavePage() {
                   <div className="grid grid-cols-2 gap-3">
                     {/* Select Egg */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickEgg")}</label>
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickEgg")}</label>
                       <select
                         value={selectedEgg || ""}
                         onChange={(e) => setSelectedEgg(e.target.value || null)}
@@ -537,7 +537,7 @@ export default function MiningCavePage() {
 
                     {/* Select Potion */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickPotion")}</label>
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">{t("game.mine.pickPotion")}</label>
                       <select
                         value={selectedPotion || ""}
                         onChange={(e) => setSelectedPotion(e.target.value || null)}
@@ -593,7 +593,7 @@ export default function MiningCavePage() {
                       >
                         {/* Active Badge */}
                         {isActive && (
-                          <span className="absolute top-2 right-2 bg-forest text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          <span className="absolute top-2 right-2 bg-forest text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                             {petRole === "mount" ? t("game.mine.badgeMount") : t("game.mine.badgePet")}
                           </span>
                         )}
@@ -606,7 +606,7 @@ export default function MiningCavePage() {
 
                           <div className="flex-grow min-w-0 select-none">
                             <h4 className="text-xs font-black text-forest-dark truncate uppercase tracking-wider">{pet.name}</h4>
-                            <p className="text-[8.5px] font-extrabold text-gray-400 uppercase tracking-wide">
+                            <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">
                               {t("game.mine.elemPrefix")} {pet.element === "fire" ? t("game.mine.elemFire") : pet.element === "ice" ? t("game.mine.elemIce") : t("game.mine.elemMagic")} • {pet.type}
                             </p>
                           </div>
@@ -614,7 +614,7 @@ export default function MiningCavePage() {
 
                         {/* Intimacy / Feed Progress bar */}
                         <div className="space-y-1 select-none">
-                          <div className="flex items-center justify-between text-[8px] font-black text-gray-400 uppercase tracking-wider">
+                          <div className="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-wider">
                             <span>{t("game.mine.intimacy")}</span>
                             <span className="text-forest-medium">{pet.feedProgress}%</span>
                           </div>
@@ -632,12 +632,12 @@ export default function MiningCavePage() {
                           {/* Feed triggers if intimacy < 100 */}
                           {pet.feedProgress < 100 ? (
                             <div className="flex items-center gap-1.5 flex-grow">
-                              <span className="text-[8px] font-black text-gray-400 uppercase select-none">{t("game.mine.feed")}</span>
+                              <span className="text-[10px] font-black text-gray-400 uppercase select-none">{t("game.mine.feed")}</span>
                               
                               <button
                                 onClick={() => handleFeed(pet.id, "meat")}
                                 disabled={inventory?.foods?.meat < 1}
-                                className={`text-[9.5px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
+                                className={`text-[11px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
                                   inventory?.foods?.meat > 0 
                                     ? "bg-white border-red-200 text-terracotta hover:bg-rose-50" 
                                     : "bg-gray-50 border-gray-150 text-gray-300 cursor-not-allowed"
@@ -650,7 +650,7 @@ export default function MiningCavePage() {
                               <button
                                 onClick={() => handleFeed(pet.id, "candy")}
                                 disabled={inventory?.foods?.candy < 1}
-                                className={`text-[9.5px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
+                                className={`text-[11px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
                                   inventory?.foods?.candy > 0 
                                     ? "bg-white border-yellow-200 text-amber hover:bg-amber-light/20" 
                                     : "bg-gray-50 border-gray-150 text-gray-300 cursor-not-allowed"
@@ -663,7 +663,7 @@ export default function MiningCavePage() {
                               <button
                                 onClick={() => handleFeed(pet.id, "leaf")}
                                 disabled={inventory?.foods?.leaf < 1}
-                                className={`text-[9.5px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
+                                className={`text-[11px] font-black px-2 py-1 rounded-lg border flex items-center gap-0.5 active:scale-95 transition-transform ${
                                   inventory?.foods?.leaf > 0 
                                     ? "bg-white border-green-200 text-forest hover:bg-green-50" 
                                     : "bg-gray-50 border-gray-150 text-gray-300 cursor-not-allowed"
@@ -674,7 +674,7 @@ export default function MiningCavePage() {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-[9px] font-black text-amber-dark uppercase tracking-widest animate-pulse flex-grow select-none">
+                            <span className="text-[11px] font-black text-amber-dark uppercase tracking-widest animate-pulse flex-grow select-none">
                               {t("game.mine.evolved")}
                             </span>
                           )}
@@ -685,7 +685,7 @@ export default function MiningCavePage() {
                               pet.isMount ? (
                                 <button
                                   onClick={() => setActiveCompanion("mount", pet.id)}
-                                  className="bg-forest hover:bg-forest-dark text-white font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-forest active:scale-95 transition-transform uppercase tracking-wider shadow-sm"
+                                  className="bg-forest hover:bg-forest-dark text-white font-extrabold text-[10px] py-1 px-3.5 rounded-lg border border-forest active:scale-95 transition-transform uppercase tracking-wider shadow-sm"
                                   type="button"
                                 >
                                   {t("game.mine.ride")}
@@ -693,7 +693,7 @@ export default function MiningCavePage() {
                               ) : (
                                 <button
                                   onClick={() => setActiveCompanion("pet", pet.id)}
-                                  className="bg-white hover:bg-sand-light text-forest font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
+                                  className="bg-white hover:bg-sand-light text-forest font-extrabold text-[10px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
                                   type="button"
                                 >
                                   {t("game.mine.follow")}
@@ -702,7 +702,7 @@ export default function MiningCavePage() {
                             ) : (
                               <button
                                 onClick={() => setActiveCompanion(null, null)}
-                                className="bg-sand hover:bg-sand-dark text-gray-500 font-extrabold text-[8.5px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
+                                className="bg-sand hover:bg-sand-dark text-gray-500 font-extrabold text-[10px] py-1 px-3.5 rounded-lg border border-sand active:scale-95 transition-transform uppercase tracking-wider"
                                 type="button"
                               >
                                 {t("game.mine.recall")}
@@ -727,7 +727,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🌳</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
         </button>
 
         <button
@@ -735,7 +735,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🛒</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
         </button>
 
         <button
@@ -743,7 +743,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
         >
           <span className="text-xl">⛏️</span>
-          <span className="text-[9px] font-black uppercase tracking-wider">{t("nav.mining")}</span>
+          <span className="text-[11px] font-black uppercase tracking-wider">{t("nav.mining")}</span>
         </button>
 
         <button
@@ -751,7 +751,7 @@ export default function MiningCavePage() {
           className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
         >
           <span className="text-xl">🔑</span>
-          <span className="text-[9px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
         </button>
       </div>
     </div>

@@ -183,7 +183,7 @@ export default function RegisterPage() {
                       return (
                         <span 
                           key={key} 
-                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                          className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
                             isMainStat 
                               ? "bg-amber-light border-amber text-amber" 
                               : "bg-sand-light border-sand text-gray-500"

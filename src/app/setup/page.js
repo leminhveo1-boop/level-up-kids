@@ -4,20 +4,16 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
+import { getJourneysForAge, JOURNEY_AGE_BANDS } from "@/lib/game/journeys";
 import { track } from "@/lib/analytics";
 
 /**
  * Onboarding wizard — from "paid" to "child playing" in under 3 minutes.
- * Step 1: pick age band → suggested tasks (pre-checked)
+ * B-lite: Step 1 is now "pick a 3-week JOURNEY" (the parent's đường dẫn) —
+ * no more inventing tasks from scratch. Loose tasks became an optional extra.
  * Step 2: first 3 real-world rewards (VND → coin conversion)
  * Step 3: set parent PIN (replace default 1234)
  */
-
-const AGE_BANDS = [
-  { id: "4-6", label: "4–6 tuổi 🧸", desc: "Thói quen cơ bản, việc nhẹ" },
-  { id: "7-9", label: "7–9 tuổi 🚴", desc: "Tự lập, học tập, việc nhà" },
-  { id: "10-12", label: "10–12 tuổi 🚀", desc: "Kỷ luật, trách nhiệm, kỹ năng" },
-];
 
 const TASKS_BY_AGE = {
   "4-6": [
@@ -44,6 +40,14 @@ const TASKS_BY_AGE = {
     { title: "🏃 Tập thể dục 30 phút", category: "strength", exp: 25, points: 25, energy: 18 },
     { title: "📝 Viết nhật ký 5 phút", category: "creative", exp: 15, points: 15, energy: 10 },
   ],
+  "13-15": [
+    { title: "📚 Học/ôn bài tập trung 25 phút", category: "intellect", exp: 25, points: 25, energy: 18 },
+    { title: "💪 Vận động 20 phút", category: "strength", exp: 25, points: 25, energy: 18 },
+    { title: "🍽️ Một việc nhà cố định mỗi ngày", category: "help", exp: 22, points: 22, energy: 16 },
+    { title: "🇬🇧 Tiếng Anh 20 phút", category: "intellect", exp: 25, points: 25, energy: 18 },
+    { title: "🛏️ Phòng riêng gọn gàng", category: "discipline", exp: 18, points: 18, energy: 12 },
+    { title: "🍳 Phụ nấu hoặc tự chuẩn bị 1 bữa", category: "help", exp: 22, points: 22, energy: 16 },
+  ],
 };
 
 const REWARD_SUGGESTIONS = [
@@ -54,12 +58,14 @@ const REWARD_SUGGESTIONS = [
 
 export default function SetupWizardPage() {
   const router = useRouter();
-  const { isLoaded, charName, addCustomTask, addCustomReward, setParentPin, parentConfig } = useGame();
+  const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig } = useGame();
   const { authLoaded, activeChildId, isDemo } = useAuth();
 
   const [step, setStep] = useState(1);
   const [ageBand, setAgeBand] = useState("7-9");
-  const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE["7-9"].map(() => true));
+  const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge("7-9")[0]?.id || null);
+  const [showExtraTasks, setShowExtraTasks] = useState(false);
+  const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE["7-9"].map(() => false));
   const [rewards, setRewards] = useState(REWARD_SUGGESTIONS.map((r) => ({ ...r, enabled: true })));
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
@@ -83,9 +89,21 @@ export default function SetupWizardPage() {
     );
   }
 
+  const journeys = getJourneysForAge(ageBand);
+  const pickingJourney = selectedJourney !== null;
+
   const selectAge = (band) => {
     setAgeBand(band);
-    setCheckedTasks(TASKS_BY_AGE[band].map(() => true));
+    setSelectedJourney(getJourneysForAge(band)[0]?.id || null);
+    setShowExtraTasks(false);
+    setCheckedTasks(TASKS_BY_AGE[band].map(() => false));
+  };
+
+  const selectNoJourney = () => {
+    setSelectedJourney(null);
+    // không theo lộ trình → quay về kiểu cũ: nhiệm vụ lẻ bật sẵn hết
+    setShowExtraTasks(true);
+    setCheckedTasks(TASKS_BY_AGE[ageBand].map(() => true));
   };
 
   const handleFinish = (e) => {
@@ -100,6 +118,10 @@ export default function SetupWizardPage() {
     }
 
     // Apply everything at once
+    if (selectedJourney && !journey) {
+      const r = startJourney(selectedJourney);
+      if (r.success) track("journey_started", { id: selectedJourney, source: "onboarding" });
+    }
     TASKS_BY_AGE[ageBand].forEach((task, i) => {
       if (checkedTasks[i]) {
         addCustomTask(task.title, task.exp, task.category, false, task.points, task.energy);
@@ -114,6 +136,7 @@ export default function SetupWizardPage() {
 
     track("onboarding_completed", {
       age_band: ageBand,
+      journey: selectedJourney || "none",
       tasks: checkedTasks.filter(Boolean).length,
       rewards: rewards.filter((r) => r.enabled).length,
     });
@@ -140,13 +163,13 @@ export default function SetupWizardPage() {
         </div>
       </div>
 
-      {/* STEP 1: age band + suggested tasks */}
+      {/* STEP 1: age band + JOURNEY pick (B-lite đường dẫn) */}
       {step === 1 && (
         <div className="space-y-4 flex-grow">
-          <p className="text-xs font-bold text-gray-500">Chọn độ tuổi để nhận bộ nhiệm vụ phù hợp:</p>
+          <p className="text-xs font-bold text-gray-500">Chọn độ tuổi của con:</p>
 
-          <div className="grid grid-cols-3 gap-2">
-            {AGE_BANDS.map((band) => (
+          <div className="grid grid-cols-2 gap-2">
+            {JOURNEY_AGE_BANDS.map((band) => (
               <button
                 key={band.id}
                 type="button"
@@ -158,40 +181,95 @@ export default function SetupWizardPage() {
                 }`}
               >
                 <p className="text-[11px] font-black text-forest-dark">{band.label}</p>
-                <p className="text-[8.5px] text-gray-400 font-bold leading-tight">{band.desc}</p>
+                <p className="text-[10px] text-gray-400 font-bold leading-tight">{band.desc}</p>
               </button>
             ))}
           </div>
 
           <div className="space-y-2">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
-              Nhiệm vụ gợi ý (bỏ chọn nếu không cần):
+              🛤️ Chọn 1 lộ trình 3 tuần — nhiệm vụ &amp; mẹo mỗi tuần đã soạn sẵn:
             </p>
-            {TASKS_BY_AGE[ageBand].map((task, i) => (
-              <label
-                key={task.title}
-                className={`flex items-center gap-3 bg-white border-2 rounded-xl p-3 cursor-pointer transition-all ${
-                  checkedTasks[i] ? "border-forest/40" : "border-sand opacity-60"
+            {journeys.map((j) => (
+              <button
+                key={j.id}
+                type="button"
+                onClick={() => setSelectedJourney(j.id)}
+                className={`w-full text-left bg-white border-2 rounded-2xl p-3.5 transition-all ${
+                  selectedJourney === j.id ? "border-forest shadow-game-forest" : "border-sand shadow-game-flat"
                 }`}
               >
-                <input
-                  type="checkbox"
-                  checked={checkedTasks[i]}
-                  onChange={(e) =>
-                    setCheckedTasks((prev) => prev.map((c, idx) => (idx === i ? e.target.checked : c)))
-                  }
-                  className="w-4 h-4 rounded text-forest focus:ring-forest"
-                />
-                <span className="text-xs font-bold text-forest-dark flex-grow">{task.title}</span>
-                <span className="text-[9px] font-black text-amber-dark">+{task.energy}⚡</span>
-              </label>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl flex-shrink-0">{j.icon}</span>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-xs font-black text-forest-dark">
+                      {j.title}
+                      <span className="ml-1.5 text-[11px] font-black text-amber-dark bg-amber-light/50 rounded-full px-1.5 py-0.5">
+                        3 TUẦN
+                      </span>
+                    </p>
+                    <p className="text-[10px] text-gray-500 font-medium leading-snug mt-0.5">{j.goal}</p>
+                  </div>
+                  <span
+                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-[10px] font-black ${
+                      selectedJourney === j.id ? "border-forest bg-forest text-white" : "border-sand text-transparent"
+                    }`}
+                  >
+                    ✓
+                  </span>
+                </div>
+              </button>
             ))}
+
+            <button
+              type="button"
+              onClick={selectNoJourney}
+              className={`w-full text-left rounded-2xl border-2 p-3 text-[10px] font-bold transition-all ${
+                !pickingJourney ? "border-forest bg-forest-light/10 text-forest-dark" : "border-sand bg-white text-gray-400"
+              }`}
+            >
+              ⚙️ Không theo lộ trình — tự chọn nhiệm vụ lẻ (kiểu cũ)
+            </button>
+          </div>
+
+          {/* Nhiệm vụ lẻ: tuỳ chọn khi đã có lộ trình, bắt buộc hiện khi không lộ trình */}
+          <div className="space-y-2">
+            {pickingJourney && (
+              <button
+                type="button"
+                onClick={() => setShowExtraTasks((v) => !v)}
+                className="text-[10px] font-black text-sky-dark underline"
+              >
+                {showExtraTasks ? "▲ Ẩn nhiệm vụ lẻ" : "➕ Thêm nhiệm vụ lẻ ngoài lộ trình (tuỳ chọn)"}
+              </button>
+            )}
+            {showExtraTasks &&
+              TASKS_BY_AGE[ageBand].map((task, i) => (
+                <label
+                  key={task.title}
+                  className={`flex items-center gap-3 bg-white border-2 rounded-xl p-3 cursor-pointer transition-all ${
+                    checkedTasks[i] ? "border-forest/40" : "border-sand opacity-60"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checkedTasks[i]}
+                    onChange={(e) =>
+                      setCheckedTasks((prev) => prev.map((c, idx) => (idx === i ? e.target.checked : c)))
+                    }
+                    className="w-4 h-4 rounded text-forest focus:ring-forest"
+                  />
+                  <span className="text-xs font-bold text-forest-dark flex-grow">{task.title}</span>
+                  <span className="text-[11px] font-black text-amber-dark">+{task.energy}⚡</span>
+                </label>
+              ))}
           </div>
 
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="w-full bg-forest text-sand-light font-black text-sm py-3.5 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed"
+            disabled={!pickingJourney && checkedTasks.every((c) => !c)}
+            className="w-full bg-forest text-sand-light font-black text-sm py-3.5 rounded-2xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed disabled:opacity-50"
           >
             TIẾP TỤC ➡️
           </button>
