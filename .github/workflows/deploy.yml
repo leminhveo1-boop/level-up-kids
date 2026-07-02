@@ -1,0 +1,51 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (vercel output)
+        run: npx vercel@latest build --yes
+        env:
+          # Public build-time vars (baked into the client bundle)
+          NEXT_PUBLIC_SUPABASE_URL: https://mqgfdotuywgxpoiezpmj.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xZ2Zkb3R1eXdneHBvaWV6cG1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NDk0NjIsImV4cCI6MjA5ODUyNTQ2Mn0.fqH1t2PUJUS7iZKLi0Az9Ig3ttQbamrYX7huxhEZJS4' }}
+          NEXT_PUBLIC_PREMIUM_PRICE_VND: "199000"
+          NEXT_PUBLIC_BANK_ID: TPBank
+          NEXT_PUBLIC_BANK_ACCOUNT: "0934567698"
+          NEXT_PUBLIC_BANK_HOLDER: BUI THE LONG
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+
+      - name: Transform for Cloudflare Pages
+        run: npx @cloudflare/next-on-pages@1 --skip-build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --branch main
