@@ -6,11 +6,18 @@ import { useGame } from "@/context/GameState";
 import confetti from "canvas-confetti";
 import SoundToggle from "@/components/SoundToggle";
 import { getEquipped } from "@/lib/game/cosmetics";
+import { getPetMood, getPetQuote } from "@/lib/game/pets";
+import { GIFT_CATALOG } from "@/lib/game/gifting";
+import { PET_HUNGER_MAX } from "@/lib/game/constants";
 import { useAuth } from "@/context/AuthContext";
+
+const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
+const MOOD_BAR_COLOR = { joyful: "bg-forest", happy: "bg-amber", hungry: "bg-terracotta", starving: "bg-red-500" };
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { childProfiles, activeChildId, selectChild, isDemo } = useAuth();
+  const { childProfiles, activeChildId, selectChild, isDemo, uiMode } = useAuth();
+  const isTeen = uiMode === "teen";
   const {
     isLoaded,
     charName,
@@ -39,6 +46,9 @@ export default function DashboardPage() {
     rewards,
     lastGraduation,
     clearLastGraduation,
+    receivedGifts,
+    markReceivedGiftsRead,
+    sendGift,
   } = useGame();
 
   // 🎯 V1.2 Goal gradient: nearest big reward the child is saving coins for
@@ -160,6 +170,23 @@ export default function DashboardPage() {
   // Companion pet/mount objects
   const activePetObj = pets?.find((p) => p.id === activePet);
   const activeMountObj = pets?.find((p) => p.id === activeMount);
+  const activeCompanion = activeMountObj || activePetObj;
+  const companionMood = activeCompanion ? getPetMood(activeCompanion) : null;
+  // Re-roll only when the companion or its hunger changes — not on every render
+  const companionQuote = React.useMemo(
+    () => (activeCompanion ? getPetQuote(activeCompanion) : null),
+    [activeCompanion?.id, activeCompanion?.hunger]
+  );
+
+  const [giftPickerFor, setGiftPickerFor] = useState(null); // sibling id currently picking a gift for
+  const [giftFlash, setGiftFlash] = useState("");
+
+  const handleSendGift = async (toChildId, giftId) => {
+    const r = await sendGift(toChildId, giftId);
+    setGiftFlash(r.message || "");
+    setTimeout(() => setGiftFlash(""), 3500);
+    if (r.success) setGiftPickerFor(null);
+  };
 
   // Redirect if character doesn't exist (no name)
   useEffect(() => {
@@ -426,6 +453,32 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* 🐾 Pet is ALIVE — mood, speech bubble, hunger bar */}
+        {activeCompanion && (
+          <div className="bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat flex items-center gap-3">
+            <span className="text-2xl flex-shrink-0">{activeCompanion.emoji}</span>
+            <div className="flex-grow min-w-0 space-y-1">
+              <p className="text-[11px] font-bold text-forest-dark italic truncate">
+                {MOOD_EMOJI[companionMood]} &ldquo;{companionQuote}&rdquo;
+              </p>
+              <div className="h-2 bg-sand rounded-full overflow-hidden border border-sand">
+                <div
+                  className={`h-full transition-all duration-300 ${MOOD_BAR_COLOR[companionMood]}`}
+                  style={{ width: `${((activeCompanion.hunger ?? PET_HUNGER_MAX) / PET_HUNGER_MAX) * 100}%` }}
+                />
+              </div>
+            </div>
+            {companionMood === "hungry" || companionMood === "starving" ? (
+              <button
+                onClick={() => router.push("/mining")}
+                className="min-h-tap flex-shrink-0 bg-amber text-white text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+              >
+                Cho ăn 🍖
+              </button>
+            ) : null}
+          </div>
+        )}
+
         {/* STATS RADAR GRID - 5 Stars of Power */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
           <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider text-center">⚔️ 5 CHỈ SỐ SỨC MẠNH ANH HÙNG</h3>
@@ -497,6 +550,24 @@ export default function DashboardPage() {
               </div>
             )}
 
+            {/* 🎁 D3: unread gifts from siblings */}
+            {receivedGifts?.some((g) => !g.read) && (
+              <div className="w-full bg-purple-50 border-2 border-purple-200 p-3 rounded-2xl space-y-1.5">
+                <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">🎁 Quà Từ Anh Chị Em</span>
+                {receivedGifts.filter((g) => !g.read).slice(0, 3).map((g) => (
+                  <p key={g.id} className="text-[11px] font-bold text-purple-800">
+                    {g.emoji} {g.fromName} đã tặng con {g.label}!
+                  </p>
+                ))}
+                <button
+                  onClick={markReceivedGiftsRead}
+                  className="min-h-tap bg-white border border-purple-200 text-purple-700 text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+                >
+                  Đã xem, cảm ơn! 💜
+                </button>
+              </div>
+            )}
+
             {/* Verification gate toast */}
             {verifyToast && (
               <div className="w-full bg-rose-50 border border-red-200 p-2.5 rounded-xl text-[11px] text-terracotta font-bold text-center animate-fade-in">
@@ -554,25 +625,64 @@ export default function DashboardPage() {
                     const isMe = sib.id === activeChildId;
                     const sibEmoji = sib.char_class === "Mage" ? "🔮" : sib.char_class === "Druid" ? "🌱" : "🛡️";
                     return (
-                      <button
-                        key={sib.id}
-                        onClick={() => {
-                          if (!isMe && confirm(`Đổi sang người chơi ${sib.name}?`)) {
-                            selectChild(sib.id);
-                          }
-                        }}
-                        className={`min-h-tap flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all active:scale-95 ${
-                          isMe ? "border-forest bg-forest-light/20" : "border-sand bg-sand-light"
-                        }`}
-                      >
-                        <span className="text-lg">{sibEmoji}</span>
-                        <span className="text-[11px] font-black text-forest-dark">
-                          {sib.name} {isMe && "(tớ)"}
-                        </span>
-                      </button>
+                      <div key={sib.id} className="flex-shrink-0 flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            if (!isMe && confirm(`Đổi sang người chơi ${sib.name}?`)) {
+                              selectChild(sib.id);
+                            }
+                          }}
+                          className={`min-h-tap flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all active:scale-95 ${
+                            isMe ? "border-forest bg-forest-light/20" : "border-sand bg-sand-light"
+                          }`}
+                        >
+                          <span className="text-lg">{sibEmoji}</span>
+                          <span className="text-[11px] font-black text-forest-dark">
+                            {sib.name} {isMe && "(tớ)"}
+                          </span>
+                        </button>
+                        {!isMe && (
+                          <button
+                            onClick={() => setGiftPickerFor(giftPickerFor === sib.id ? null : sib.id)}
+                            className="min-h-tap min-w-tap flex items-center justify-center rounded-xl border-2 border-purple-200 bg-purple-50 text-base active:scale-95 transition-transform"
+                            title={`Tặng quà cho ${sib.name}`}
+                          >
+                            🎁
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
+
+                {giftPickerFor && (
+                  <div className="border-t border-sand pt-2 space-y-1.5">
+                    <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">
+                      Tặng {childProfiles.find((c) => c.id === giftPickerFor)?.name} món gì?
+                    </span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {GIFT_CATALOG.map((g) => (
+                        <button
+                          key={g.id}
+                          onClick={() => handleSendGift(giftPickerFor, g.id)}
+                          disabled={heroCoins < g.cost}
+                          className={`min-h-tap text-left px-2.5 py-2 rounded-xl border-2 text-[10px] font-bold flex items-center justify-between gap-1 transition-transform active:scale-95 ${
+                            heroCoins < g.cost
+                              ? "border-sand bg-sand-light text-gray-300"
+                              : "border-purple-200 bg-purple-50 text-purple-800"
+                          }`}
+                        >
+                          <span>{g.emoji} {g.label}</span>
+                          <span>{g.cost}🪙</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {giftFlash && (
+                  <p className="text-[10px] font-bold text-purple-700 text-center">{giftFlash}</p>
+                )}
               </div>
             )}
 

@@ -209,7 +209,7 @@ export default function MiningCavePage() {
             }`}
             type="button"
           >
-            🐾 Khu Thú Cưng
+            {isTeen ? "🐾 Bộ Sưu Tập" : "🐾 Khu Thú Cưng"}
           </button>
         </div>
 
@@ -567,12 +567,12 @@ export default function MiningCavePage() {
             <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-4">
               <h3 className="text-xs font-black text-forest-dark uppercase tracking-wider flex items-center gap-1">
                 <span>🐾</span>
-                <span>Thú Cưng Của {charName} ({pets?.length || 0})</span>
+                <span>{isTeen ? `Bộ Sưu Tập Của ${charName} (${pets?.length || 0})` : `Thú Cưng Của ${charName} (${pets?.length || 0})`}</span>
               </h3>
 
               {pets?.length === 0 ? (
                 <div className="text-center py-8 text-[11px] text-gray-400 font-bold uppercase tracking-wider select-none">
-                  🍃 Chuồng trống! Hãy ấp trứng để mở khóa thú cưng đầu tiên...
+                  {isTeen ? "🍃 Trống trơn! Hãy ấp trứng để mở khóa vật phẩm đầu tiên..." : "🍃 Chuồng trống! Hãy ấp trứng để mở khóa thú cưng đầu tiên..."}
                 </div>
               ) : (
                 <div className="space-y-3.5">

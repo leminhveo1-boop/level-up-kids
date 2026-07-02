@@ -27,6 +27,8 @@ import {
   FOCUS_BONUS_MIN,
   FOCUS_BONUS_RATIO,
 } from "./constants";
+import { advanceBossWeek } from "./boss";
+import { decayPetsHunger } from "./pets";
 
 /** Streak → points multiplier (balanced against inflation). */
 export function getStreakMultiplier(streak) {
@@ -208,7 +210,7 @@ export function rejectTask(state, taskId) {
       stats: nextStats,
       exp: Math.max(0, state.exp - task.exp),
       energy: Math.max(0, state.energy - energyToRevert),
-      bossHp: state.bossDefeated ? 0 : Math.min(BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
+      bossHp: state.bossDefeated ? 0 : Math.min(state.bossMaxHp || BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
       trustScore: Math.max(TRUST_MIN, (state.trustScore || 0) - TRUST_LOSS_ON_REJECT),
     },
     result: { success: true, taskTitle: task.title },
@@ -291,7 +293,7 @@ export function uncompleteTask(state, taskId) {
       exp: Math.max(0, state.exp - task.exp),
       points: Math.max(0, state.points - pointsToRevert),
       energy: Math.max(0, state.energy - energyToRevert),
-      bossHp: state.bossDefeated ? 0 : Math.min(BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
+      bossHp: state.bossDefeated ? 0 : Math.min(state.bossMaxHp || BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
       lastPointsGain: null,
     },
     events: { pointsReverted: pointsToRevert, energyReverted: energyToRevert },
@@ -595,8 +597,13 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     return true;
   });
 
+  // D1: pets get hungrier every day; D2: boss is a real weekly cycle now —
+  // HP persists within the week and only respawns (harder) on a new week.
+  const hungered = decayPetsHunger(settled);
+  const { state: bossAdvanced } = advanceBossWeek(hungered, new Date());
+
   return {
-    ...settled,
+    ...bossAdvanced,
     streak,
     streakFreezes,
     lastFreezeUsed: freezeUsed,
@@ -618,7 +625,5 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     energy: Math.min(ENERGY_CAP, settled.energy + DAILY_ENERGY_BONUS),
     rewards: settled.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
-    bossHp: settled.bossDefeated ? BOSS_MAX_HP : settled.bossHp,
-    bossDefeated: false,
   };
 }

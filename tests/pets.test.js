@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { hatchPet, feedPet, setActiveCompanion } from "@/lib/game/pets";
+import { hatchPet, feedPet, setActiveCompanion, decayPetsHunger, getPetMood, getPetQuote, PET_ROSTER } from "@/lib/game/pets";
 import { migrateState } from "@/lib/game/migrate";
-import { createInitialState } from "@/lib/game/constants";
+import { createInitialState, PET_HUNGER_MAX } from "@/lib/game/constants";
 
 const rng = () => 0.5;
 
@@ -131,5 +131,62 @@ describe("migrateState (legacy saves)", () => {
     expect(new Set(rewardIds).size).toBe(rewardIds.length);
     // titles preserved in order
     expect(migrated.tasks.map((t) => t.title)).toEqual(["A", "B", "C"]);
+  });
+});
+
+describe("PET_ROSTER", () => {
+  test("lists every egg/element combination (Pokédex-style)", () => {
+    expect(PET_ROSTER.length).toBe(9); // 3 eggTypes x 3 elements
+    expect(PET_ROSTER.every((p) => p.name && p.eggType && p.element && p.emoji)).toBe(true);
+  });
+});
+
+describe("decayPetsHunger", () => {
+  test("reduces every pet's hunger by the daily decay amount", () => {
+    const state = { ...createInitialState(), pets: [{ id: "p1", hunger: 60 }, { id: "p2", hunger: 20 }] };
+    const next = decayPetsHunger(state);
+    expect(next.pets[0].hunger).toBe(45);
+    expect(next.pets[1].hunger).toBe(5);
+    expect(state.pets[0].hunger).toBe(60); // immutability
+  });
+
+  test("clamps hunger at 0, never goes negative", () => {
+    const state = { ...createInitialState(), pets: [{ id: "p1", hunger: 5 }] };
+    const next = decayPetsHunger(state);
+    expect(next.pets[0].hunger).toBe(0);
+  });
+
+  test("no-ops on an empty pet list", () => {
+    const state = { ...createInitialState(), pets: [] };
+    expect(decayPetsHunger(state)).toBe(state);
+  });
+});
+
+describe("getPetMood", () => {
+  test("joyful at high hunger, happy at mid, hungry at low, starving at critical", () => {
+    expect(getPetMood({ hunger: 100 })).toBe("joyful");
+    expect(getPetMood({ hunger: 85 })).toBe("joyful");
+    expect(getPetMood({ hunger: 60 })).toBe("happy");
+    expect(getPetMood({ hunger: 40 })).toBe("hungry");
+    expect(getPetMood({ hunger: 15 })).toBe("starving");
+    expect(getPetMood({ hunger: 0 })).toBe("starving");
+  });
+
+  test("defaults to full hunger (joyful) when hunger is missing (legacy pet)", () => {
+    expect(getPetMood({})).toBe("joyful");
+    expect(getPetMood(null)).toBe("joyful");
+  });
+});
+
+describe("getPetQuote", () => {
+  test("picks a quote matching the pet's current mood", () => {
+    const starving = { hunger: 5 };
+    const quote = getPetQuote(starving, () => 0);
+    expect(quote).toContain("đói");
+  });
+
+  test("is deterministic given a fixed rng", () => {
+    const pet = { hunger: 90 };
+    expect(getPetQuote(pet, () => 0)).toBe(getPetQuote(pet, () => 0));
   });
 });

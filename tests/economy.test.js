@@ -327,11 +327,36 @@ describe("resetDailyTasks", () => {
     expect(next.streak).toBe(5);
   });
 
-  test("defeated boss respawns at full HP", () => {
-    const state = freshState({ bossHp: 0, bossDefeated: true });
+  test("D2: boss spawns fresh on first reset (no bossWeekId yet)", () => {
+    const state = freshState({ bossHp: 0, bossDefeated: true, bossWeekId: null, bossCycleCount: 0 });
     const next = resetDailyTasks(state);
     expect(next.bossHp).toBe(100);
+    expect(next.bossMaxHp).toBe(100);
     expect(next.bossDefeated).toBe(false);
+    expect(next.bossCycleCount).toBe(1);
+    expect(next.bossWeekId).toBeTruthy();
+  });
+
+  test("D2: boss HP persists across daily resets within the same week (no daily revive)", () => {
+    const state = freshState({ bossHp: 30, bossDefeated: false, bossWeekId: "will-be-overwritten" });
+    // First reset establishes this week's id + full HP for the cycle
+    const afterFirst = resetDailyTasks(state);
+    // Simulate a same-week second reset: boss should NOT reset to full HP again
+    const damaged = { ...afterFirst, bossHp: 15 };
+    const afterSecond = resetDailyTasks(damaged);
+    expect(afterSecond.bossHp).toBe(15);
+    expect(afterSecond.bossWeekId).toBe(afterFirst.bossWeekId);
+    expect(afterSecond.bossCycleCount).toBe(afterFirst.bossCycleCount);
+  });
+
+  test("D1: pets lose hunger every daily reset", () => {
+    let state = freshState();
+    state = {
+      ...state,
+      pets: [{ id: "p1", name: "Cáo Lửa Đỏ", eggType: "base", element: "fire", emoji: "🦊", feedProgress: 0, isMount: false, hunger: 60 }],
+    };
+    const next = resetDailyTasks(state);
+    expect(next.pets[0].hunger).toBe(45);
   });
 });
 

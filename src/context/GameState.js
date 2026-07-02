@@ -17,6 +17,9 @@ import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
 import * as petSystem from "@/lib/game/pets";
 import * as cosmeticsSystem from "@/lib/game/cosmetics";
+import * as bossSystem from "@/lib/game/boss";
+import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
+import { deliverGiftToSibling } from "@/lib/siblingGift";
 import { playSound } from "@/lib/sound";
 
 const GameContext = createContext(null);
@@ -26,7 +29,7 @@ const CLOUD_SYNC_DEBOUNCE_MS = 2500;
 const stateKeyFor = (childId) => `luk_state_${childId}`;
 
 export function GameProvider({ children }) {
-  const { authLoaded, cloudEnabled, user, activeChild, activeChildId } = useAuth();
+  const { authLoaded, cloudEnabled, user, activeChild, activeChildId, childProfiles } = useAuth();
   const supabase = getSupabase();
 
   const [state, setState] = useState(null);
@@ -415,6 +418,29 @@ export function GameProvider({ children }) {
     return outcome;
   }, []);
 
+  // ---------------- D2: Boss weekly chest (real loot, once per cycle) ----------------
+  const openBossChest = useCallback(() => {
+    let outcome = { success: false, message: "Rương chưa thể mở! ❌" };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = bossSystem.openBossChest(prev);
+      if (!result.success) {
+        const messages = {
+          BOSS_NOT_DEFEATED: "Boss chưa bị đánh bại! Hãy hoàn thành nhiệm vụ để gây sát thương nhé! ⚔️",
+          CHEST_ALREADY_OPENED: "Rương đã được mở rồi! Chờ boss tuần sau nhé! 📦",
+        };
+        outcome = { success: false, message: messages[result.error] || "Có lỗi xảy ra! ❌" };
+        return prev;
+      }
+      playSound("reward");
+      fireConfetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ["#D97706", "#FBBF24", "#7C3AED"] });
+      const eggText = result.loot.egg ? ` + 1 Trứng ${result.loot.egg === "dragon" ? "Rồng 🐉" : result.loot.egg === "wolf" ? "Sói 🐺" : "Thường 🥚"}` : "";
+      outcome = { success: true, loot: result.loot, message: `Nhận được ${result.loot.coins} 🪙${eggText}!` };
+      return next;
+    });
+    return outcome;
+  }, []);
+
   const hatchPet = useCallback((eggType, potionType) => {
     let outcome = { success: false, message: "Không đủ Trứng hoặc Thuốc ấp! ❌" };
     setState((prev) => {
@@ -473,6 +499,45 @@ export function GameProvider({ children }) {
 
   const setActiveCompanion = useCallback((type, id) => {
     setState((prev) => (prev ? petSystem.setActiveCompanion(prev, type, id) : prev));
+  }, []);
+
+  // ---------------- D3: Co-op — gift food/coins to a sibling ----------------
+  const sendGift = useCallback(
+    async (toChildId, giftId) => {
+      if (!state || !toChildId || toChildId === activeChildId) {
+        return { success: false, message: "Không thể gửi quà lúc này! ❌" };
+      }
+      const { state: deducted, result } = deductGiftCost(state, giftId);
+      if (!result.success) {
+        const messages = {
+          INVALID_GIFT: "Món quà không hợp lệ! ❌",
+          NOT_ENOUGH_COINS: `Chưa đủ Hero Coins! Cần thêm ${result.shortage} 🪙 nữa nhé! ⚠️`,
+        };
+        return { success: false, message: messages[result.error] || "Có lỗi xảy ra! ❌" };
+      }
+
+      const delivery = await deliverGiftToSibling({
+        toChildId,
+        giftId,
+        fromName: activeChild?.name || state.charName || "anh chị em",
+        supabase,
+        cloudEnabled,
+      });
+      if (!delivery.success) {
+        return { success: false, message: "Không gửi được quà, thử lại nhé! ❌" };
+      }
+
+      setState(deducted);
+      playSound("reward");
+      fireConfetti({ particleCount: 60, spread: 55, colors: ["#7C3AED", "#D97706"] });
+      const toName = childProfiles.find((c) => c.id === toChildId)?.name || "anh chị em";
+      return { success: true, message: `Đã gửi quà cho ${toName}! 🎁`, gift: result.gift };
+    },
+    [state, activeChildId, activeChild, childProfiles, supabase, cloudEnabled]
+  );
+
+  const markReceivedGiftsRead = useCallback(() => {
+    setState((prev) => (prev ? markGiftsReadPure(prev) : prev));
   }, []);
 
   // ---------------- B3.5: Cosmetics (Góc Của Tớ) ----------------
@@ -693,9 +758,12 @@ export function GameProvider({ children }) {
         claimReward,
         toggleTimerState,
         bossHp: s.bossHp,
-        bossMaxHp: BOSS_MAX_HP,
+        bossMaxHp: s.bossMaxHp || BOSS_MAX_HP,
         bossName: s.bossName,
         bossDefeated: s.bossDefeated,
+        bossChestOpened: s.bossChestOpened || false,
+        bossCycleCount: s.bossCycleCount || 0,
+        openBossChest,
         screenTimeLeft: s.screenTimeLeft,
         setScreenTimeLeft: makeFieldSetter("screenTimeLeft"),
         isTimerActive: s.isTimerActive,
@@ -732,6 +800,9 @@ export function GameProvider({ children }) {
         hatchPet,
         feedPet,
         setActiveCompanion,
+        receivedGifts: s.receivedGifts || [],
+        sendGift,
+        markReceivedGiftsRead,
         parentConfig: s.parentConfig,
         setParentConfig: makeFieldSetter("parentConfig"),
         screenMinutesUsedToday: s.screenMinutesUsedToday,

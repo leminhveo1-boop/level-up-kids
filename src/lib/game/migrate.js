@@ -12,6 +12,7 @@ import {
   DEFAULT_STATS,
   STARTING_ENERGY,
   BOSS_MAX_HP,
+  PET_HUNGER_MAX,
 } from "./constants";
 
 /**
@@ -91,6 +92,10 @@ export function migrateState(data) {
     tasks,
     rewards,
     bossHp: data.bossHp !== undefined ? data.bossHp : BOSS_MAX_HP,
+    bossMaxHp: data.bossMaxHp !== undefined ? data.bossMaxHp : BOSS_MAX_HP,
+    bossWeekId: data.bossWeekId || null,
+    bossCycleCount: data.bossCycleCount || 0,
+    bossChestOpened: data.bossChestOpened || false,
     bossName: data.bossName || "Thần Lười Biếng 😴",
     bossDefeated: data.bossDefeated || false,
     screenTimeLeft: data.screenTimeLeft || 0,
@@ -108,7 +113,7 @@ export function migrateState(data) {
       potions: { ...DEFAULT_INVENTORY.potions },
       foods: { ...DEFAULT_INVENTORY.foods },
     },
-    pets: data.pets || [],
+    pets: (data.pets || []).map((p) => ({ ...p, hunger: p.hunger ?? PET_HUNGER_MAX })),
     activePet: data.activePet !== undefined ? data.activePet : null,
     activeMount: data.activeMount !== undefined ? data.activeMount : null,
     parentConfig: data.parentConfig || { ...DEFAULT_PARENT_CONFIG },
@@ -119,6 +124,7 @@ export function migrateState(data) {
     graduatedHabits: data.graduatedHabits || [],
     lastGraduation: data.lastGraduation || null,
     childMessages: data.childMessages || [],
+    receivedGifts: data.receivedGifts || [],
     savedAt: data.savedAt || 0,
   };
 }

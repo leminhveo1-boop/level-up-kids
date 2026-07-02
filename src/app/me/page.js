@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
+import { useAuth } from "@/context/AuthContext";
 import { COSMETICS_CATALOG, getEquipped } from "@/lib/game/cosmetics";
+import { PET_ROSTER, getPetMood } from "@/lib/game/pets";
+
+const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
+const MOOD_LABEL = { joyful: "Rất vui", happy: "Vui vẻ", hungry: "Hơi đói", starving: "Rất đói" };
 
 const SLOT_LABELS = {
   hat: "🎩 Mũ & Phụ Kiện Đầu",
@@ -20,6 +25,8 @@ const RARITY_BADGE = {
 /** Góc Của Tớ 🏠 — avatar/pet cosmetics shop (Octalysis CD4, sibling identity). */
 export default function MyCornerPage() {
   const router = useRouter();
+  const { uiMode } = useAuth();
+  const isTeen = uiMode === "teen";
   const {
     isLoaded,
     charName,
@@ -157,6 +164,39 @@ export default function MyCornerPage() {
             </div>
           </div>
         )}
+
+        {/* 📖 Pokédex — full pet roster, owned vs undiscovered */}
+        <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-3">
+          <h3 className="text-scale-xs font-black text-forest-dark uppercase tracking-wider">
+            {isTeen ? `📖 Bộ Sưu Tập (${pets?.length || 0}/${PET_ROSTER.length})` : `📖 Sổ Tay Thú Cưng (${pets?.length || 0}/${PET_ROSTER.length})`}
+          </h3>
+          <div className="grid grid-cols-3 gap-2">
+            {PET_ROSTER.map((entry) => {
+              const owned = pets?.find((p) => p.eggType === entry.eggType && p.element === entry.element);
+              const mood = owned ? getPetMood(owned) : null;
+              return (
+                <div
+                  key={`${entry.eggType}_${entry.element}`}
+                  className={`border-2 rounded-2xl p-2.5 text-center space-y-1 ${
+                    owned ? "border-forest bg-forest-light/10" : "border-sand bg-sand-light/40"
+                  }`}
+                >
+                  <div className={`text-3xl h-8 flex items-center justify-center ${owned ? "" : "grayscale opacity-30"}`}>
+                    {owned ? entry.emoji : "❓"}
+                  </div>
+                  <p className={`text-[9px] font-black leading-tight ${owned ? "text-forest-dark" : "text-gray-300"}`}>
+                    {owned ? entry.name : "???"}
+                  </p>
+                  {owned && (
+                    <span className="text-[9px] font-bold text-gray-400">
+                      {MOOD_EMOJI[mood]} {MOOD_LABEL[mood]}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* 💌 Two-way pigeon: child writes to parents */}
         <div className="bg-white border-2 border-sand p-4 rounded-3xl shadow-game-flat space-y-2.5">

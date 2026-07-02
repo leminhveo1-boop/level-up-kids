@@ -40,6 +40,18 @@ export const FOCUS_BONUS_MIN = 2;
 export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
 export const GRADUATION_DAYS = 30; // thói quen 30 ngày liên tục → tốt nghiệp 🎓 thành "Bản Năng Anh Hùng"
 
+// ===== D1: Pet "sống" (hunger + mood) =====
+export const PET_HUNGER_MAX = 100;
+export const PET_HUNGER_DAILY_DECAY = 15; // giảm mỗi ngày qua resetDailyTasks
+export const PET_HUNGER_LOW_THRESHOLD = 40; // dưới mức này pet "buồn/đói"
+export const PET_HUNGER_CRITICAL_THRESHOLD = 15; // dưới mức này pet "rất đói"
+
+// ===== D2: Boss tuần thành sự kiện thật =====
+export const BOSS_HP_SCALE_PER_CYCLE = 20; // mỗi tuần mới, HP tối đa của boss tăng thêm
+export const BOSS_HP_SCALE_MAX_CYCLES = 8; // scale HP dừng lại sau 8 tuần (tránh bất khả thi)
+export const BOSS_LOOT_COIN_MIN = 40; // rương boss hào phóng hơn hẳn đào mỏ thường
+export const BOSS_LOOT_COIN_MAX = 80;
+
 export const DEFAULT_PARENT_CONFIG = {
   screenMaxMinutesPerDay: 60,
   screenRedeemMaxPerWeek: 5,
@@ -138,8 +150,12 @@ export function createInitialState(opts = {}) {
     tasks: DEFAULT_TASKS.map((t) => ({ ...t })),
     rewards: DEFAULT_REWARDS.map((r) => ({ ...r })),
     bossHp: BOSS_MAX_HP,
+    bossMaxHp: BOSS_MAX_HP,
     bossName: "Thần Lười Biếng 😴",
     bossDefeated: false,
+    bossWeekId: null,
+    bossCycleCount: 0,
+    bossChestOpened: false,
     screenTimeLeft: 0,
     isTimerActive: false,
     timerEndTime: 0,
@@ -166,5 +182,6 @@ export function createInitialState(opts = {}) {
     graduatedHabits: [],
     lastGraduation: null,
     childMessages: [],
+    receivedGifts: [],
   };
 }
