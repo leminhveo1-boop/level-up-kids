@@ -30,6 +30,7 @@ export default function SystemTab() {
   const [topVnd, setTopVnd] = useState(500000);
   const [topDays, setTopDays] = useState(14);
   const [requireMandatory, setRequireMandatory] = useState(true);
+  const [smartAuto, setSmartAuto] = useState(true);
   const [maxCoins, setMaxCoins] = useState(7000);
   const [newPin, setNewPin] = useState("");
 
@@ -40,6 +41,7 @@ export default function SystemTab() {
       setTopVnd(parentConfig.topRewardMoneyVnd || 500000);
       setTopDays(parentConfig.topRewardEffortDays || 14);
       setRequireMandatory(parentConfig.requireAllMandatory !== false);
+      setSmartAuto(parentConfig.smartAutoApprove !== false);
       setMaxCoins(parentConfig.maxCoinBalance || 7000);
     }
   }, [isLoaded, parentConfig]);
@@ -52,6 +54,7 @@ export default function SystemTab() {
       topRewardMoneyVnd: topVnd,
       topRewardEffortDays: topDays,
       requireAllMandatory: requireMandatory,
+      smartAutoApprove: smartAuto,
       maxCoinBalance: maxCoins,
     });
     showFlash("Đã lưu thiết lập! ✅");
@@ -110,6 +113,22 @@ export default function SystemTab() {
             Bắt buộc xong việc 🔴 mới đổi quà
           </label>
         </div>
+
+        {/* Đợt Bằng Chứng: chế độ tự lái cho tuần bận */}
+        <label className="flex items-start gap-2 text-scale-2xs font-bold text-gray-600 cursor-pointer bg-sand-light rounded-xl p-3">
+          <input
+            type="checkbox"
+            checked={smartAuto}
+            onChange={(e) => setSmartAuto(e.target.checked)}
+            className="w-5 h-5 rounded text-forest focus:ring-forest mt-0.5 flex-shrink-0"
+          />
+          <span>
+            ⚡ Tự duyệt thông minh khi Uy Tín ≥ 80
+            <span className="block font-medium text-gray-400 mt-0.5">
+              Việc con tự ghi nhận được nhả điểm ngay, không chờ duyệt — dành cho con đã chứng minh đáng tin. Việc cần bố mẹ xác nhận vẫn chờ như thường.
+            </span>
+          </span>
+        </label>
 
         <div className="bg-sand-light rounded-xl p-3 text-scale-2xs text-gray-500 font-bold">
           📊 Tỷ giá hiện tại: 1 🪙 ≈ {Math.round(topVnd / (250 * Math.max(1, topDays)))} VNĐ · Tuần này con đã đổi {screenRedeemsThisWeek}/{maxRedeems} lượt giải trí

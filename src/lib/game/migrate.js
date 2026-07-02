@@ -116,7 +116,8 @@ export function migrateState(data) {
     pets: (data.pets || []).map((p) => ({ ...p, hunger: p.hunger ?? PET_HUNGER_MAX })),
     activePet: data.activePet !== undefined ? data.activePet : null,
     activeMount: data.activeMount !== undefined ? data.activeMount : null,
-    parentConfig: data.parentConfig || { ...DEFAULT_PARENT_CONFIG },
+    // Merge defaults first so config keys added in later versions get sane values
+    parentConfig: { ...DEFAULT_PARENT_CONFIG, ...(data.parentConfig || {}) },
     screenMinutesUsedToday: data.screenMinutesUsedToday || 0,
     screenRedeemsThisWeek: data.screenRedeemsThisWeek || 0,
     cosmetics: data.cosmetics || { owned: [], equipped: { hat: null, frame: null, petAccessory: null } },

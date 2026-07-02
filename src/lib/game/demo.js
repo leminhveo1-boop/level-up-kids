@@ -42,6 +42,20 @@ export function createDemoState() {
     potionType: "fire",
   };
 
+  // 13 closed days with an upward trend so the D8 "vs last week 📈" headline
+  // and share-card brag line light up in demo (best-foot-forward)
+  const dayMs = 24 * 60 * 60 * 1000;
+  const history = Array.from({ length: 13 }, (_, i) => ({
+    date: new Date(now - (13 - i) * dayMs).toLocaleDateString("vi-VN"),
+    completed: i < 7 ? 3 : 4,
+    total: 11,
+    mandatoryDone: 3,
+    mandatoryTotal: 4,
+    screenMinutes: 25,
+    trustScore: 80 + i,
+    streak: i,
+  }));
+
   return {
     ...base,
     level: 5,
@@ -50,6 +64,8 @@ export function createDemoState() {
     energy: 72,
     heroCoins: 385,
     points: 96,
+    trustScore: 88, // Uy Tín cao → demo khoe luôn auto-duyệt thông minh
+    history,
     stats: { strength: 24, intellect: 19, discipline: 22, creative: 15, help: 18 },
     bossHp: 34,
     tasks: base.tasks.map((t, i) =>

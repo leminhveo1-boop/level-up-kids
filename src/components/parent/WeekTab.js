@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { generatePraiseSuggestions } from "@/lib/game/recognition";
+import { compareWeeks } from "@/lib/game/progress";
 import { Send, Share2 } from "lucide-react";
 
 const STAT_META = {
@@ -44,6 +45,9 @@ export default function WeekTab() {
 
   const completedToday = tasks.filter((t) => t.completed).length;
   const rejectedToday = tasks.filter((t) => t.wasRejected).length;
+
+  // D8: self-comparison headline — this week vs last week, from daily snapshots
+  const weekCompare = compareWeeks(history, { completed: completedToday, total: tasks.length });
 
   const praises = generatePraiseSuggestions({ charName, streak, trustScore, tasks });
 
@@ -95,9 +99,16 @@ export default function WeekTab() {
     ctx.fillText(`🤝 Uy Tín ${trustScore}/100`, W / 2, py + 435);
     ctx.fillText(`⭐ ${points} điểm · 🪙 ${heroCoins} coin`, W / 2, py + 490);
 
+    // D8: the one-line proof of progress — only brag when it's up
+    if (weekCompare.status === "up") {
+      ctx.fillStyle = "#D97706";
+      ctx.font = "bold 34px system-ui";
+      ctx.fillText(`📈 +${weekCompare.deltaPct}% so với tuần trước`, W / 2, py + 548);
+    }
+
     ctx.fillStyle = "#2E7D32";
     ctx.font = "italic 30px system-ui";
-    ctx.fillText('"Mỗi việc tốt là một bước lên cấp!"', W / 2, py + 580);
+    ctx.fillText('"Mỗi việc tốt là một bước lên cấp!"', W / 2, py + 620);
 
     ctx.fillStyle = "#999";
     ctx.font = "28px system-ui";
@@ -142,6 +153,20 @@ export default function WeekTab() {
       {/* ===== V1.2: 7-day chart (history snapshots + today live) ===== */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark">📊 7 ngày gần nhất</h3>
+        {/* D8: so-với-chính-mình — bằng chứng tiến bộ thành 1 câu */}
+        {weekCompare.status !== "insufficient" && (
+          <p
+            className={`text-scale-2xs font-black rounded-xl px-3 py-2 border ${
+              weekCompare.status === "up"
+                ? "bg-forest-light/30 border-forest/20 text-forest-dark"
+                : weekCompare.status === "down"
+                  ? "bg-amber-light/40 border-amber/30 text-gray-600"
+                  : "bg-sand-light border-sand text-gray-600"
+            }`}
+          >
+            {weekCompare.message}
+          </p>
+        )}
         {(() => {
           const days = [
             ...history.slice(-6),

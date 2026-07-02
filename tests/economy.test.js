@@ -140,6 +140,55 @@ describe("completeTask", () => {
   });
 });
 
+describe("smart auto-approve — Uy Tín ≥80 nhả điểm ngay (Đợt Bằng Chứng)", () => {
+  // t5 "Lau dọn nhà cửa": verifyType trust, points 12
+  const TRUST_TASK = "t5";
+
+  test("việc trust + Uy Tín 80 → điểm về ví ngay, approval auto", () => {
+    const state = freshState({ trustScore: 80 });
+    const { state: next, events } = completeTask(state, TRUST_TASK, rngQueue(0.99));
+    const done = next.tasks.find((t) => t.id === TRUST_TASK);
+    expect(done.approval).toBe("auto");
+    expect(done.pendingPoints).toBe(0);
+    expect(done.earnedPoints).toBe(12);
+    expect(next.points).toBe(12);
+    expect(events.pointsPending).toBe(false);
+    expect(events.trustAutoApproved).toBe(true);
+  });
+
+  test("Uy Tín 79 → vẫn escrow pending như thường", () => {
+    const state = freshState({ trustScore: 79 });
+    const { state: next, events } = completeTask(state, TRUST_TASK, rngQueue(0.99));
+    const done = next.tasks.find((t) => t.id === TRUST_TASK);
+    expect(done.approval).toBe("pending");
+    expect(next.points).toBe(0);
+    expect(events.trustAutoApproved).toBe(false);
+  });
+
+  test("việc verifyType parent → vẫn pending dù Uy Tín tối đa", () => {
+    const state = freshState({ trustScore: 100 });
+    const { state: next } = completeTask(state, "t1", rngQueue(0.99)); // t1: parent
+    expect(next.tasks.find((t) => t.id === "t1").approval).toBe("pending");
+    expect(next.points).toBe(0);
+  });
+
+  test("bố mẹ tắt smartAutoApprove → vẫn pending", () => {
+    const base = freshState({ trustScore: 90 });
+    const state = { ...base, parentConfig: { ...base.parentConfig, smartAutoApprove: false } };
+    const { state: next } = completeTask(state, TRUST_TASK, rngQueue(0.99));
+    expect(next.tasks.find((t) => t.id === TRUST_TASK).approval).toBe("pending");
+    expect(next.points).toBe(0);
+  });
+
+  test("save cũ thiếu key smartAutoApprove → mặc định BẬT", () => {
+    const base = freshState({ trustScore: 85 });
+    const state = { ...base, parentConfig: { screenMaxMinutesPerDay: 60 } };
+    const { state: next } = completeTask(state, TRUST_TASK, rngQueue(0.99));
+    expect(next.tasks.find((t) => t.id === TRUST_TASK).approval).toBe("auto");
+    expect(next.points).toBe(12);
+  });
+});
+
 describe("uncompleteTask", () => {
   test("reverts approved points exactly (crit-safe), pending points just evaporate", () => {
     // Arrange: crit completion (10 pts) then parent approves → wallet 10

@@ -89,6 +89,16 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
   // ===== ESCROW (P0): points are held pending parent approval; EXP/energy/stats
   // credit immediately to preserve the same-day fun loop (mining). Points are the
   // screen-time currency — the cheat-worthy one — so they gate on the Check step.
+  // Đợt Bằng Chứng: high-trust kids (Uy Tín ≥80) get self-reported ("trust") tasks
+  // released instantly — the parent's "autopilot mode"; toggleable in Hệ Thống.
+  const trustAutoApproved =
+    !task.wasApprovedToday &&
+    task.verifyType === "trust" &&
+    (state.trustScore || 0) >= TRUST_HIGH_THRESHOLD &&
+    state.parentConfig?.smartAutoApprove !== false;
+  const instantApproved = Boolean(task.wasApprovedToday) || trustAutoApproved;
+  const approvalStatus = task.wasApprovedToday ? "approved" : trustAutoApproved ? "auto" : "pending";
+
   const nextTasks = state.tasks.map((t) =>
     t.id === taskId
       ? {
@@ -96,16 +106,15 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
           completed: true,
           // Same-day re-tick of a previously-approved task restores approval
           // instantly (grace path — no double verification, no re-escrow)
-          approval: task.wasApprovedToday ? "approved" : "pending",
-          pendingPoints: task.wasApprovedToday ? 0 : pointsAdded,
-          earnedPoints: task.wasApprovedToday ? pointsAdded : 0,
+          approval: approvalStatus,
+          pendingPoints: instantApproved ? 0 : pointsAdded,
+          earnedPoints: instantApproved ? pointsAdded : 0,
           wasApprovedToday: undefined,
           completedAt: Date.now(),
           earnedEnergy: energyAdded,
         }
       : t
   );
-  const instantApproved = Boolean(task.wasApprovedToday);
 
   const nextStats = task.statKey
     ? { ...state.stats, [task.statKey]: (state.stats[task.statKey] || 0) + task.statVal }
@@ -137,6 +146,7 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
       pointsAdded,
       focusBonus,
       pointsPending: !instantApproved,
+      trustAutoApproved,
       energyAdded,
       bossDefeated: bossJustDefeated,
     },

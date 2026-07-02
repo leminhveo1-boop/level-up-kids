@@ -36,6 +36,9 @@ export const FOCUS_COMPLETION_RATIO = 0.8; // session must reach 80% of duration
 export const FOCUS_BONUS_RATIO = 0.5; // +50% points bonus for a focused session
 export const FOCUS_BONUS_MIN = 2;
 
+// ===== Đợt Bằng Chứng: D8 so-với-chính-mình =====
+export const COMPARE_MIN_LAST_WEEK_DAYS = 4; // cần ≥4 ngày dữ liệu tuần trước mới đủ tin để so sánh
+
 // ===== V1.2 =====
 export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
 export const GRADUATION_DAYS = 30; // thói quen 30 ngày liên tục → tốt nghiệp 🎓 thành "Bản Năng Anh Hùng"
@@ -59,6 +62,7 @@ export const DEFAULT_PARENT_CONFIG = {
   topRewardEffortDays: 14,
   requireAllMandatory: true,
   maxCoinBalance: 7000,
+  smartAutoApprove: true, // Uy Tín ≥80: việc tự-ghi-nhận nhả điểm ngay (chế độ tự lái)
 };
 
 export const DEFAULT_STATS = {
