@@ -17,6 +17,11 @@ const TASK_TEMPLATES = [
   { title: "🏃 Tập thể dục 15 phút", category: "strength", exp: 20, energy: 20, verifyType: "timer", durationMin: 15 },
   { title: "🎨 Vẽ tranh hoặc tô màu", category: "creative", exp: 20, energy: 15, verifyType: "photo" },
   { title: "🎹 Luyện đàn / nhạc cụ 15p", category: "creative", exp: 25, energy: 20, verifyType: "timer", durationMin: 15 },
+  // 💞 Connection quests — parent & child together (both earn the moment)
+  { title: "💞 Đọc sách cùng bố mẹ 15 phút", category: "connection", exp: 25, energy: 20, verifyType: "witness" },
+  { title: "💞 Cùng nấu một món / làm việc nhà chung", category: "connection", exp: 25, energy: 20, verifyType: "witness" },
+  { title: "💞 Đi dạo & trò chuyện cùng nhau 15p", category: "connection", exp: 20, energy: 15, verifyType: "witness" },
+  { title: "💞 Ôm bố mẹ và nói một lời yêu thương", category: "connection", exp: 10, energy: 8, verifyType: "witness" },
 ];
 
 const VERIFY_OPTIONS = [
@@ -32,6 +37,7 @@ const CATEGORY_OPTIONS = [
   { value: "intellect", label: "🧠 Trí tuệ (mở Ấn Pháp)" },
   { value: "creative", label: "🎨 Sáng tạo" },
   { value: "help", label: "🤝 Giúp đỡ" },
+  { value: "connection", label: "💞 Kết nối bố mẹ & con" },
 ];
 
 /** Tab 🎯 NHIỆM VỤ & QUÀ — CRUD tasks/rewards + inventory gifting. */

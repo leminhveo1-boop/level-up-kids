@@ -196,6 +196,8 @@ export function GameProvider({ children }) {
       if (!task) return prev;
 
       if (!task.completed) {
+        // Same-day grace: re-ticking a previously-approved task skips gates
+        if (!task.wasApprovedToday) {
         // ===== VERIFICATION GATES (declared up-front, never retroactive) =====
         if (task.verifyType === "timer") {
           const requiredSec = (task.durationMin || 10) * 60 * 0.8;
@@ -226,6 +228,7 @@ export function GameProvider({ children }) {
             message: "Hôm nay việc này cần chụp ảnh kết quả để làm bằng chứng nhé! 📸",
           };
           return prev;
+        }
         }
 
         playSound("complete");
@@ -509,7 +512,7 @@ export function GameProvider({ children }) {
     (title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0, verifyType = "trust", durationMin = 0) => {
       setState((prev) => {
         if (!prev) return prev;
-        const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help" };
+        const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help", connection: "help" };
         const newTask = {
           id: makeUniqueId("custom"),
           title,

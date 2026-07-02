@@ -87,14 +87,18 @@ export function completeTask(state, taskId, rng = Math.random) {
       ? {
           ...t,
           completed: true,
-          approval: "pending",
-          pendingPoints: pointsAdded,
+          // Same-day re-tick of a previously-approved task restores approval
+          // instantly (grace path — no double verification, no re-escrow)
+          approval: task.wasApprovedToday ? "approved" : "pending",
+          pendingPoints: task.wasApprovedToday ? 0 : pointsAdded,
+          earnedPoints: task.wasApprovedToday ? pointsAdded : 0,
+          wasApprovedToday: undefined,
           completedAt: Date.now(),
-          earnedPoints: 0,
           earnedEnergy: energyAdded,
         }
       : t
   );
+  const instantApproved = Boolean(task.wasApprovedToday);
 
   const nextStats = task.statKey
     ? { ...state.stats, [task.statKey]: (state.stats[task.statKey] || 0) + task.statVal }
@@ -107,6 +111,7 @@ export function completeTask(state, taskId, rng = Math.random) {
       stats: nextStats,
       level: expResult.level,
       exp: expResult.exp,
+      points: instantApproved ? state.points + pointsAdded : state.points,
       energy: Math.min(ENERGY_CAP, state.energy + energyAdded),
       bossHp: nextBossHp,
       bossDefeated: state.bossDefeated || bossJustDefeated,
@@ -115,7 +120,7 @@ export function completeTask(state, taskId, rng = Math.random) {
         isCritical,
         taskTitle: task.title,
         timestamp: Date.now(),
-        pending: true,
+        pending: !instantApproved,
       },
     },
     events: {
@@ -123,7 +128,7 @@ export function completeTask(state, taskId, rng = Math.random) {
       levelsGained: expResult.levelsGained,
       isCritical,
       pointsAdded,
-      pointsPending: true,
+      pointsPending: !instantApproved,
       energyAdded,
       bossDefeated: bossJustDefeated,
     },
@@ -253,7 +258,18 @@ export function uncompleteTask(state, taskId) {
 
   const nextTasks = state.tasks.map((t) =>
     t.id === taskId
-      ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedPoints: 0, earnedEnergy: 0, evidencePhoto: undefined }
+      ? {
+          ...t,
+          completed: false,
+          approval: undefined,
+          pendingPoints: 0,
+          earnedPoints: 0,
+          earnedEnergy: 0,
+          evidencePhoto: undefined,
+          // Same-day grace: an accidentally un-ticked APPROVED task can be
+          // re-ticked without redoing verification (no 15-min timer twice!)
+          wasApprovedToday: wasApproved ? true : t.wasApprovedToday,
+        }
       : t
   );
 
@@ -558,6 +574,7 @@ export function resetDailyTasks(state, rng = Math.random) {
       earnedEnergy: 0,
       evidencePhoto: undefined,
       wasRejected: false,
+      wasApprovedToday: undefined, // grace window is same-day only
       photoRequiredToday: t.verifyType === "photo" ? rng() < spotRate : false,
     })),
     energy: Math.min(ENERGY_CAP, settled.energy + DAILY_ENERGY_BONUS),

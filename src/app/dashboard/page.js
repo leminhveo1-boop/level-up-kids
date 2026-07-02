@@ -6,9 +6,11 @@ import { useGame } from "@/context/GameState";
 import confetti from "canvas-confetti";
 import SoundToggle from "@/components/SoundToggle";
 import { getEquipped } from "@/lib/game/cosmetics";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { childProfiles, activeChildId, selectChild, isDemo } = useAuth();
   const {
     isLoaded,
     charName,
@@ -88,15 +90,18 @@ export default function DashboardPage() {
     }
 
     // ===== P0 verification gates (routed to the right UI affordance) =====
-    if (task.verifyType === "witness") {
-      setWitnessTask(task);
-      setWitnessPin("");
-      return;
-    }
-    if (task.verifyType === "photo" && task.photoRequiredToday) {
-      setPhotoTaskId(taskId);
-      photoInputRef.current?.click();
-      return;
+    // Same-day grace: re-tick of a previously-approved task skips all gates
+    if (!task.wasApprovedToday) {
+      if (task.verifyType === "witness") {
+        setWitnessTask(task);
+        setWitnessPin("");
+        return;
+      }
+      if (task.verifyType === "photo" && task.photoRequiredToday) {
+        setPhotoTaskId(taskId);
+        photoInputRef.current?.click();
+        return;
+      }
     }
 
     const isActive = taskId === activeTaskId;
@@ -494,6 +499,37 @@ export default function DashboardPage() {
               </div>
             )}
 
+            {/* 👨‍👩‍👧‍👦 NHÀ MÌNH — siblings strip (Octalysis CD5, family circle V1) */}
+            {!isDemo && childProfiles.length > 1 && (
+              <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-2">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">👨‍👩‍👧‍👦 Nhà Mình</span>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {childProfiles.map((sib) => {
+                    const isMe = sib.id === activeChildId;
+                    const sibEmoji = sib.char_class === "Mage" ? "🔮" : sib.char_class === "Druid" ? "🌱" : "🛡️";
+                    return (
+                      <button
+                        key={sib.id}
+                        onClick={() => {
+                          if (!isMe && confirm(`Đổi sang người chơi ${sib.name}?`)) {
+                            selectChild(sib.id);
+                          }
+                        }}
+                        className={`min-h-tap flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all active:scale-95 ${
+                          isMe ? "border-forest bg-forest-light/20" : "border-sand bg-sand-light"
+                        }`}
+                      >
+                        <span className="text-lg">{sibEmoji}</span>
+                        <span className="text-[11px] font-black text-forest-dark">
+                          {sib.name} {isMe && "(tớ)"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Filter buttons */}
             <div className="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
               <button 
@@ -536,13 +572,21 @@ export default function DashboardPage() {
               >
                 🎨 Sáng tạo
               </button>
-              <button 
+              <button
                 onClick={() => setTaskFilter("help")}
                 className={`px-3 py-1.5 rounded-full border transition-all ${
                   taskFilter === "help" ? "bg-forest-medium text-white border-forest-medium" : "bg-white text-gray-500 border-sand hover:border-gray-300"
                 }`}
               >
                 🤝 Giúp đỡ
+              </button>
+              <button
+                onClick={() => setTaskFilter("connection")}
+                className={`px-3 py-1.5 rounded-full border transition-all ${
+                  taskFilter === "connection" ? "bg-terracotta text-white border-terracotta" : "bg-white text-gray-500 border-sand hover:border-gray-300"
+                }`}
+              >
+                💞 Kết nối
               </button>
             </div>
           </div>
@@ -594,6 +638,7 @@ export default function DashboardPage() {
                   if (task.category === "intellect") { emoji = "🧠"; statText = "Trí tuệ"; }
                   if (task.category === "creative") { emoji = "🎨"; statText = "Sáng tạo"; }
                   if (task.category === "help") { emoji = "🤝"; statText = "Giúp đỡ"; }
+                  if (task.category === "connection") { emoji = "💞"; statText = "Kết nối"; }
 
                   let itemStyle = "border-sand shadow-game-flat hover:border-sand-dark";
                   if (task.isMandatory && !task.completed) {

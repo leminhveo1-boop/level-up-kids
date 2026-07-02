@@ -442,6 +442,60 @@ describe("P0 escrow & trust (PDCA Check)", () => {
   });
 });
 
+describe("same-day approved re-tick grace 🔁", () => {
+  const approveFirst = (state, taskId) => {
+    // complete → approve (simulating parent)
+    let s = completeTask(state, taskId, rngQueue(0.99)).state;
+    const t = s.tasks.find((x) => x.id === taskId);
+    s = {
+      ...s,
+      points: s.points + t.pendingPoints,
+      tasks: s.tasks.map((x) =>
+        x.id === taskId ? { ...x, approval: "approved", earnedPoints: x.pendingPoints, pendingPoints: 0 } : x
+      ),
+    };
+    return s;
+  };
+
+  test("un-tick approved task refunds points and marks grace flag", () => {
+    const state = freshState();
+    const approved = approveFirst(state, "t1"); // +5 points credited
+    expect(approved.points).toBe(5);
+
+    const { state: unticked } = uncompleteTask(approved, "t1");
+    expect(unticked.points).toBe(0); // refunded
+    expect(unticked.tasks.find((t) => t.id === "t1").wasApprovedToday).toBe(true);
+  });
+
+  test("re-tick within same day: instant approval, no escrow, no gate", () => {
+    const state = freshState();
+    const approved = approveFirst(state, "t1");
+    const { state: unticked } = uncompleteTask(approved, "t1");
+
+    const { state: reticked, events } = completeTask(unticked, "t1", rngQueue(0.99));
+    const t = reticked.tasks.find((x) => x.id === "t1");
+    expect(t.approval).toBe("approved"); // instant — no pending
+    expect(t.wasApprovedToday).toBeUndefined(); // flag consumed
+    expect(reticked.points).toBe(5); // credited immediately
+    expect(events.pointsPending).toBe(false);
+  });
+
+  test("grace flag does not survive daily reset", () => {
+    const state = freshState();
+    const approved = approveFirst(state, "t1");
+    const { state: unticked } = uncompleteTask(approved, "t1");
+    const next = resetDailyTasks(unticked);
+    expect(next.tasks.find((t) => t.id === "t1").wasApprovedToday).toBeUndefined();
+  });
+
+  test("normal first-time completion still goes to escrow", () => {
+    const state = freshState();
+    const { state: next, events } = completeTask(state, "t1", rngQueue(0.99));
+    expect(next.tasks.find((t) => t.id === "t1").approval).toBe("pending");
+    expect(events.pointsPending).toBe(true);
+  });
+});
+
 describe("streak freeze ❄️", () => {
   test("freeze card saves streak on a fully-missed day and is consumed", () => {
     const state = freshState({ streak: 6, streakFreezes: 1 });

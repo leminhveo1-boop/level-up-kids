@@ -74,6 +74,8 @@ export const DEFAULT_TASKS = [
   { id: "t8", title: "Viết nhật ký cảm xúc & bài học ngày ✍️", exp: 15, points: 8, energy: 3, category: "creative", completed: false, statKey: "creative", statVal: 1, isMandatory: false, verifyType: "photo" },
   { id: "t9", title: "Chăm sóc, tưới cây hoặc cho thú cưng ăn 🌿", exp: 20, points: 10, energy: 4, category: "creative", completed: false, statKey: "creative", statVal: 2, isMandatory: false, verifyType: "photo" },
   { id: "t10", title: "Tuân thủ giới hạn xem TV/chơi Game 📺", exp: 30, points: 15, energy: 6, category: "discipline", completed: false, statKey: "discipline", statVal: 3, isMandatory: true, verifyType: "trust" },
+  // Connection quest 💞 — child & parent do it TOGETHER (witness = parent is right there)
+  { id: "tc1", title: "Kể cho bố mẹ nghe 3 điều về ngày hôm nay 💞", exp: 20, points: 10, energy: 4, category: "connection", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "witness" },
 ];
 
 export const DEFAULT_REWARDS = [
