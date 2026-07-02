@@ -9,6 +9,7 @@ import confetti from "canvas-confetti";
 import StatusBar from "@/components/dashboard/StatusBar";
 import HeroCard from "@/components/dashboard/HeroCard";
 import CompanionCard from "@/components/dashboard/CompanionCard";
+import WorldTreeCard from "@/components/dashboard/WorldTreeCard";
 import StatsGrid from "@/components/dashboard/StatsGrid";
 import GoalBar from "@/components/dashboard/GoalBar";
 import FamilyStrip from "@/components/dashboard/FamilyStrip";
@@ -49,6 +50,7 @@ export default function DashboardPage() {
     nudgeParents,
     cosmetics,
     rewards,
+    treeGrowth,
     lastGraduation,
     clearLastGraduation,
     receivedGifts,
@@ -254,6 +256,8 @@ export default function DashboardPage() {
         />
 
         {activeCompanion && <CompanionCard companion={activeCompanion} />}
+
+        <WorldTreeCard treeGrowth={treeGrowth} />
 
         <StatsGrid stats={stats} />
 

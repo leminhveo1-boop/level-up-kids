@@ -29,6 +29,7 @@ import {
 } from "./constants";
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
+import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 
 /** Streak → points multiplier (balanced against inflation). */
 export function getStreakMultiplier(streak) {
@@ -128,6 +129,8 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
       level: expResult.level,
       exp: expResult.exp,
       points: instantApproved ? state.points + pointsAdded : state.points,
+      // D5: released points also drip sap into the family World Tree
+      treeGrowth: (state.treeGrowth || 0) + (instantApproved ? TREE_GROWTH_PER_APPROVAL : 0),
       energy: Math.min(ENERGY_CAP, state.energy + energyAdded),
       bossHp: nextBossHp,
       bossDefeated: state.bossDefeated || bossJustDefeated,
@@ -170,6 +173,8 @@ export function approveTask(state, taskId, opts = {}) {
       ...state,
       points: state.points + released,
       trustScore: Math.min(TRUST_MAX, (state.trustScore || 0) + TRUST_GAIN_ON_APPROVE),
+      // D5: an approved task grows the family World Tree
+      treeGrowth: (state.treeGrowth || 0) + TREE_GROWTH_PER_APPROVAL,
       tasks: state.tasks.map((t) =>
         t.id === taskId
           ? { ...t, approval: opts.auto ? "auto" : "approved", earnedPoints: released, pendingPoints: 0 }

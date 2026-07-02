@@ -123,6 +123,19 @@ export const gameDict = {
     "game.crit.desc": "Đã nhân đôi Điểm Tích Lũy và nhân hệ số Streak! 🎉",
     "game.crit.cta": "QUÁ TUYỆT VỜI! 🚀",
 
+    // D5 World Tree (family shared mission)
+    "game.tree.title": "🌍 Cây Thế Giới nhà mình",
+    "game.tree.stage.0": "Hạt Mầm",
+    "game.tree.stage.1": "Chồi Non",
+    "game.tree.stage.2": "Cây Con",
+    "game.tree.stage.3": "Cây Nhỏ",
+    "game.tree.stage.4": "Đại Thụ",
+    "game.tree.stage.5": "Cổ Thụ Ngàn Năm",
+    "game.tree.stage.6": "Cây Thế Giới",
+    "game.tree.progress": "{into}/{need} nhựa sống đến giai đoạn kế 🌱",
+    "game.tree.max": "Cây Thế Giới đã nở rộ — cả nhà quá tuyệt vời! 🎉",
+    "game.tree.note": "Mỗi việc tốt cả nhà làm là một giọt nhựa sống nuôi cây 🌳",
+
     // Language switcher (parent System tab)
     "game.lang.title": "🌐 Ngôn ngữ",
     "game.lang.desc": "Áp dụng cho toàn bộ màn hình của con và bố mẹ.",
@@ -443,6 +456,19 @@ export const gameDict = {
     "game.crit.reward": "Quest Reward",
     "game.crit.desc": "Points doubled and multiplied by your Streak! 🎉",
     "game.crit.cta": "AMAZING! 🚀",
+
+    // D5 World Tree (family shared mission)
+    "game.tree.title": "🌍 Our Family World Tree",
+    "game.tree.stage.0": "Seed",
+    "game.tree.stage.1": "Sprout",
+    "game.tree.stage.2": "Seedling",
+    "game.tree.stage.3": "Young Tree",
+    "game.tree.stage.4": "Great Tree",
+    "game.tree.stage.5": "Ancient Tree",
+    "game.tree.stage.6": "World Tree",
+    "game.tree.progress": "{into}/{need} sap to the next stage 🌱",
+    "game.tree.max": "The World Tree is in full bloom — amazing work, family! 🎉",
+    "game.tree.note": "Every good deed by the family is a drop of sap feeding the tree 🌳",
 
     // Language switcher (parent System tab)
     "game.lang.title": "🌐 Language",

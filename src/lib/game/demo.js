@@ -65,6 +65,7 @@ export function createDemoState() {
     heroCoins: 385,
     points: 96,
     trustScore: 88, // Uy Tín cao → demo khoe luôn auto-duyệt thông minh
+    treeGrowth: 175, // D5: demo tree già dặn (giai đoạn "Cây Nhỏ") để khoe sứ mệnh chung
     history,
     stats: { strength: 24, intellect: 19, discipline: 22, creative: 15, help: 18 },
     bossHp: 34,

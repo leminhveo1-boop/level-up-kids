@@ -809,6 +809,7 @@ export function GameProvider({ children }) {
         setScreenMinutesUsedToday: makeFieldSetter("screenMinutesUsedToday"),
         screenRedeemsThisWeek: s.screenRedeemsThisWeek,
         setScreenRedeemsThisWeek: makeFieldSetter("screenRedeemsThisWeek"),
+        treeGrowth: s.treeGrowth || 0,
       }}
     >
       {children}

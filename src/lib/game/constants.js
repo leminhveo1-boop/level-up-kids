@@ -187,5 +187,6 @@ export function createInitialState(opts = {}) {
     lastGraduation: null,
     childMessages: [],
     receivedGifts: [],
+    treeGrowth: 0,
   };
 }

@@ -126,6 +126,7 @@ export function migrateState(data) {
     lastGraduation: data.lastGraduation || null,
     childMessages: data.childMessages || [],
     receivedGifts: data.receivedGifts || [],
+    treeGrowth: data.treeGrowth || 0,
     savedAt: data.savedAt || 0,
   };
 }
