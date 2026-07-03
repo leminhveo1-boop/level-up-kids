@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { track } from "@/lib/analytics";
 import { normalizeReferralCode, isValidReferralCode, buildReferralLink } from "@/lib/referral";
+import { ShieldCheck } from "lucide-react";
 
 // Referral code from a shared link must survive the sign-up detour, so we stash
 // it on the device the moment the link opens and auto-apply it once authenticated.
@@ -228,6 +229,15 @@ function PremiumContent() {
             <div className="border-t border-sand pt-2.5 flex items-center justify-between">
               <span className="text-[11px] font-bold text-gray-500">{t("premium.price")}:</span>
               <span className="text-base font-black text-amber-dark">{PRICE_VND.toLocaleString("vi-VN")}₫</span>
+            </div>
+            {/* Niềm tin thanh toán — nỗi sợ #1 của phụ huynh VN là bẫy auto-renew (docs/DANH_GIA_REPORT_PERSONA.md) */}
+            <div className="border-t border-sand pt-2.5 space-y-1.5">
+              {["premium.trust.noCard", "premium.trust.noAutoCharge"].map((key) => (
+                <div key={key} className="flex items-center gap-2 text-[10.5px] font-bold text-gray-500">
+                  <ShieldCheck size={13} className="text-forest flex-shrink-0" />
+                  <span>{t(key)}</span>
+                </div>
+              ))}
             </div>
           </div>
 

@@ -73,6 +73,8 @@ export const dictionaries = {
     "premium.payDesc": "Chuyển khoản đúng số tiền với nội dung bên dưới, hệ thống sẽ tự động kích hoạt trong ~1 phút (qua SePay).",
     "premium.payContent": "Nội dung chuyển khoản",
     "premium.price": "Giá gói 1 năm",
+    "premium.trust.noCard": "Không lưu thẻ — chuyển khoản 1 lần là xong",
+    "premium.trust.noAutoCharge": "Không tự động trừ tiền — hết hạn là ngừng, không bẫy gia hạn",
 
     // Referral (two-sided +6 months)
     "premium.referTitle": "Giới thiệu bạn bè 🎁",
@@ -157,6 +159,8 @@ export const dictionaries = {
     "premium.payDesc": "Transfer the exact amount with the content below; your account activates automatically within ~1 minute (via SePay).",
     "premium.payContent": "Transfer content",
     "premium.price": "1-year plan price",
+    "premium.trust.noCard": "No card on file — one single transfer and you're done",
+    "premium.trust.noAutoCharge": "No auto-charge — access simply stops at expiry, no renewal traps",
 
     // Referral (two-sided +6 months)
     "premium.referTitle": "Refer a Friend 🎁",

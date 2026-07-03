@@ -100,12 +100,18 @@ export default function LandingPage() {
         </button>
 
         {primaryTarget === "/demo" && (
-          <button
-            onClick={() => router.push("/premium")}
-            className="w-full bg-amber text-white font-extrabold text-sm py-3 px-6 rounded-2xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
-          >
-            👑 MỞ KHÓA TRỌN BỘ — 199.000₫/NĂM
-          </button>
+          <>
+            <button
+              onClick={() => router.push("/premium")}
+              className="w-full bg-amber text-white font-extrabold text-sm py-3 px-6 rounded-2xl border-2 border-amber shadow-game-amber btn-game-transition active:shadow-game-pressed"
+            >
+              👑 MỞ KHÓA TRỌN BỘ — 199.000₫/NĂM
+            </button>
+            {/* Nỗi sợ #1 phụ huynh VN: bẫy auto-renew — LUK cấu trúc không thể dính, nói to ra */}
+            <p className="text-[11px] font-bold text-gray-500 text-center">
+              Không lưu thẻ · Không tự động trừ tiền — chuyển khoản 1 lần, hết hạn là ngừng
+            </p>
+          </>
         )}
 
         {activeChild && !isDemo && (
