@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
-import { getJourneysForAge, JOURNEY_AGE_BANDS } from "@/lib/game/journeys";
+import { getJourneysForAge, JOURNEY_AGE_BANDS, recommendJourneys, getPainpointById } from "@/lib/game/journeys";
+import PainpointPicker from "@/features/parent/components/PainpointPicker";
 import { track } from "@/lib/analytics";
 
 /**
@@ -76,11 +77,12 @@ const REWARDS_BY_AGE = {
 
 export default function SetupWizardPage() {
   const router = useRouter();
-  const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig } = useGame();
+  const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig, setParentConfig } = useGame();
   const { authLoaded, activeChildId, isDemo } = useAuth();
 
   const [step, setStep] = useState(1);
   const [ageBand, setAgeBand] = useState("7-9");
+  const [painpoints, setPainpoints] = useState([]);
   const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge("7-9")[0]?.id || null);
   const [showExtraTasks, setShowExtraTasks] = useState(false);
   const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE["7-9"].map(() => false));
@@ -110,12 +112,30 @@ export default function SetupWizardPage() {
   const journeys = getJourneysForAge(ageBand);
   const pickingJourney = selectedJourney !== null;
 
+  // "Chẩn đoán" → kê đơn: lộ trình khớp painpoint lên đầu, kèm lý do kê
+  const { recommendations } = recommendJourneys(ageBand, painpoints);
+  const recIds = recommendations.map((r) => r.journey.id);
+  const orderedJourneys = [...recommendations.map((r) => r.journey), ...journeys.filter((j) => !recIds.includes(j.id))];
+  const matchedLabels = (journeyId) =>
+    (recommendations.find((r) => r.journey.id === journeyId)?.matched || [])
+      .map((pid) => getPainpointById(pid)?.label)
+      .filter(Boolean);
+
+  const topRecommendedId = (band, points) =>
+    recommendJourneys(band, points).recommendations[0]?.journey.id || getJourneysForAge(band)[0]?.id || null;
+
   const selectAge = (band) => {
     setAgeBand(band);
-    setSelectedJourney(getJourneysForAge(band)[0]?.id || null);
+    setSelectedJourney(topRecommendedId(band, painpoints));
     setShowExtraTasks(false);
     setCheckedTasks(TASKS_BY_AGE[band].map(() => false));
     setRewards(REWARDS_BY_AGE[band].map((r) => ({ ...r, enabled: true })));
+  };
+
+  const changePainpoints = (next) => {
+    setPainpoints(next);
+    // chỉ tự nhảy lựa chọn khi bố mẹ đang theo lộ trình (không đè lựa chọn "kiểu cũ")
+    if (pickingJourney) setSelectedJourney(topRecommendedId(ageBand, next));
   };
 
   const selectNoJourney = () => {
@@ -137,6 +157,8 @@ export default function SetupWizardPage() {
     }
 
     // Apply everything at once
+    // Lưu "chẩn đoán" (kể cả painpoint chưa có lộ trình) — nguồn cho thẻ Khoảnh khắc sau này
+    setParentConfig({ ...(parentConfig || {}), intake: { ageBand, painpoints, updatedAt: Date.now() } });
     if (selectedJourney && !journey) {
       const r = startJourney(selectedJourney);
       if (r.success) track("journey_started", { id: selectedJourney, source: "onboarding" });
@@ -155,6 +177,7 @@ export default function SetupWizardPage() {
 
     track("onboarding_completed", {
       age_band: ageBand,
+      painpoints: painpoints.join(","),
       journey: selectedJourney || "none",
       tasks: checkedTasks.filter(Boolean).length,
       rewards: rewards.filter((r) => r.enabled).length,
@@ -205,11 +228,15 @@ export default function SetupWizardPage() {
             ))}
           </div>
 
+          <PainpointPicker selected={painpoints} onChange={changePainpoints} />
+
           <div className="space-y-2">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
-              🛤️ Chọn 1 lộ trình 3 tuần — nhiệm vụ &amp; mẹo mỗi tuần đã soạn sẵn:
+              {recommendations.length > 0
+                ? "🛤️ Lộ trình 3 tuần được kê riêng cho con:"
+                : "🛤️ Chọn 1 lộ trình 3 tuần — nhiệm vụ & mẹo mỗi tuần đã soạn sẵn:"}
             </p>
-            {journeys.map((j) => (
+            {orderedJourneys.map((j) => (
               <button
                 key={j.id}
                 type="button"
@@ -227,6 +254,11 @@ export default function SetupWizardPage() {
                         3 TUẦN
                       </span>
                     </p>
+                    {matchedLabels(j.id).length > 0 && (
+                      <p className="text-[10px] font-black text-forest mt-0.5">
+                        Kê theo: {matchedLabels(j.id).join(" · ").toLowerCase()}
+                      </p>
+                    )}
                     <p className="text-[10px] text-gray-500 font-medium leading-snug mt-0.5">{j.goal}</p>
                   </div>
                   <span

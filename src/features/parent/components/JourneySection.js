@@ -2,7 +2,14 @@
 
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
-import { getJourneysForAge, getJourneyStatus, JOURNEY_AGE_BANDS } from "@/lib/game/journeys";
+import {
+  getJourneysForAge,
+  getJourneyStatus,
+  getPainpointById,
+  recommendJourneys,
+  JOURNEY_AGE_BANDS,
+} from "@/lib/game/journeys";
+import PainpointPicker from "./PainpointPicker";
 import { track } from "@/lib/analytics";
 import { Map, Square } from "lucide-react";
 
@@ -12,8 +19,12 @@ import { Map, Square } from "lucide-react";
  * No journey → pick one from the catalog (grouped by age band).
  */
 export default function JourneySection({ showFlash }) {
-  const { journey, tasks, journeysCompleted, startJourney, cancelJourney, charName } = useGame();
+  const { journey, tasks, journeysCompleted, startJourney, cancelJourney, charName, parentConfig, setParentConfig } = useGame();
   const status = getJourneyStatus({ journey, tasks });
+
+  // Lưu "chẩn đoán" của bố mẹ — nguồn cho thẻ Khoảnh khắc sau này
+  const saveIntake = (ageBand, painpoints) =>
+    setParentConfig({ ...(parentConfig || {}), intake: { ageBand, painpoints, updatedAt: Date.now() } });
 
   return (
     <div className="bg-white border-2 border-forest/30 rounded-xl p-4 space-y-3">
@@ -24,7 +35,7 @@ export default function JourneySection({ showFlash }) {
       {status ? (
         <ActiveJourneyCard status={status} charName={charName} cancelJourney={cancelJourney} showFlash={showFlash} />
       ) : (
-        <JourneyPicker startJourney={startJourney} showFlash={showFlash} />
+        <JourneyPicker startJourney={startJourney} showFlash={showFlash} intake={parentConfig?.intake} saveIntake={saveIntake} />
       )}
 
       {journeysCompleted.length > 0 && (
@@ -111,14 +122,25 @@ function ActiveJourneyCard({ status, charName, cancelJourney, showFlash }) {
   );
 }
 
-function JourneyPicker({ startJourney, showFlash }) {
-  const [band, setBand] = useState("7-9");
+function JourneyPicker({ startJourney, showFlash, intake, saveIntake }) {
+  const [band, setBand] = useState(() =>
+    JOURNEY_AGE_BANDS.some((b) => b.id === intake?.ageBand) ? intake.ageBand : "7-9"
+  );
+  const [painpoints, setPainpoints] = useState(() => (Array.isArray(intake?.painpoints) ? intake.painpoints : []));
+
   const journeys = getJourneysForAge(band);
+  const { recommendations } = recommendJourneys(band, painpoints);
+  const recIds = recommendations.map((r) => r.journey.id);
+  const ordered = [...recommendations.map((r) => r.journey), ...journeys.filter((j) => !recIds.includes(j.id))];
+  const matchedLabels = (journeyId) =>
+    (recommendations.find((r) => r.journey.id === journeyId)?.matched || [])
+      .map((pid) => getPainpointById(pid)?.label)
+      .filter(Boolean);
 
   return (
     <div className="space-y-2.5">
       <p className="text-scale-2xs text-gray-500 font-medium leading-relaxed">
-        Chọn MỘT thói quen mục tiêu — nhiệm vụ mỗi tuần, mẹo đồng hành và mốc kỳ vọng đã soạn sẵn. Mỗi lúc một lộ trình để con không quá tải.
+        Tick điều đang đau đầu — app kê lộ trình phù hợp. Mỗi lúc một lộ trình để con không quá tải.
       </p>
 
       <div className="grid grid-cols-4 gap-1.5">
@@ -135,18 +157,31 @@ function JourneyPicker({ startJourney, showFlash }) {
         ))}
       </div>
 
-      {journeys.map((j) => (
+      <PainpointPicker selected={painpoints} onChange={setPainpoints} />
+
+      {ordered.map((j) => (
         <div key={j.id} className="border border-sand rounded-xl p-3 flex items-center gap-2.5">
           <span className="text-2xl flex-shrink-0">{j.icon}</span>
           <div className="flex-grow min-w-0">
             <p className="text-scale-xs font-black text-forest-dark">{j.title}</p>
+            {matchedLabels(j.id).length > 0 && (
+              <p className="text-scale-2xs font-black text-forest">
+                Kê theo: {matchedLabels(j.id).join(" · ").toLowerCase()}
+              </p>
+            )}
             <p className="text-scale-2xs text-gray-500 font-medium leading-snug">{j.goal}</p>
           </div>
           <button
             onClick={() => {
               const r = startJourney(j.id);
               if (r.success) {
-                track("journey_started", { id: j.id, source: "parent_room" });
+                saveIntake(band, painpoints);
+                track("journey_started", {
+                  id: j.id,
+                  source: "parent_room",
+                  recommended: recIds.includes(j.id),
+                  painpoints: painpoints.join(","),
+                });
                 showFlash(`Đã bắt đầu lộ trình "${j.title}"! Nhiệm vụ tuần 1 đã vào bảng của con. 🛤️`);
               }
             }}

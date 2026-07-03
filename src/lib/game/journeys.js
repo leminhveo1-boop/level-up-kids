@@ -25,12 +25,61 @@ export const JOURNEY_AGE_BANDS = [
   { id: "13-15", label: "13–15 tuổi 🎧", desc: "Tự chủ, tiền bạc, màn hình" },
 ];
 
+/**
+ * Màn "chẩn đoán" đầu vào: bố mẹ tick điều đang đau đầu → app kê lộ trình.
+ * 10 painpoint khớp bộ thẻ Khoảnh khắc (docs/KHOANH_KHAC_7_11.md).
+ * Painpoint chưa có lộ trình trong catalog vẫn được ghi nhận (unmatched)
+ * để đợt thẻ Khoảnh khắc chạm tới — không được vứt lựa chọn của bố mẹ.
+ */
+export const JOURNEY_PAINPOINTS = [
+  { id: "luoi_hoc", label: "Nhắc mãi mới làm (học, việc nhà...)" },
+  { id: "nan_bai", label: "Nản khi gặp bài khó, dễ bỏ cuộc" },
+  { id: "dien_thoai", label: "Dán mắt điện thoại, giục không dứt" },
+  { id: "bua_bon", label: "Bừa bộn, quên đồ, không dọn" },
+  { id: "ngang_buong", label: "Ngang bướng “con không muốn”" },
+  { id: "me_nheo", label: "Mè nheo, ăn vạ đòi mua đồ" },
+  { id: "doi_thuong", label: "Làm việc gì cũng đòi thưởng" },
+  { id: "noi_doi", label: "Giấu điểm kém, nói dối" },
+  { id: "ganh_em", label: "Ganh tị với anh/chị/em" },
+  { id: "thua_cuoc", label: "Khóc, cáu khi thua cuộc" },
+];
+
+/** Số painpoint tối đa được tick ở màn chẩn đoán — giữ intake ~30 giây. */
+export const INTAKE_MAX_PAINPOINTS = 3;
+
+/** @param {string} painpointId */
+export function getPainpointById(painpointId) {
+  return JOURNEY_PAINPOINTS.find((p) => p.id === painpointId) || null;
+}
+
+/**
+ * Kê lộ trình theo tuổi + painpoint đã tick (thuần, không mutate đầu vào).
+ * @param {string} ageBand
+ * @param {string[]} selectedPainpoints
+ * @returns {{ recommendations: Array<{journey: object, matched: string[]}>, unmatched: string[] }}
+ *   recommendations: lộ trình có tag khớp, xếp theo số painpoint khớp giảm dần
+ *   unmatched: painpoint không lộ trình nào trong band phủ — lưu lại cho đợt thẻ
+ */
+export function recommendJourneys(ageBand, selectedPainpoints) {
+  const chosen = Array.isArray(selectedPainpoints) ? selectedPainpoints : [];
+  const recommendations = getJourneysForAge(ageBand || "")
+    .map((journey) => ({
+      journey,
+      matched: chosen.filter((pid) => (journey.painpoints || []).includes(pid)),
+    }))
+    .filter((r) => r.matched.length > 0)
+    .sort((a, b) => b.matched.length - a.matched.length);
+  const covered = new Set(recommendations.flatMap((r) => r.matched));
+  return { recommendations, unmatched: chosen.filter((pid) => !covered.has(pid)) };
+}
+
 // Task spec fields: title, category, exp, points, energy, verifyType, [durationMin]
 // verifyType: trust = con tự ghi nhận | parent = bố mẹ xác nhận | focus = timer tuỳ chọn
 export const JOURNEY_CATALOG = [
   // ============================== 4–6 TUỔI ==============================
   {
     id: "brush_teeth_46",
+    painpoints: ["ngang_buong"],
     icon: "🦷",
     title: "Đánh răng không cần nhắc",
     ageBand: "4-6",
@@ -73,6 +122,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "tidy_toys_46",
+    painpoints: ["bua_bon"],
     icon: "🧸",
     title: "Cất đồ chơi gọn gàng",
     ageBand: "4-6",
@@ -114,6 +164,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "morning_dress_46",
+    painpoints: ["ngang_buong"],
     icon: "👕",
     title: "Sáng tự mặc đồ",
     ageBand: "4-6",
@@ -157,6 +208,7 @@ export const JOURNEY_CATALOG = [
   // ============================== 7–9 TUỔI ==============================
   {
     id: "school_bag_79",
+    painpoints: ["bua_bon", "luoi_hoc"],
     icon: "🎒",
     title: "Tự soạn cặp sách",
     ageBand: "7-9",
@@ -198,6 +250,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "reading_79",
+    painpoints: ["dien_thoai"],
     icon: "📚",
     title: "Mê đọc sách 15 phút",
     ageBand: "7-9",
@@ -239,6 +292,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "morning_79",
+    painpoints: ["luoi_hoc", "ngang_buong"],
     icon: "🌅",
     title: "Buổi sáng tự lập",
     ageBand: "7-9",
@@ -283,6 +337,7 @@ export const JOURNEY_CATALOG = [
   // ============================== 10–12 TUỔI ==============================
   {
     id: "homework_1012",
+    painpoints: ["luoi_hoc", "nan_bai"],
     icon: "✍️",
     title: "Tự giác làm bài về nhà",
     ageBand: "10-12",
@@ -324,6 +379,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "chores_1012",
+    painpoints: ["bua_bon", "doi_thuong"],
     icon: "🍽️",
     title: "Việc nhà chính chủ",
     ageBand: "10-12",
@@ -365,6 +421,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "sleep_1012",
+    painpoints: ["dien_thoai", "ngang_buong"],
     icon: "😴",
     title: "Ngủ đúng giờ",
     ageBand: "10-12",
@@ -409,6 +466,7 @@ export const JOURNEY_CATALOG = [
   // ============================== 13–15 TUỔI ==============================
   {
     id: "money_1315",
+    painpoints: ["doi_thuong", "me_nheo"],
     icon: "💰",
     title: "Quản lý tiền tiêu vặt",
     ageBand: "13-15",
@@ -450,6 +508,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "screen_1315",
+    painpoints: ["dien_thoai"],
     icon: "📱",
     title: "Tự quản giờ màn hình",
     ageBand: "13-15",
@@ -491,6 +550,7 @@ export const JOURNEY_CATALOG = [
   },
   {
     id: "fitness_1315",
+    painpoints: ["dien_thoai"],
     icon: "💪",
     title: "Rèn sức bền 3 tuần",
     ageBand: "13-15",
