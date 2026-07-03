@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
+import { Star, Clock } from "lucide-react";
 
 const formatStopwatch = (totalSecs) => {
   const m = Math.floor(totalSecs / 60);
@@ -53,16 +54,15 @@ export default function TaskCard({
           ✓
         </button>
 
-        {/* Title (carries its own emoji) — the only text that matters to a kid */}
-        <span className={`flex-grow text-scale-sm font-extrabold leading-snug ${task.completed ? "text-gray-400 line-through" : "text-forest-dark"}`}>
-          {task.journeyId && <span className="mr-0.5">🛤️</span>}
+        {/* Title (carries its own emoji) — clamp to 2 tidy lines, never ragged */}
+        <span className={`flex-grow min-w-0 text-scale-sm font-extrabold leading-snug line-clamp-2 ${task.completed ? "text-gray-400 line-through" : "text-forest-dark"}`}>
           {task.isMandatory && !task.completed && <span className="text-terracotta mr-0.5">●</span>}
           {task.title}
         </span>
 
         {/* ONE reward — the star points they spend on rewards */}
         <span
-          className={`flex-shrink-0 text-scale-2xs font-black px-2.5 py-1 rounded-full select-none ${
+          className={`flex-shrink-0 flex items-center gap-1 text-scale-2xs font-black px-2.5 py-1 rounded-full select-none ${
             task.completed
               ? "bg-gray-100 text-gray-400"
               : pending
@@ -70,7 +70,11 @@ export default function TaskCard({
                 : "bg-amber-light text-amber-dark"
           }`}
         >
-          {pending ? "⏳" : `+${points} ⭐`}
+          {pending ? (
+            <Clock size={13} />
+          ) : (
+            <>+{points} <Star size={13} fill="currentColor" /></>
+          )}
         </span>
       </div>
 

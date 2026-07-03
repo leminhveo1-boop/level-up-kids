@@ -46,7 +46,7 @@ export const gameDict = {
     "game.status.guideTitle": "Cẩm nang chiến binh",
 
     // Tasks section
-    "game.tasks.title": "🎯 Nhiệm Vụ Hôm Nay",
+    "game.tasks.title": "Nhiệm vụ hôm nay",
     "game.tasks.progress": "Xong: {done}/{total} ({pct}%)",
     "game.tasks.tipLabel": "Mẹo:",
     "game.tasks.tip": "Hoàn thành từ 3 nhiệm vụ để duy trì ngọn lửa Streak 🔥.",
@@ -412,7 +412,7 @@ export const gameDict = {
     "game.status.guideTitle": "Warrior handbook",
 
     // Tasks section
-    "game.tasks.title": "🎯 Today's Quests",
+    "game.tasks.title": "Today's quests",
     "game.tasks.progress": "Done: {done}/{total} ({pct}%)",
     "game.tasks.tipLabel": "Tip:",
     "game.tasks.tip": "Finish at least 3 quests to keep your Streak flame alive 🔥.",

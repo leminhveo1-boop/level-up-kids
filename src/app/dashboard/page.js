@@ -21,6 +21,7 @@ import LetterModal from "@/components/dashboard/LetterModal";
 import CriticalToast from "@/components/dashboard/CriticalToast";
 import GuideModal from "@/components/dashboard/GuideModal";
 import BottomNav from "@/components/dashboard/BottomNav";
+import { Target, SlidersHorizontal } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -64,6 +65,7 @@ export default function DashboardPage() {
   } = useGame();
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
+  const [showFilter, setShowFilter] = useState(false); // category filter hidden until asked
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
   const [showGuideModal, setShowGuideModal] = useState(false); // Guideline for child
@@ -270,14 +272,24 @@ export default function DashboardPage() {
              action never sits below the fold (visual hierarchy / Von Restorff). ===== */}
         <div className="space-y-3">
           <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-scale-lg font-black text-forest-dark flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-forest rounded-full" aria-hidden="true" />
+            <div className="flex items-center gap-2">
+              <Target size={20} className="text-forest flex-shrink-0" />
+              <h3 className="text-scale-lg font-black text-forest-dark truncate flex-grow min-w-0">
                 {t("game.tasks.title")}
               </h3>
               <span className="text-scale-2xs font-black text-forest-dark bg-forest-light/40 px-2.5 py-1 rounded-full flex-shrink-0">
-                {t("game.tasks.progress", { done: completedTasksCount, total: totalTasksCount, pct: completionPercentage })}
+                {completedTasksCount}/{totalTasksCount}
               </span>
+              <button
+                type="button"
+                onClick={() => setShowFilter((v) => !v)}
+                aria-label="Lọc theo nhóm"
+                className={`hit-target w-9 h-9 flex items-center justify-center rounded-full border flex-shrink-0 transition-colors ${
+                  showFilter || taskFilter !== "all" ? "bg-forest text-white border-forest" : "bg-white text-gray-400 border-sand"
+                }`}
+              >
+                <SlidersHorizontal size={16} />
+              </button>
             </div>
 
             {/* P0: Pending approval summary + child-initiated nudge */}
@@ -374,7 +386,7 @@ export default function DashboardPage() {
               />
             )}
 
-            <TaskFilterBar taskFilter={taskFilter} onChange={setTaskFilter} />
+            {showFilter && <TaskFilterBar taskFilter={taskFilter} onChange={setTaskFilter} />}
           </div>
 
           {/* Tasks — Kanban-grouped view */}

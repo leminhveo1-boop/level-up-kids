@@ -4,8 +4,10 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import SoundToggle from "@/components/SoundToggle";
 import { useLang } from "@/context/LanguageContext";
+import { Zap, Star, Coins, Flame, Snowflake, Mail } from "lucide-react";
 
-/** Top strip: energy, wallets, pigeon alert, streak+freeze, sound, guide. */
+/** Top strip: energy, wallets, streak, plus pigeon + sound. One tidy row,
+ *  line-icon set (lucide) instead of emoji — no wrapping, no clutter. */
 export default function StatusBar({
   energy,
   points,
@@ -15,83 +17,65 @@ export default function StatusBar({
   encouragements,
   unreadCount,
   onOpenLetter,
-  onOpenGuide,
 }) {
   const router = useRouter();
   const { t } = useLang();
 
+  const pill = "flex items-center gap-1 bg-white border border-sand px-2.5 py-1.5 rounded-full shadow-game-flat flex-shrink-0";
+
   return (
-    <div className="flex items-center justify-between gap-1 flex-wrap select-none">
-      {/* Energy Bar */}
-      <div className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat">
-        <span className="text-[10px]">❤️</span>
-        <div className="w-8 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-          <div
-            className="bg-terracotta h-full transition-all duration-300"
-            style={{ width: `${energy}%` }}
-          ></div>
+    <div className="flex items-center gap-1.5 select-none">
+      {/* Energy */}
+      <div className={pill}>
+        <Zap size={14} className="text-terracotta" fill="currentColor" />
+        <div className="w-6 bg-sand h-1.5 rounded-full overflow-hidden">
+          <div className="bg-terracotta h-full transition-all duration-300" style={{ width: `${energy}%` }} />
         </div>
       </div>
 
-      {/* Points Wallet */}
-      <div
-        onClick={() => router.push("/rewards")}
-        className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
-      >
-        <span className="text-xs">⭐</span>
-        <span className="text-[11px] font-black text-forest-dark">{points}</span>
+      {/* Points */}
+      <button type="button" onClick={() => router.push("/rewards")} className={`${pill} active:scale-95 transition-transform`}>
+        <Star size={14} className="text-forest" fill="currentColor" />
+        <span className="text-scale-2xs font-black text-forest-dark">{points}</span>
+      </button>
+
+      {/* Coins */}
+      <button type="button" onClick={() => router.push("/rewards")} className={`${pill} active:scale-95 transition-transform`}>
+        <Coins size={14} className="text-amber" />
+        <span className="text-scale-2xs font-black text-amber-dark">{heroCoins}</span>
+      </button>
+
+      {/* Streak (+ freeze) */}
+      <div className={pill}>
+        <Flame size={14} className="text-amber animate-flame" fill="currentColor" />
+        <span className="text-scale-2xs font-black text-amber">{streak}</span>
+        {streakFreezes > 0 && (
+          <span className="flex items-center gap-0.5 text-scale-2xs font-black text-sky-dark ml-0.5">
+            <Snowflake size={11} />{streakFreezes}
+          </span>
+        )}
       </div>
 
-      {/* Hero Coin Wallet */}
-      <div
-        onClick={() => router.push("/rewards")}
-        className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
-      >
-        <span className="text-xs">🪙</span>
-        <span className="text-[11px] font-black text-amber-dark">{heroCoins}</span>
-      </div>
+      <div className="flex-grow" />
 
-      {/* Messages Bird (Carrier Pigeon Alert) */}
+      {/* Pigeon (only when there are letters) */}
       {encouragements.length > 0 && (
         <button
+          type="button"
           onClick={() => onOpenLetter(encouragements[0])}
           aria-label={t("game.status.pigeonTitle")}
-          className="hit-target relative p-2 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-amber transition-colors"
-          title={t("game.status.pigeonTitle")}
+          className="hit-target relative w-9 h-9 flex items-center justify-center bg-white border border-sand rounded-full shadow-game-flat active:scale-95 transition-transform flex-shrink-0"
         >
-          <span className="text-xs">🕊️</span>
+          <Mail size={16} className="text-sky-dark" />
           {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 bg-terracotta text-white font-extrabold text-[10px] h-3 w-3 rounded-full flex items-center justify-center border border-white animate-pulse">
-              !
+            <span className="absolute -top-0.5 -right-0.5 bg-terracotta text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
+              {unreadCount}
             </span>
           )}
         </button>
       )}
 
-      {/* Streak Flame + Freeze cards */}
-      <div
-        className="flex items-center gap-0.5 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat"
-        title={t("game.status.streakTitle", { d: streak, f: streakFreezes })}
-      >
-        <span className="text-xs animate-flame">🔥</span>
-        <span className="text-[11px] font-black text-amber">{streak}</span>
-        {streakFreezes > 0 && (
-          <span className="text-[11px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
-        )}
-      </div>
-
-      {/* Sound mute toggle */}
       <SoundToggle />
-
-      {/* Guide Button for child */}
-      <button
-        onClick={onOpenGuide}
-        aria-label={t("game.status.guideTitle")}
-        className="hit-target flex items-center justify-center p-2 bg-white border-2 border-sand rounded-full shadow-game-flat hover:border-forest transition-colors text-xs active:scale-90"
-        title={t("game.status.guideTitle")}
-      >
-        📜
-      </button>
     </div>
   );
 }

@@ -3,42 +3,34 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/context/LanguageContext";
+import { Home, Gift, Pickaxe, Lock } from "lucide-react";
 
-/** Bottom tab navigation (Duolingo style) — dashboard is the active tab. */
+/** Bottom tab navigation — line icons (lucide), dashboard is the active tab. */
 export default function BottomNav() {
   const router = useRouter();
   const { t } = useLang();
 
+  const items = [
+    { icon: Home, labelKey: "nav.adventure", active: true, go: null },
+    { icon: Gift, labelKey: "nav.rewards", go: "/rewards" },
+    { icon: Pickaxe, labelKey: "nav.mining", go: "/mining" },
+    { icon: Lock, labelKey: "nav.parent", go: "/parent" },
+  ];
+
   return (
-    <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
-      <button className="flex flex-col items-center p-2 text-forest-medium space-y-0.5">
-        <span className="text-xl">🌳</span>
-        <span className="text-[11px] font-black uppercase tracking-wider">{t("nav.adventure")}</span>
-      </button>
-
-      <button
-        onClick={() => router.push("/rewards")}
-        className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-      >
-        <span className="text-xl">🛒</span>
-        <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
-      </button>
-
-      <button
-        onClick={() => router.push("/mining")}
-        className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-      >
-        <span className="text-xl">⛏️</span>
-        <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.mining")}</span>
-      </button>
-
-      <button
-        onClick={() => router.push("/parent")}
-        className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-      >
-        <span className="text-xl">🔑</span>
-        <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
-      </button>
+    <div className="absolute bottom-0 inset-x-0 bg-white border-t border-sand px-2 py-1.5 flex items-center justify-around z-40 max-w-md mx-auto">
+      {items.map(({ icon: Icon, labelKey, active, go }) => (
+        <button
+          key={labelKey}
+          onClick={() => go && router.push(go)}
+          className={`min-h-tap flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-colors ${
+            active ? "text-forest" : "text-gray-400 hover:text-forest"
+          }`}
+        >
+          <Icon size={22} strokeWidth={active ? 2.4 : 2} />
+          <span className={`text-[11px] ${active ? "font-black" : "font-bold"}`}>{t(labelKey)}</span>
+        </button>
+      ))}
     </div>
   );
 }
