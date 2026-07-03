@@ -59,6 +59,43 @@
 [data-ui-mode="teen"] .animate-pulse,
 [data-ui-mode="teen"] .animate-flame { animation: none; }
 
+/* ===== KID MODE TOKENS (Bước 2 đã duyệt): nền ấm + 1 accent XANH DƯƠNG =====
+   Quân luật: chữ nâu ấm 3 tầng (cấm slate lạnh); accent #2E7CD6 cho MỌI hành
+   động; amber chỉ còn là màu tiền tệ ⭐/năng lượng; đỏ chỉ cho bắt buộc.
+   Transitional overrides — component sẽ đọc var() trực tiếp ở bước tokenize. */
+[data-ui-mode="kid"] {
+  --kid-accent: #2E7CD6;
+  --kid-accent-soft: #E9F2FC;
+  --kid-text-1: #33271A;  /* Title */
+  --kid-text-2: #5C5243;  /* Body ~6.3:1 */
+  --kid-text-3: #6C5F4E;  /* Caption ~4.9:1 */
+}
+/* Chữ ấm — thay slate lạnh (đè bản vá contrast toàn cục phía trên) */
+[data-ui-mode="kid"] .text-forest-dark { color: var(--kid-text-1); }
+[data-ui-mode="kid"] .text-gray-600,
+[data-ui-mode="kid"] .text-gray-500,
+[data-ui-mode="kid"] .text-gray-800 { color: var(--kid-text-2); }
+[data-ui-mode="kid"] .text-gray-400,
+[data-ui-mode="kid"] .text-gray-300 { color: var(--kid-text-3); }
+[data-ui-mode="kid"] .bg-gray-50 { background-color: #F9F4EA; }
+[data-ui-mode="kid"] .bg-gray-100 { background-color: #F1E9DB; }
+/* 1 accent xanh dương cho hành động (forest/sky/clay → accent) */
+[data-ui-mode="kid"] [class*="text-forest"],
+[data-ui-mode="kid"] [class*="text-sky"],
+[data-ui-mode="kid"] [class*="text-clay"] { color: var(--kid-accent); }
+[data-ui-mode="kid"] .text-forest-dark { color: var(--kid-text-1); } /* sau [class*] để thắng */
+[data-ui-mode="kid"] [class*="bg-forest-light"],
+[data-ui-mode="kid"] [class*="bg-sky-light"],
+[data-ui-mode="kid"] [class*="bg-clay-light"] { background-color: var(--kid-accent-soft); }
+[data-ui-mode="kid"] .bg-forest,
+[data-ui-mode="kid"] .bg-forest-medium,
+[data-ui-mode="kid"] .bg-sky,
+[data-ui-mode="kid"] .bg-clay { background-color: var(--kid-accent); }
+[data-ui-mode="kid"] [class*="border-forest"],
+[data-ui-mode="kid"] [class*="border-sky"],
+[data-ui-mode="kid"] [class*="border-clay"] { border-color: var(--kid-accent); }
+[data-ui-mode="kid"] .shadow-game-forest { box-shadow: 0 2px 10px -2px rgb(46 124 214 / 0.28); }
+
 /* ===== KID MODE — playful but refined (vui nhưng gọn) =====
    Keep the warm colours, roundness and big friendly shapes — just remove the
    "AI đời đầu" clutter: thin the heavy 2px borders, stop the ALL-CAPS shouting,
