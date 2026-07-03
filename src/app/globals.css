@@ -59,6 +59,29 @@
 [data-ui-mode="teen"] .animate-pulse,
 [data-ui-mode="teen"] .animate-flame { animation: none; }
 
+/* ===== KID MODE — playful but refined (vui nhưng gọn) =====
+   Keep the warm colours, roundness and big friendly shapes — just remove the
+   "AI đời đầu" clutter: thin the heavy 2px borders, stop the ALL-CAPS shouting,
+   and make card corners consistently soft. Colours + fun stay untouched. */
+[data-ui-mode="kid"] .border-2 { border-width: 1.5px; }
+[data-ui-mode="kid"] .uppercase { text-transform: none; letter-spacing: 0.01em; }
+[data-ui-mode="kid"] .tracking-wider,
+[data-ui-mode="kid"] .tracking-wide { letter-spacing: 0.01em; }
+[data-ui-mode="kid"] .rounded-xl { border-radius: 16px; }
+[data-ui-mode="kid"] .rounded-2xl { border-radius: 20px; }
+
+/* ===== TEEN MODE — mature / sleek typography refinements =====
+   Dark base already set above; here we calm the typography so it reads grown-up
+   (no kiddie ALL-CAPS/900), and thin the borders for a sleeker feel. */
+[data-ui-mode="teen"] .uppercase { text-transform: none; }
+[data-ui-mode="teen"] .tracking-wider,
+[data-ui-mode="teen"] .tracking-wide { letter-spacing: normal; }
+[data-ui-mode="teen"] .font-black,
+[data-ui-mode="teen"] .font-extrabold { font-weight: 700; }
+[data-ui-mode="teen"] .border-2 { border-width: 1px; }
+[data-ui-mode="teen"] .rounded-xl { border-radius: 14px; }
+[data-ui-mode="teen"] .rounded-2xl { border-radius: 16px; }
+
 /* ===== PARENT MODE — Apple-clean / pro interface (UX Pro-Max) =====
    The parent room is its OWN interface, not the child's kid/teen skin. Deference
    over decoration: cool neutral canvas, white cards, hairline borders, one soft
