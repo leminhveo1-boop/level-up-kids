@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
+import { stripEmoji } from "@/lib/text";
 
 /** 🎯 V1.2 Goal gradient — visible progress to the nearest big coin reward. */
 export default function GoalBar({ rewards, heroCoins }) {
@@ -17,7 +18,7 @@ export default function GoalBar({ rewards, heroCoins }) {
 
   const pct = Math.round((heroCoins / coinGoal.cost) * 100);
 
-  const goalTitle = coinGoal.title.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, "").trim();
+  const goalTitle = stripEmoji(coinGoal.title);
 
   return (
     <div className="w-full bg-white border border-sand p-3 rounded-2xl shadow-game-flat space-y-2">

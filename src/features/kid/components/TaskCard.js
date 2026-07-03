@@ -3,20 +3,13 @@
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
 import { Star, Clock, Trees } from "lucide-react";
+import { stripEmoji } from "@/lib/text";
 
 const formatStopwatch = (totalSecs) => {
   const m = Math.floor(totalSecs / 60);
   const s = totalSecs % 60;
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 };
-
-// Big clean apps (Todoist / Reminders / Things) don't put decorative emoji in
-// task text. Strip them from the DISPLAY so a line is just: check + text + reward.
-const stripEmoji = (s) =>
-  (s || "")
-    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
 
 /**
  * One task row — restrained, big-app style: a checkbox, the task text, and one

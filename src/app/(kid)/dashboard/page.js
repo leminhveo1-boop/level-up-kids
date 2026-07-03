@@ -19,7 +19,7 @@ import TaskCard from "@/features/kid/components/TaskCard";
 import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
-import BottomNav from "@/features/kid/components/BottomNav";
+import BottomNav from "@/ui/BottomNav";
 import { Target, SlidersHorizontal } from "lucide-react";
 
 export default function DashboardPage() {

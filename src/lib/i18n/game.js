@@ -26,8 +26,6 @@ export const gameDict = {
     "game.hero.myCorner": "Của tớ",
     "game.hero.myCornerTitle": "Góc Của Tớ — tùy biến avatar",
     "game.hero.level": "CẤP {n}",
-    "game.hero.exp": "EXP: {n}",
-    "game.hero.req": "YÊU CẦU: {n}",
 
     // Level titles
     "game.levelTitle.100": "Anh Hùng Mùa Hè 👑",
@@ -43,13 +41,9 @@ export const gameDict = {
     // Status bar titles
     "game.status.pigeonTitle": "Thư động viên từ bố mẹ!",
     "game.status.streakTitle": "Streak {d} ngày — {f} thẻ đóng băng ❄️",
-    "game.status.guideTitle": "Cẩm nang chiến binh",
 
     // Tasks section
     "game.tasks.title": "Nhiệm vụ hôm nay",
-    "game.tasks.progress": "Xong: {done}/{total} ({pct}%)",
-    "game.tasks.tipLabel": "Mẹo:",
-    "game.tasks.tip": "Hoàn thành từ 3 nhiệm vụ để duy trì ngọn lửa Streak 🔥.",
     "game.tasks.pending": "⏳ {n} nhiệm vụ chờ bố mẹ duyệt điểm ⭐",
     "game.tasks.nudge": "Nhắc bố mẹ 🕊️",
     "game.tasks.giftsTitle": "🎁 Quà Từ Anh Chị Em",
@@ -59,8 +53,6 @@ export const gameDict = {
 
     // Toasts
     "game.toast.focusBonus": "Tuyệt vời! Con đã tập trung đủ lâu — nhận thêm điểm thưởng tập trung! 🌳✨",
-    "game.toast.photoSaved": "Đã lưu ảnh vào máy (chỉ bố mẹ trên máy này xem được). 📸",
-    "game.toast.photoError": "Không đọc được ảnh, con thử lại nhé! 📸",
     "game.toast.nudgeSent": "Đã gửi lời nhắc đến bố mẹ! Bồ câu đang bay đi đây 🕊️",
     "game.toast.nudgeLimit": "Hôm nay con đã nhắc đủ 2 lần rồi — bố mẹ sẽ duyệt sớm thôi! 🌸",
 
@@ -72,13 +64,11 @@ export const gameDict = {
     // 🛤️ Journey (Lộ Trình 3 tuần)
     "game.journey.title": "Lộ trình của tớ",
     "game.journey.week": "TUẦN {week}/{weeks}",
-    "game.journey.progress": "Tuần này đạt {done} ngày · cả hành trình {success}/{total} ngày",
     "game.journey.todayDone": "Hôm nay xong phần lộ trình rồi",
     "game.journey.todayTodo": "Còn {n} việc lộ trình hôm nay",
     "game.journey.done.title": "“{title}” — CHINH PHỤC THÀNH CÔNG! 🏆",
     "game.journey.done.desc": "{success}/{total} ngày đạt sau 3 tuần — thói quen mới đã là của con! Việc tuần cuối vẫn ở bảng để con giữ phong độ tới huy hiệu 🎓.",
     "game.journey.done.cta": "QUÁ ĐÃ! 🏆",
-    "game.task.journeyBadge": "🛤️ LỘ TRÌNH",
     "game.world.title": "Thế giới của con",
 
     // Goal bar
@@ -93,20 +83,10 @@ export const gameDict = {
     "game.family.giftFor": "Tặng quà cho {name}",
 
     // Task card
-    "game.task.parentNote": "👨‍👩‍👧 bố mẹ ghi nhận",
-    "game.task.mandatory": "Bắt buộc 🔴",
-    "game.task.parentAssigned": "Bố mẹ giao 👑",
-    "game.task.waiting": "⏳ Chờ duyệt",
-    "game.task.minutes": "🌳 {n}p",
     "game.task.focusDone": "Xong",
     "game.task.focusStop": "Dừng",
     "game.task.focusLabel": "Tập trung: {time}",
-    "game.task.focusHintA": "🌳 Bật tập trung để nhận ",
-    "game.task.focusHintBold": "điểm thưởng",
-    "game.task.focusHintB": " (tùy chọn)",
-    "game.task.tickHint": "✓ Làm xong thì tích ô bên trên",
     "game.task.startFocus": "Tập trung",
-    "game.task.photoTitle": "Đính ảnh (tùy chọn, lưu trên máy)",
 
     // Kanban lanes
     "game.lane.doing": "Đang tập trung",
@@ -167,22 +147,6 @@ export const gameDict = {
     "game.lang.vi": "🇻🇳 Tiếng Việt",
     "game.lang.en": "🇬🇧 English",
 
-    // Guide modal
-    "game.guide.title": "Cẩm Nang Chiến Binh Mùa Hè 📜",
-    "game.guide.subtitle": "Bí kíp để thăng cấp và nhận những phần quà xịn nhất!",
-    "game.guide.s1.title": "🎯 1. Làm Nhiệm Vụ Hằng Ngày",
-    "game.guide.s1.body": "Hoàn thành các nhiệm vụ bố mẹ giao để nhận EXP thăng cấp, Điểm Tích Lũy ⭐ và Tiền Vàng 🪙.",
-    "game.guide.s2.title": "🔥 2. Duy Trì Ngọn Lửa Streak",
-    "game.guide.s2.body": "Hoàn thành từ 3 nhiệm vụ mỗi ngày để duy trì ngọn lửa Streak 🔥. Streak càng cao, lượng Điểm ⭐ nhận được từ nhiệm vụ tiếp theo càng nhiều!",
-    "game.guide.s3.title": "⚡ 3. Điểm May Mắn (Lucky Multiplier)",
-    "game.guide.s3.body": "Mỗi khi hoàn thành một nhiệm vụ, dũng sĩ có 15% cơ hội kích hoạt Điểm May Mắn ⚡ giúp nhân đôi lượng Điểm ⭐ nhận được!",
-    "game.guide.s4.title": "⛏️ 4. Đào Mỏ & Đổi Quà",
-    "game.guide.s4.body": "• Hoàn thành việc tốt nạp Năng Lượng ⚡.|• Đập đá ở Hang Đào Mỏ ⛏️ nhận Hero Coin 🪙.|• Dùng Điểm ⭐ đổi thời gian chơi TV/game; dùng Hero Coin 🪙 đổi quà thực tế lớn (kem, Lego)!",
-    "game.guide.s5.title": "🐾 5. Ấp Trứng & Huấn Luyện Thú Cưỡi",
-    "game.guide.s5.body": "• Cách có vật phẩm: Đập đá đào mỏ, nhờ bố mẹ tặng thưởng, hoặc dùng Hero Coin 🪙 mua Trứng, Thuốc phép & Combo Thức ăn trong Cửa Hàng 🛒.|• Ấp thú cưng: Kết hợp Trứng & Thuốc ấp phép để nở ra Fox, Cat, Sói, Rồng 🦊.|• Nuôi pet đạt 100% thân mật sẽ tiến hóa thành Thú Cưỡi khổng lồ 🦖, tăng +10% Năng lượng ⚡ khi làm nhiệm vụ và +5% tỷ lệ nổ Cú Đập Sức Mạnh 🔥 khi đào mỏ!",
-    "game.guide.s6.title": "🕊️ 6. Bồ Câu Nhận Thư Động Viên",
-    "game.guide.s6.body": "• Mỗi ngày bố mẹ sẽ gửi những lời chúc, lời nhắn nhủ yêu thương từ Phòng Quản Trị.|• Nhấp vào chú bồ câu 🕊️ ở góc màn hình để mở thư động viên của bố mẹ nhé!",
-    "game.guide.cta": "CON ĐÃ HIỂU, LÊN ĐƯỜNG THÔI! 🚀",
 
     // Boss screen (kid / teen variants)
     "game.boss.tab.kid": "Boss Tuần",
@@ -392,8 +356,6 @@ export const gameDict = {
     "game.hero.myCorner": "My corner",
     "game.hero.myCornerTitle": "My Corner — customize avatar",
     "game.hero.level": "LEVEL {n}",
-    "game.hero.exp": "XP: {n}",
-    "game.hero.req": "NEEDED: {n}",
 
     // Level titles
     "game.levelTitle.100": "Summer Hero 👑",
@@ -409,13 +371,9 @@ export const gameDict = {
     // Status bar titles
     "game.status.pigeonTitle": "Encouragement from your parents!",
     "game.status.streakTitle": "Streak {d} days — {f} freeze cards ❄️",
-    "game.status.guideTitle": "Warrior handbook",
 
     // Tasks section
     "game.tasks.title": "Today's quests",
-    "game.tasks.progress": "Done: {done}/{total} ({pct}%)",
-    "game.tasks.tipLabel": "Tip:",
-    "game.tasks.tip": "Finish at least 3 quests to keep your Streak flame alive 🔥.",
     "game.tasks.pending": "⏳ {n} quest(s) awaiting parent approval ⭐",
     "game.tasks.nudge": "Remind parents 🕊️",
     "game.tasks.giftsTitle": "🎁 Gifts From Siblings",
@@ -425,8 +383,6 @@ export const gameDict = {
 
     // Toasts
     "game.toast.focusBonus": "Awesome! You focused long enough — bonus focus points! 🌳✨",
-    "game.toast.photoSaved": "Photo saved on this device (only parents on this device can view it). 📸",
-    "game.toast.photoError": "Couldn't read the photo, please try again! 📸",
     "game.toast.nudgeSent": "Reminder sent to your parents! The pigeon is on its way 🕊️",
     "game.toast.nudgeLimit": "You've reminded them twice today — parents will approve soon! 🌸",
 
@@ -438,13 +394,11 @@ export const gameDict = {
     // 🛤️ Journey (3-week guided path)
     "game.journey.title": "My journey",
     "game.journey.week": "WEEK {week}/{weeks}",
-    "game.journey.progress": "{done} good days this week · {success}/{total} days overall",
     "game.journey.todayDone": "Today's journey tasks are done",
     "game.journey.todayTodo": "{n} journey task(s) left today",
     "game.journey.done.title": "“{title}” — CONQUERED! 🏆",
     "game.journey.done.desc": "{success}/{total} good days across 3 weeks — the new habit is yours! The final week's tasks stay on your board on the road to the 🎓 badge.",
     "game.journey.done.cta": "SO COOL! 🏆",
-    "game.task.journeyBadge": "🛤️ JOURNEY",
     "game.world.title": "Your world",
 
     // Goal bar
@@ -459,20 +413,10 @@ export const gameDict = {
     "game.family.giftFor": "Send a gift to {name}",
 
     // Task card
-    "game.task.parentNote": "👨‍👩‍👧 parent-verified",
-    "game.task.mandatory": "Required 🔴",
-    "game.task.parentAssigned": "Parent-assigned 👑",
-    "game.task.waiting": "⏳ Awaiting",
-    "game.task.minutes": "🌳 {n}m",
     "game.task.focusDone": "Done",
     "game.task.focusStop": "Stop",
     "game.task.focusLabel": "Focus: {time}",
-    "game.task.focusHintA": "🌳 Start focus to earn ",
-    "game.task.focusHintBold": "bonus points",
-    "game.task.focusHintB": " (optional)",
-    "game.task.tickHint": "✓ Tick the box above when you're done",
     "game.task.startFocus": "Focus",
-    "game.task.photoTitle": "Attach photo (optional, saved on device)",
 
     // Kanban lanes
     "game.lane.doing": "Focusing",
@@ -533,22 +477,6 @@ export const gameDict = {
     "game.lang.vi": "🇻🇳 Tiếng Việt",
     "game.lang.en": "🇬🇧 English",
 
-    // Guide modal
-    "game.guide.title": "Summer Warrior Handbook 📜",
-    "game.guide.subtitle": "Tips to level up and earn the coolest rewards!",
-    "game.guide.s1.title": "🎯 1. Do Your Daily Quests",
-    "game.guide.s1.body": "Finish the quests your parents set to earn XP to level up, Points ⭐ and Hero Coins 🪙.",
-    "game.guide.s2.title": "🔥 2. Keep Your Streak Alive",
-    "game.guide.s2.body": "Finish at least 3 quests each day to keep your Streak flame 🔥. The higher the Streak, the more Points ⭐ your next quest gives!",
-    "game.guide.s3.title": "⚡ 3. Lucky Points (Lucky Multiplier)",
-    "game.guide.s3.body": "Every time you finish a quest, you have a 15% chance to trigger Lucky Points ⚡ that double the Points ⭐ you earn!",
-    "game.guide.s4.title": "⛏️ 4. Mining & Rewards",
-    "game.guide.s4.body": "• Good deeds fill your Energy ⚡.|• Break rocks in the Mining Cave ⛏️ to get Hero Coins 🪙.|• Spend Points ⭐ on TV/game time; spend Hero Coins 🪙 on big real-world rewards (ice cream, Lego)!",
-    "game.guide.s5.title": "🐾 5. Hatch Eggs & Train Mounts",
-    "game.guide.s5.body": "• Getting items: mine rocks, get gifts from parents, or spend Hero Coins 🪙 on Eggs, Potions & Food Combos in the Shop 🛒.|• Hatching: combine an Egg & a Potion to hatch a Fox, Cat, Wolf, or Dragon 🦊.|• Feed a pet to 100% bond and it evolves into a giant Mount 🦖, giving +10% Energy ⚡ on quests and +5% Power Strike chance 🔥 while mining!",
-    "game.guide.s6.title": "🕊️ 6. Pigeon Encouragement Letters",
-    "game.guide.s6.body": "• Every day your parents send loving notes from the Parent Room.|• Tap the pigeon 🕊️ in the corner to open their encouragement letter!",
-    "game.guide.cta": "GOT IT, LET'S GO! 🚀",
 
     // Boss screen (kid / teen variants)
     "game.boss.tab.kid": "Weekly Boss",

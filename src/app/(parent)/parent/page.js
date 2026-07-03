@@ -7,6 +7,7 @@ import ApprovalTab from "@/features/parent/components/ApprovalTab";
 import WeekTab from "@/features/parent/components/WeekTab";
 import ManageTab from "@/features/parent/components/ManageTab";
 import SystemTab from "@/features/parent/components/SystemTab";
+import BottomNav from "@/ui/BottomNav";
 
 const TABS = [
   { id: "approval", label: "✅ Duyệt" },
@@ -144,25 +145,7 @@ export default function ParentDashboard() {
         {activeTab === "system" && <SystemTab />}
       </div>
 
-      {/* Bottom nav */}
-      <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
-        <button onClick={() => router.push("/dashboard")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">🌳</span>
-          <span className="text-scale-2xs font-extrabold">Phiêu Lưu</span>
-        </button>
-        <button onClick={() => router.push("/rewards")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">🛒</span>
-          <span className="text-scale-2xs font-extrabold">Đổi Quà</span>
-        </button>
-        <button onClick={() => router.push("/mining")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">⛏️</span>
-          <span className="text-scale-2xs font-extrabold">Đào Mỏ</span>
-        </button>
-        <button onClick={() => {}} className="min-h-tap flex flex-col items-center p-2 text-forest-medium space-y-0.5">
-          <span className="text-xl">🔑</span>
-          <span className="text-scale-2xs font-black">Bố Mẹ</span>
-        </button>
-      </div>
+      <BottomNav active="parent" />
     </div>
   );
 }
