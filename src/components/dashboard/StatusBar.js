@@ -47,7 +47,7 @@ export default function StatusBar({
         onClick={() => router.push("/rewards")}
         className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
       >
-        <span className="text-xs animate-bounce">🪙</span>
+        <span className="text-xs">🪙</span>
         <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
       </div>
 

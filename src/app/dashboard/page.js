@@ -262,23 +262,20 @@ export default function DashboardPage() {
           activeMountObj={activeMountObj}
         />
 
-        {activeCompanion && <CompanionCard companion={activeCompanion} />}
-
-        <SeasonBanner />
-
-        {/* 🛤️ B-lite: active journey — the child's guided path */}
+        {/* 🛤️ B-lite: active journey — the child's guided path (sits with tasks) */}
         {journey && <JourneyCard journey={journey} tasks={tasks} />}
 
-        <WorldTreeCard treeGrowth={treeGrowth} />
-
-        <StatsGrid stats={stats} />
-
-        {/* DAILY TASKS SECTION */}
+        {/* ===== FOCAL BLOCK: today's tasks — the one thing the child opens the
+             app to do. Promoted above the ambient "world" cards so the primary
+             action never sits below the fold (visual hierarchy / Von Restorff). ===== */}
         <div className="space-y-3">
           <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-forest-dark uppercase tracking-wider">{t("game.tasks.title")}</h3>
-              <span className="text-[10px] font-black text-gray-400 bg-sand px-2 py-0.5 rounded-full">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-scale-lg font-black text-forest-dark flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-forest rounded-full" aria-hidden="true" />
+                {t("game.tasks.title")}
+              </h3>
+              <span className="text-scale-2xs font-black text-forest-dark bg-forest-light/40 px-2.5 py-1 rounded-full flex-shrink-0">
                 {t("game.tasks.progress", { done: completedTasksCount, total: totalTasksCount, pct: completionPercentage })}
               </span>
             </div>
@@ -421,6 +418,21 @@ export default function DashboardPage() {
               })
             )}
           </div>
+        </div>
+
+        {/* ===== AMBIENT ZONE — the child's "world": identity, season, pet,
+             tree, stats. Grouped + labelled below the focal tasks so they read
+             as secondary ambience, not competing focal points (Gestalt common
+             region + hierarchy). ===== */}
+        <div className="pt-1 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="text-scale-2xs font-black text-gray-400 uppercase tracking-wider">🌍 {t("game.world.title")}</span>
+            <span className="flex-grow h-px bg-sand" />
+          </div>
+          {activeCompanion && <CompanionCard companion={activeCompanion} />}
+          <SeasonBanner />
+          <WorldTreeCard treeGrowth={treeGrowth} />
+          <StatsGrid stats={stats} />
         </div>
       </div>
 

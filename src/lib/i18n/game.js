@@ -79,6 +79,7 @@ export const gameDict = {
     "game.journey.done.desc": "{success}/{total} ngày đạt sau 3 tuần — thói quen mới đã là của con! Việc tuần cuối vẫn ở bảng để con giữ phong độ tới huy hiệu 🎓.",
     "game.journey.done.cta": "QUÁ ĐÃ! 🏆",
     "game.task.journeyBadge": "🛤️ LỘ TRÌNH",
+    "game.world.title": "Thế giới của con",
 
     // Goal bar
     "game.goal.title": "🎯 Mục tiêu lớn",
@@ -444,6 +445,7 @@ export const gameDict = {
     "game.journey.done.desc": "{success}/{total} good days across 3 weeks — the new habit is yours! The final week's tasks stay on your board on the road to the 🎓 badge.",
     "game.journey.done.cta": "SO COOL! 🏆",
     "game.task.journeyBadge": "🛤️ JOURNEY",
+    "game.world.title": "Your world",
 
     // Goal bar
     "game.goal.title": "🎯 Big goal",
