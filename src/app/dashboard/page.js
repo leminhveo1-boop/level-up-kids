@@ -280,12 +280,6 @@ export default function DashboardPage() {
               </span>
             </div>
 
-            {/* Daily Reset Hint */}
-            <div className="w-full bg-amber-light border border-amber/30 p-2 rounded-xl text-[10px] text-amber-dark font-medium flex items-center gap-1">
-              <span>💡</span>
-              <span><strong>{t("game.tasks.tipLabel")}</strong> {t("game.tasks.tip")}</span>
-            </div>
-
             {/* P0: Pending approval summary + child-initiated nudge */}
             {pendingCount > 0 && (
               <div className="w-full bg-sky-light/60 border border-sky/30 p-2.5 rounded-xl flex items-center justify-between gap-2">

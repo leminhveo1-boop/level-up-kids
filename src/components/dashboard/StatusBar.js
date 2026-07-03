@@ -36,19 +36,19 @@ export default function StatusBar({
       {/* Points Wallet */}
       <div
         onClick={() => router.push("/rewards")}
-        className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
+        className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat transition-all hover:border-forest cursor-pointer active:scale-95"
       >
         <span className="text-xs">⭐</span>
-        <span className="text-[11px] font-black text-forest-dark">{points} {t("game.points")}</span>
+        <span className="text-[11px] font-black text-forest-dark">{points}</span>
       </div>
 
       {/* Hero Coin Wallet */}
       <div
         onClick={() => router.push("/rewards")}
-        className="flex items-center gap-0.5 bg-white border-2 border-sand px-2 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
+        className="flex items-center gap-1 bg-white border-2 border-sand px-2.5 py-1.5 rounded-full shadow-game-flat transition-all hover:border-amber cursor-pointer active:scale-95"
       >
         <span className="text-xs">🪙</span>
-        <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+        <span className="text-[11px] font-black text-amber-dark">{heroCoins}</span>
       </div>
 
       {/* Messages Bird (Carrier Pigeon Alert) */}
@@ -74,7 +74,7 @@ export default function StatusBar({
         title={t("game.status.streakTitle", { d: streak, f: streakFreezes })}
       >
         <span className="text-xs animate-flame">🔥</span>
-        <span className="text-[11px] font-black text-amber">{streak}N</span>
+        <span className="text-[11px] font-black text-amber">{streak}</span>
         {streakFreezes > 0 && (
           <span className="text-[11px] font-black text-sky-dark ml-0.5">❄️{streakFreezes}</span>
         )}
