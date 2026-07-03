@@ -48,17 +48,18 @@ module.exports = {
         "4xl": "2.5rem",
       },
       boxShadow: {
-        // Flat 3D game button shadows (Duolingo style)
-        "game-flat": "0 6px 0px 0px #E4DCCF",
-        "game-pressed": "0 2px 0px 0px #E4DCCF",
-        "game-forest": "0 6px 0px 0px #1B5E20",
-        "game-forest-pressed": "0 2px 0px 0px #1B5E20",
-        "game-amber": "0 6px 0px 0px #B45309",
-        "game-amber-pressed": "0 2px 0px 0px #B45309",
-        "game-terracotta": "0 6px 0px 0px #BE123C",
-        "game-terracotta-pressed": "0 2px 0px 0px #BE123C",
-        "game-sky": "0 6px 0px 0px #0369A1",
-        "game-sky-pressed": "0 2px 0px 0px #0369A1",
+        // Soft, Apple-style depth (was chunky 0 6px 0px "sticker" shadows).
+        // Redefining these tokens re-skins every card/button app-wide at once.
+        "game-flat": "0 1px 2px 0 rgba(27,46,30,0.04), 0 6px 16px -6px rgba(27,46,30,0.08)",
+        "game-pressed": "0 1px 2px 0 rgba(27,46,30,0.05)",
+        "game-forest": "0 2px 10px -2px rgba(27,94,32,0.28)",
+        "game-forest-pressed": "0 1px 4px 0 rgba(27,94,32,0.22)",
+        "game-amber": "0 2px 10px -2px rgba(180,83,9,0.26)",
+        "game-amber-pressed": "0 1px 4px 0 rgba(180,83,9,0.2)",
+        "game-terracotta": "0 2px 10px -2px rgba(190,18,60,0.26)",
+        "game-terracotta-pressed": "0 1px 4px 0 rgba(190,18,60,0.2)",
+        "game-sky": "0 2px 10px -2px rgba(3,105,161,0.26)",
+        "game-sky-pressed": "0 1px 4px 0 rgba(3,105,161,0.2)",
       },
       fontFamily: {
         outfit: ["var(--font-outfit)", "sans-serif"],

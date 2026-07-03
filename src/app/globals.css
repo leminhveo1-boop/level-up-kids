@@ -46,7 +46,7 @@
 [data-ui-mode="teen"] .text-gray-500,
 [data-ui-mode="teen"] .text-gray-600,
 [data-ui-mode="teen"] .text-gray-400 { color: #94A3B8; }
-[data-ui-mode="teen"] .shadow-game-flat { box-shadow: 0 4px 0px 0px #0B1220; }
+[data-ui-mode="teen"] .shadow-game-flat { box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -8px rgba(0,0,0,0.5); }
 [data-ui-mode="teen"] .bg-rose-50,
 [data-ui-mode="teen"] .bg-blue-50,
 [data-ui-mode="teen"] .bg-green-50,
@@ -58,6 +58,43 @@
 [data-ui-mode="teen"] .animate-bounce,
 [data-ui-mode="teen"] .animate-pulse,
 [data-ui-mode="teen"] .animate-flame { animation: none; }
+
+/* ===== PARENT MODE — Apple-clean / pro interface (UX Pro-Max) =====
+   The parent room is its OWN interface, not the child's kid/teen skin. Deference
+   over decoration: cool neutral canvas, white cards, hairline borders, one soft
+   shadow, calm typography (no ALL-CAPS/900 shouting), green kept as a sparse
+   accent (primary buttons only). Scoped — never touches the child screens. */
+[data-ui-mode="parent"] {
+  --background: #F2F3F5;
+  --foreground: #1A2027;
+}
+[data-ui-mode="parent"] .bg-sand-light,
+[data-ui-mode="parent"] .bg-sand { background-color: #F2F3F5; }
+[data-ui-mode="parent"] .bg-white { background-color: #FFFFFF; }
+/* Hairline everything — the single biggest "Apple" tell vs the chunky 2px game borders */
+[data-ui-mode="parent"] .border-2 { border-width: 1px; }
+[data-ui-mode="parent"] .border-2,
+[data-ui-mode="parent"] .border,
+[data-ui-mode="parent"] .border-t-2,
+[data-ui-mode="parent"] .border-sand,
+[data-ui-mode="parent"] .border-sand-dark { border-color: rgba(17,24,39,0.09); }
+/* One refined soft shadow (replaces both chunky game shadow and heavy shadow-lg) */
+[data-ui-mode="parent"] .shadow-game-flat,
+[data-ui-mode="parent"] .shadow-sm { box-shadow: 0 1px 2px rgba(16,24,40,0.04), 0 4px 12px -4px rgba(16,24,40,0.08); }
+[data-ui-mode="parent"] .shadow-lg { box-shadow: 0 8px 28px -6px rgba(16,24,40,0.12); }
+/* Calm the shouty typography */
+[data-ui-mode="parent"] .font-black,
+[data-ui-mode="parent"] .font-extrabold { font-weight: 700; }
+[data-ui-mode="parent"] .uppercase { text-transform: none; }
+[data-ui-mode="parent"] .tracking-wider,
+[data-ui-mode="parent"] .tracking-wide { letter-spacing: normal; }
+/* Neutral text; forest green survives only where explicitly an accent */
+[data-ui-mode="parent"] .text-forest-dark { color: #1A2027; }
+[data-ui-mode="parent"] .text-gray-500 { color: #667085; }
+[data-ui-mode="parent"] .text-gray-400 { color: #8A94A6; }
+/* Consistent, generous radii */
+[data-ui-mode="parent"] .rounded-xl { border-radius: 14px; }
+[data-ui-mode="parent"] .rounded-2xl { border-radius: 16px; }
 
 html {
   /* Stop iOS Safari from auto-inflating text on orientation/zoom changes */
@@ -94,11 +131,12 @@ body {
 
 /* Custom flat button transition helper */
 .btn-game-transition {
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
 }
 
 .btn-game-transition:active {
-  transform: translateY(4px);
+  transform: scale(0.98);
+  opacity: 0.9;
 }
 
 /* Shimmer animation for card upgrades */
