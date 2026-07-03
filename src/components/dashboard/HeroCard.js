@@ -115,18 +115,12 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
 
         <p className="text-[11px] font-bold text-gray-500">{t(levelTitleKey(level))}</p>
 
-        {/* EXP Progress bar */}
-        <div className="space-y-1">
-          <div className="w-full bg-sand h-3 rounded-full border border-sand overflow-hidden relative shadow-inner">
-            <div
-              className="bg-amber h-full transition-all duration-300 animate-shimmer"
-              style={{ width: `${(exp / expToNextLevel) * 100}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between text-[10px] font-black text-gray-400">
-            <span>{t("game.hero.exp", { n: exp })}</span>
-            <span>{t("game.hero.req", { n: expToNextLevel })}</span>
-          </div>
+        {/* EXP Progress bar — the bar is the signal; no number labels needed */}
+        <div className="w-full bg-sand h-2.5 rounded-full overflow-hidden">
+          <div
+            className="bg-amber h-full transition-all duration-300"
+            style={{ width: `${(exp / expToNextLevel) * 100}%` }}
+          ></div>
         </div>
       </div>
     </div>

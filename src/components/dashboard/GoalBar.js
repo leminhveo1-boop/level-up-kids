@@ -17,24 +17,20 @@ export default function GoalBar({ rewards, heroCoins }) {
 
   const pct = Math.round((heroCoins / coinGoal.cost) * 100);
 
+  const goalTitle = coinGoal.title.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, "").trim();
+
   return (
-    <div className="w-full bg-white border-2 border-sand p-3 rounded-2xl shadow-game-flat space-y-1.5">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">{t("game.goal.title")}</span>
-        <span className="text-[10px] font-black text-amber-dark">
-          {heroCoins}/{coinGoal.cost} 🪙 ({pct}%)
-        </span>
+    <div className="w-full bg-white border border-sand p-3 rounded-2xl shadow-game-flat space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-scale-2xs font-black text-forest-dark truncate min-w-0">{goalTitle}</p>
+        <span className="text-scale-2xs font-black text-amber-dark flex-shrink-0">{heroCoins}/{coinGoal.cost}</span>
       </div>
-      <p className="text-[11px] font-black text-forest-dark truncate">{coinGoal.title}</p>
-      <div className="h-3 bg-sand rounded-full overflow-hidden border border-sand">
+      <div className="h-2.5 bg-sand rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-amber to-amber-dark rounded-full transition-all duration-500"
+          className="h-full bg-amber rounded-full transition-all duration-500"
           style={{ width: `${Math.min(100, pct)}%` }}
         />
       </div>
-      <p className="text-[11px] text-gray-400 font-bold">
-        {t("game.goal.remain", { n: coinGoal.cost - heroCoins })}
-      </p>
     </div>
   );
 }

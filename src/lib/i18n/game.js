@@ -23,7 +23,7 @@ export const gameDict = {
     "game.stat.exp": "EXP",
 
     // Hero card
-    "game.hero.myCorner": "🏠 Của Tớ",
+    "game.hero.myCorner": "Của tớ",
     "game.hero.myCornerTitle": "Góc Của Tớ — tùy biến avatar",
     "game.hero.level": "CẤP {n}",
     "game.hero.exp": "EXP: {n}",
@@ -70,11 +70,11 @@ export const gameDict = {
     "game.grad.cta": "TUYỆT VỜI! 🙌",
 
     // 🛤️ Journey (Lộ Trình 3 tuần)
-    "game.journey.title": "🛤️ LỘ TRÌNH CỦA TỚ",
+    "game.journey.title": "Lộ trình của tớ",
     "game.journey.week": "TUẦN {week}/{weeks}",
     "game.journey.progress": "Tuần này đạt {done} ngày · cả hành trình {success}/{total} ngày",
-    "game.journey.todayDone": "Hôm nay xong phần lộ trình rồi — giữ vững nhé! 🔥",
-    "game.journey.todayTodo": "Còn {n} việc lộ trình đang chờ con hôm nay!",
+    "game.journey.todayDone": "Hôm nay xong phần lộ trình rồi",
+    "game.journey.todayTodo": "Còn {n} việc lộ trình hôm nay",
     "game.journey.done.title": "“{title}” — CHINH PHỤC THÀNH CÔNG! 🏆",
     "game.journey.done.desc": "{success}/{total} ngày đạt sau 3 tuần — thói quen mới đã là của con! Việc tuần cuối vẫn ở bảng để con giữ phong độ tới huy hiệu 🎓.",
     "game.journey.done.cta": "QUÁ ĐÃ! 🏆",
@@ -109,10 +109,10 @@ export const gameDict = {
     "game.task.photoTitle": "Đính ảnh (tùy chọn, lưu trên máy)",
 
     // Kanban lanes
-    "game.lane.doing": "🌳 ĐANG TẬP TRUNG",
-    "game.lane.today": "📋 HÔM NAY",
-    "game.lane.waiting": "⏳ CHỜ BỐ MẸ DUYỆT",
-    "game.lane.done": "✅ HOÀN THÀNH",
+    "game.lane.doing": "Đang tập trung",
+    "game.lane.today": "Hôm nay",
+    "game.lane.waiting": "Chờ duyệt",
+    "game.lane.done": "Hoàn thành",
 
     // Filters
     "game.filter.all": "Tất cả",
@@ -389,7 +389,7 @@ export const gameDict = {
     "game.stat.exp": "EXP",
 
     // Hero card
-    "game.hero.myCorner": "🏠 My Corner",
+    "game.hero.myCorner": "My corner",
     "game.hero.myCornerTitle": "My Corner — customize avatar",
     "game.hero.level": "LEVEL {n}",
     "game.hero.exp": "XP: {n}",
@@ -436,11 +436,11 @@ export const gameDict = {
     "game.grad.cta": "AWESOME! 🙌",
 
     // 🛤️ Journey (3-week guided path)
-    "game.journey.title": "🛤️ MY JOURNEY",
+    "game.journey.title": "My journey",
     "game.journey.week": "WEEK {week}/{weeks}",
     "game.journey.progress": "{done} good days this week · {success}/{total} days overall",
-    "game.journey.todayDone": "Today's journey tasks are done — keep it up! 🔥",
-    "game.journey.todayTodo": "{n} journey task(s) still waiting for you today!",
+    "game.journey.todayDone": "Today's journey tasks are done",
+    "game.journey.todayTodo": "{n} journey task(s) left today",
     "game.journey.done.title": "“{title}” — CONQUERED! 🏆",
     "game.journey.done.desc": "{success}/{total} good days across 3 weeks — the new habit is yours! The final week's tasks stay on your board on the road to the 🎓 badge.",
     "game.journey.done.cta": "SO COOL! 🏆",
@@ -475,10 +475,10 @@ export const gameDict = {
     "game.task.photoTitle": "Attach photo (optional, saved on device)",
 
     // Kanban lanes
-    "game.lane.doing": "🌳 FOCUSING",
-    "game.lane.today": "📋 TODAY",
-    "game.lane.waiting": "⏳ AWAITING PARENT",
-    "game.lane.done": "✅ DONE",
+    "game.lane.doing": "Focusing",
+    "game.lane.today": "Today",
+    "game.lane.waiting": "Awaiting review",
+    "game.lane.done": "Done",
 
     // Filters
     "game.filter.all": "All",
