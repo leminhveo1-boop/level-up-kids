@@ -32,7 +32,7 @@ export default function BottomNav({ active = "adventure" }) {
             onClick={() => !isActive && router.push(go)}
             aria-current={isActive ? "page" : undefined}
             className={`min-h-tap flex flex-col items-center justify-center gap-1 px-4 py-1 rounded-xl transition-colors ${
-              isActive ? "text-forest" : "text-gray-400 hover:text-forest"
+              isActive ? "accent-text" : "text-gray-400 hover:text-gray-600"
             }`}
           >
             <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />

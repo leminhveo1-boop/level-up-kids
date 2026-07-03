@@ -21,8 +21,8 @@ export default function JourneyCard({ journey, tasks }) {
   return (
     <div className="bg-white border-2 border-forest/40 rounded-2xl p-4 space-y-3 shadow-game-forest">
       <div className="flex items-center gap-2">
-        <Map size={15} className="text-forest flex-shrink-0" />
-        <span className="text-scale-2xs font-black text-forest uppercase tracking-wider flex-grow truncate">{t("game.journey.title")}</span>
+        <Map size={15} className="accent-text flex-shrink-0" />
+        <span className="text-scale-2xs font-black accent-text uppercase tracking-wider flex-grow truncate">{t("game.journey.title")}</span>
         <span className="text-scale-2xs font-black text-amber-dark bg-amber-light/60 rounded-full px-2.5 py-1 flex-shrink-0">
           {t("game.journey.week", { week, weeks })}
         </span>
@@ -41,7 +41,7 @@ export default function JourneyCard({ journey, tasks }) {
         {Array.from({ length: weeks }).map((_, i) => (
           <span
             key={i}
-            className={`h-2.5 flex-1 rounded-full transition-colors ${i < week - 1 ? "bg-forest" : i === week - 1 ? "bg-amber" : "bg-sand"}`}
+            className={`h-2.5 flex-1 rounded-full transition-colors ${i < week - 1 ? "accent-bg" : i === week - 1 ? "bg-amber" : "bg-sand"}`}
           />
         ))}
       </div>

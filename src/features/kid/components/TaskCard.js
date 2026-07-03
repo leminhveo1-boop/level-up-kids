@@ -48,8 +48,8 @@ export default function TaskCard({
           onClick={() => onToggleComplete(task.id)}
           className={`hit-target flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center text-base font-black transition-all active:scale-90 ${
             task.completed
-              ? "bg-forest-medium border-forest-medium text-white"
-              : "border-sand-dark bg-sand-light text-transparent hover:border-forest"
+              ? "accent-bg accent-border"
+              : "border-sand-dark bg-sand-light text-transparent"
           }`}
         >
           ✓
@@ -71,13 +71,13 @@ export default function TaskCard({
         <div className="flex items-center gap-2 border-t border-sand pt-4">
           {isFocusing ? (
             <>
-              <span className="mr-auto flex items-center gap-1.5 font-mono text-scale-sm font-black text-forest">
+              <span className="mr-auto flex items-center gap-1.5 font-mono text-scale-sm font-black accent-text">
                 <Trees size={16} className="animate-pulse" /> {formatStopwatch(elapsedSeconds)}
               </span>
               <button
                 type="button"
                 onClick={() => onToggleComplete(task.id)}
-                className="min-h-tap bg-forest text-white text-scale-2xs font-black px-4 rounded-xl shadow-game-forest active:scale-95 transition-all"
+                className="min-h-tap accent-bg text-scale-2xs font-black px-4 rounded-xl shadow-game-forest active:scale-95 transition-all"
               >
                 {t("game.task.focusDone")}
               </button>
@@ -93,7 +93,7 @@ export default function TaskCard({
             <button
               type="button"
               onClick={() => onStartFocus(task.id)}
-              className="mr-auto min-h-tap text-scale-2xs font-black px-4 rounded-xl border-2 border-forest text-forest bg-white active:scale-95 transition-all"
+              className="mr-auto min-h-tap text-scale-2xs font-black px-4 rounded-xl border-2 accent-border accent-text bg-white active:scale-95 transition-all"
             >
               {t("game.task.startFocus")}
             </button>

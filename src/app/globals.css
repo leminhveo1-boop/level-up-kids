@@ -20,13 +20,32 @@
 
   /* Effects intensity (kid default) */
   --fx-intensity: 1;
+
+  /* ===== SEMANTIC ACCENT (Core UI token) — the single per-theme accent.
+     Base = forest brand (public/landing). Themes override below. New code uses
+     .accent-* / ui primitives instead of brand color classes + CSS overrides. */
+  --accent: #2E7D32;
+  --accent-hover: #1B5E20;
+  --accent-soft: #E8F5E9;
+  --on-accent: #FFFFFF;
 }
+
+/* Semantic accent utilities — resolve to the active theme's --accent */
+.accent-text { color: var(--accent); }
+.accent-bg { background-color: var(--accent); color: var(--on-accent); }
+.accent-bg:hover { background-color: var(--accent-hover); }
+.accent-border { border-color: var(--accent); }
+.accent-soft-bg { background-color: var(--accent-soft); color: var(--accent); }
 
 /* ===== TEEN MODE TOKENS (UX_AUDIT Phần 4) — applied via [data-ui-mode="teen"] ===== */
 [data-ui-mode="teen"] {
   --background: #0F172A;   /* slate-900 */
   --foreground: #E2E8F0;   /* slate-200 */
   --fx-intensity: 0.4;     /* fewer perpetual animations */
+  --accent: #34D399;       /* emerald */
+  --accent-hover: #10B981;
+  --accent-soft: #24334A;
+  --on-accent: #0F172A;
 }
 
 /* Teen Dark Skin V1 — utility-class overrides (transitional until full
@@ -69,6 +88,10 @@
   --kid-text-1: #33271A;  /* Title */
   --kid-text-2: #5C5243;  /* Body ~6.3:1 */
   --kid-text-3: #6C5F4E;  /* Caption ~4.9:1 */
+  --accent: #2E7CD6;
+  --accent-hover: #2569BC;
+  --accent-soft: #E9F2FC;
+  --on-accent: #FFFFFF;
 }
 /* Chữ ấm — thay slate lạnh (đè bản vá contrast toàn cục phía trên) */
 [data-ui-mode="kid"] .text-forest-dark { color: var(--kid-text-1); }
