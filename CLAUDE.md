@@ -6,7 +6,7 @@ App thói quen cho gia đình Việt: trẻ làm nhiệm vụ → điểm treo (
 
 - **2 tệp người dùng = 2 giao diện tách biệt**: route groups `app/(kid)` và `app/(parent)` (+ `(public)` cho landing/auth/onboarding). Không dùng chung shell/theme một cách khiên cưỡng.
 - Theme áp qua `ThemeScope` trong layout của từng group (set `data-ui-mode` trên `<html>`) — KHÔNG hack `useEffect` trong page, KHÔNG thêm `UiModeApplier` kiểu cũ.
-- Core UI hướng tới themeable (đọc CSS variables); component mới **không hardcode màu**.
+- **Theming 2 tầng (CHÍNH THỨC, không churn thêm):** (1) token `--accent`/`.accent-*` + primitives `ui/Card,Button,Pill` cho **code mới**; (2) remap brand-color theo `[data-ui-mode]` trong globals.css cho **code cũ**. Cả hai render đúng như nhau. KHÔNG migrate 216 usage cũ sang token — đó là churn vô hình (người dùng thấy y hệt), rủi ro cao giá trị 0. Chỉ migrate khi ĐANG SỬA component đó vì lý do khác.
 - `lib/game/*` là logic thuần dùng chung (audience-agnostic) — refactor UI không được đụng.
 - `context/GameState` là 1 document sync Supabase — KHÔNG tách store; cô lập bằng hook mặt tiền khi cần.
 
