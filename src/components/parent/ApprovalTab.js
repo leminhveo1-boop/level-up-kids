@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
 import { getLocalPhoto } from "@/lib/localPhotos";
-import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle } from "lucide-react";
+import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown } from "lucide-react";
 
 const VERIFY_META = {
   trust: { icon: HandHeart, label: "Con tự ghi nhận" },
@@ -39,6 +39,10 @@ export default function ApprovalTab() {
   const [flash, setFlash] = useState("");
   const [quickMsg, setQuickMsg] = useState("");
   const [bonusAmount, setBonusAmount] = useState(20);
+  // Progressive disclosure — secondary tools stay folded so the landing isn't
+  // overwhelming (real parent feedback: "vào thấy ngộp, quá nhiều chữ").
+  const [showLog, setShowLog] = useState(false);
+  const [showQuick, setShowQuick] = useState(false);
 
   const pending = tasks.filter((t) => t.approval === "pending");
   // Tasks the child hasn't claimed yet — parent can log them directly
@@ -95,32 +99,23 @@ export default function ApprovalTab() {
         </div>
       )}
 
-      {/* Trust score */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-scale-xs font-bold text-gray-600">
-            <ShieldCheck size={16} className="text-forest" /> Uy Tín của {charName}
-          </span>
-          <span className="text-scale-sm font-black text-forest-dark">{trustScore}/100</span>
-        </div>
-        <div className="w-full bg-sand h-2.5 rounded-full overflow-hidden">
+      {/* Trust score — one compact line, no paragraph */}
+      <div className="flex items-center gap-3 px-1">
+        <ShieldCheck size={16} className="text-forest flex-shrink-0" />
+        <div className="flex-grow bg-sand h-2 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ${trustScore >= 80 ? "bg-forest" : trustScore >= 40 ? "bg-amber" : "bg-terracotta"}`}
             style={{ width: `${trustScore}%` }}
           />
         </div>
-        <p className="text-scale-2xs text-gray-400">
-          {trustScore >= 80
-            ? "Uy Tín cao — con làm thật, báo thật. Hãy khen con nhé!"
-            : "Duyệt đúng mỗi ngày giúp Uy Tín tăng; bác nhiệm vụ khai sai sẽ trừ mạnh."}
-        </p>
+        <span className="text-scale-2xs font-bold text-gray-500 flex-shrink-0">Uy Tín {trustScore}</span>
       </div>
 
-      {/* Pending queue */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
+      {/* Pending queue — the one job of this screen */}
+      <div className="bg-white border border-sand rounded-xl p-4 space-y-3 shadow-game-flat">
         <div className="flex items-center justify-between">
           <h3 className="text-scale-sm font-black text-forest-dark">
-            ⏳ Chờ duyệt ({pendingCount})
+            Chờ duyệt {pendingCount > 0 && <span className="text-forest">({pendingCount})</span>}
           </h3>
           {pending.length > 0 && (
             <button
@@ -134,7 +129,7 @@ export default function ApprovalTab() {
 
         {pending.length === 0 ? (
           <p className="text-scale-xs text-gray-400 text-center py-6">
-            ✨ Không có gì chờ duyệt. Nhiệm vụ chưa duyệt sau 24h sẽ tự động được tính cho con.
+            Không có gì chờ duyệt ✨
           </p>
         ) : (
           <div className="space-y-2">
@@ -191,15 +186,20 @@ export default function ApprovalTab() {
         )}
       </div>
 
-      {/* Parent-log — mark a task done for the child (Token Economy) */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
-        <div className="space-y-0.5">
-          <h3 className="text-scale-sm font-black text-forest-dark">✍️ Tick giúp con</h3>
-          <p className="text-scale-2xs text-gray-400">
-            Nhiều việc (dậy sớm, cùng nhau đọc sách...) bố mẹ tự ghi nhận là tiện nhất — con không cần chạm điện thoại.
-          </p>
-        </div>
-        {notDone.length === 0 ? (
+      {/* Parent-log — folded by default (progressive disclosure) */}
+      <div className="bg-white border border-sand rounded-xl shadow-game-flat">
+        <button
+          onClick={() => setShowLog((v) => !v)}
+          className="w-full flex items-center justify-between p-4 min-h-tap"
+        >
+          <h3 className="text-scale-sm font-black text-forest-dark">
+            ✍️ Tick giúp con {notDone.length > 0 && <span className="text-gray-400 font-bold">({notDone.length})</span>}
+          </h3>
+          <ChevronDown size={18} className={`text-gray-400 transition-transform ${showLog ? "rotate-180" : ""}`} />
+        </button>
+        {showLog && (
+          <div className="px-4 pb-4 space-y-2">
+            {notDone.length === 0 ? (
           <p className="text-scale-2xs text-gray-400 text-center py-3">Hôm nay con đã làm hết nhiệm vụ rồi! 🎉</p>
         ) : (
           <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
@@ -220,12 +220,21 @@ export default function ApprovalTab() {
             ))}
           </div>
         )}
+          </div>
+        )}
       </div>
 
-      {/* Quick actions */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
-        <h3 className="text-scale-sm font-black text-forest-dark">⚡ Thao tác nhanh</h3>
-
+      {/* Quick actions — folded by default */}
+      <div className="bg-white border border-sand rounded-xl shadow-game-flat">
+        <button
+          onClick={() => setShowQuick((v) => !v)}
+          className="w-full flex items-center justify-between p-4 min-h-tap"
+        >
+          <h3 className="text-scale-sm font-black text-forest-dark">⚡ Thao tác nhanh</h3>
+          <ChevronDown size={18} className={`text-gray-400 transition-transform ${showQuick ? "rotate-180" : ""}`} />
+        </button>
+        {showQuick && (
+        <div className="px-4 pb-4 space-y-3">
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -265,6 +274,8 @@ export default function ApprovalTab() {
             <Send size={18} />
           </button>
         </form>
+        </div>
+        )}
       </div>
 
       {flash && (
