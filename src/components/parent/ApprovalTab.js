@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
-import { useAuth } from "@/context/AuthContext";
-import { getLocalPhoto } from "@/lib/localPhotos";
 import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown } from "lucide-react";
 
 const VERIFY_META = {
@@ -33,9 +31,7 @@ export default function ApprovalTab() {
     setPoints,
     sendEncouragement,
   } = useGame();
-  const { activeChildId } = useAuth();
 
-  const [photoPreview, setPhotoPreview] = useState(null); // dataURL being viewed
   const [flash, setFlash] = useState("");
   const [quickMsg, setQuickMsg] = useState("");
   const [bonusAmount, setBonusAmount] = useState(20);
@@ -136,24 +132,11 @@ export default function ApprovalTab() {
             {pending.map((task) => {
               const meta = VERIFY_META[task.verifyType] || VERIFY_META.trust;
               const MetaIcon = meta.icon;
-              const localPhoto = getLocalPhoto(activeChildId, task.id);
               return (
                 <div key={task.id} className="border border-sand rounded-xl p-3 flex items-center gap-3">
-                  {/* Optional device-only photo, if the child attached one on this device */}
-                  {localPhoto ? (
-                    <button
-                      onClick={() => setPhotoPreview(localPhoto)}
-                      className="w-12 h-12 rounded-lg overflow-hidden border border-sand flex-shrink-0"
-                      title="Xem ảnh con đính (lưu trên máy này)"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={localPhoto} alt="ảnh con đính" className="w-full h-full object-cover" />
-                    </button>
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-sand-light border border-sand flex items-center justify-center flex-shrink-0">
-                      <MetaIcon size={18} className="text-gray-400" />
-                    </div>
-                  )}
+                  <div className="w-12 h-12 rounded-lg bg-sand-light border border-sand flex items-center justify-center flex-shrink-0">
+                    <MetaIcon size={18} className="text-gray-400" />
+                  </div>
 
                   <div className="flex-grow min-w-0">
                     <p className="text-scale-xs font-bold text-forest-dark truncate">{task.title}</p>
@@ -282,17 +265,6 @@ export default function ApprovalTab() {
         <p className="text-scale-xs font-bold text-center text-forest bg-forest-light/30 border border-forest/20 rounded-xl p-2.5 animate-fade-in">
           {flash}
         </p>
-      )}
-
-      {/* Photo preview modal */}
-      {photoPreview && (
-        <div
-          className="absolute inset-0 bg-black/70 flex items-center justify-center p-6 z-50"
-          onClick={() => setPhotoPreview(null)}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoPreview} alt="bằng chứng" className="max-w-full max-h-[70vh] rounded-2xl" />
-        </div>
       )}
     </div>
   );

@@ -19,7 +19,6 @@ import TaskCard from "@/components/dashboard/TaskCard";
 import JourneyCard from "@/components/dashboard/JourneyCard";
 import LetterModal from "@/components/dashboard/LetterModal";
 import CriticalToast from "@/components/dashboard/CriticalToast";
-import GuideModal from "@/components/dashboard/GuideModal";
 import BottomNav from "@/components/dashboard/BottomNav";
 import { Target, SlidersHorizontal } from "lucide-react";
 
@@ -68,7 +67,6 @@ export default function DashboardPage() {
   const [showFilter, setShowFilter] = useState(false); // category filter hidden until asked
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
-  const [showGuideModal, setShowGuideModal] = useState(false); // Guideline for child
 
   // V1.3: OPTIONAL focus companion — the child may run it for a bonus, but it
   // never gates completion and never blocks other tasks.
@@ -77,8 +75,6 @@ export default function DashboardPage() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const [verifyToast, setVerifyToast] = useState(""); // small info toast
-  const photoInputRef = React.useRef(null);
-  const [photoTaskId, setPhotoTaskId] = useState(null); // task the optional photo is for
 
   const showVerifyToast = (msg) => {
     setVerifyToast(msg);
@@ -133,28 +129,6 @@ export default function DashboardPage() {
     setFocusTaskId(null);
     setFocusStartTime(0);
     setElapsedSeconds(0);
-  };
-
-  // Optional device-only photo attach (never synced, never a gate)
-  const handlePhotoSelected = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !photoTaskId) return;
-    try {
-      const { compressImageFile } = await import("@/lib/image");
-      const { saveLocalPhoto } = await import("@/lib/localPhotos");
-      const dataUrl = await compressImageFile(file);
-      saveLocalPhoto(activeChildId, photoTaskId, dataUrl);
-      showVerifyToast(t("game.toast.photoSaved"));
-    } catch {
-      showVerifyToast(t("game.toast.photoError"));
-    }
-    setPhotoTaskId(null);
-  };
-
-  const handleAttachPhoto = (taskId) => {
-    setPhotoTaskId(taskId);
-    photoInputRef.current?.click();
   };
 
   const handleNudge = () => {
@@ -250,7 +224,6 @@ export default function DashboardPage() {
           encouragements={encouragements}
           unreadCount={unreadLetters.length}
           onOpenLetter={handleOpenLetter}
-          onOpenGuide={() => setShowGuideModal(true)}
         />
 
         <HeroCard
@@ -416,7 +389,6 @@ export default function DashboardPage() {
                         onToggleComplete={handleTaskComplete}
                         onStartFocus={handleStartFocus}
                         onStopFocus={handleStopFocus}
-                        onAttachPhoto={handleAttachPhoto}
                       />
                     ))}
                   </div>
@@ -442,16 +414,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Hidden optional photo input (device-only, never a gate) */}
-      <input
-        ref={photoInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handlePhotoSelected}
-        className="hidden"
-      />
-
       {selectedMessage && (
         <LetterModal message={selectedMessage} charName={charName} onClose={() => setSelectedMessage(null)} />
       )}
@@ -459,8 +421,6 @@ export default function DashboardPage() {
       {criticalToast && (
         <CriticalToast toast={criticalToast} charName={charName} onClose={() => setCriticalToast(null)} />
       )}
-
-      {showGuideModal && <GuideModal onClose={() => setShowGuideModal(false)} />}
 
       {/* Floating Carrier Pigeon if there are unread messages */}
       {unreadLetters.length > 0 && (
