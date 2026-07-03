@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
-import ApprovalTab from "@/components/parent/ApprovalTab";
-import WeekTab from "@/components/parent/WeekTab";
-import ManageTab from "@/components/parent/ManageTab";
-import SystemTab from "@/components/parent/SystemTab";
+import ApprovalTab from "@/features/parent/components/ApprovalTab";
+import WeekTab from "@/features/parent/components/WeekTab";
+import ManageTab from "@/features/parent/components/ManageTab";
+import SystemTab from "@/features/parent/components/SystemTab";
 
 const TABS = [
   { id: "approval", label: "✅ Duyệt" },

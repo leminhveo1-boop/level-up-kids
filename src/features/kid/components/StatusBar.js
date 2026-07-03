@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import SoundToggle from "@/components/SoundToggle";
+import SoundToggle from "@/features/kid/components/SoundToggle";
 import { useLang } from "@/context/LanguageContext";
 import { Zap, Star, Coins, Flame, Snowflake, Mail } from "lucide-react";
 

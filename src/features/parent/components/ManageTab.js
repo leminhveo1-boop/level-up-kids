@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
-import JourneySection from "@/components/parent/JourneySection";
+import JourneySection from "@/features/parent/components/JourneySection";
 import { Trash2, Plus } from "lucide-react";
 
 const TASK_TEMPLATES = [
