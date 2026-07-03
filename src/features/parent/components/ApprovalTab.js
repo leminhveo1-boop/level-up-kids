@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
+import MomentCard from "./MomentCard";
 import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown } from "lucide-react";
 
 const VERIFY_META = {
@@ -260,6 +261,9 @@ export default function ApprovalTab() {
         </div>
         )}
       </div>
+
+      {/* Thẻ Khoảnh khắc — tri thức đúng-lúc sau 1 phút duyệt (SPEC_APP_LA_CHUYEN_GIA) */}
+      <MomentCard />
 
       {flash && (
         <p className="text-scale-xs font-bold text-center text-forest bg-forest-light/30 border border-forest/20 rounded-xl p-2.5 animate-fade-in">
