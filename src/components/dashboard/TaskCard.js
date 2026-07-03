@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
-import { Star, Clock } from "lucide-react";
+import { Star, Clock, Trees } from "lucide-react";
 
 const formatStopwatch = (totalSecs) => {
   const m = Math.floor(totalSecs / 60);
@@ -10,10 +10,18 @@ const formatStopwatch = (totalSecs) => {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 };
 
+// Big clean apps (Todoist / Reminders / Things) don't put decorative emoji in
+// task text. Strip them from the DISPLAY so a line is just: check + text + reward.
+const stripEmoji = (s) =>
+  (s || "")
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
 /**
- * One task row — kid-first: big tap check, task title (already carries its own
- * emoji), ONE reward pill. No stat labels / verify notes / hint paragraphs —
- * kids don't read them. Focus timer stays for focusable tasks, icon-only.
+ * One task row — restrained, big-app style: a checkbox, the task text, and one
+ * reward chip. Nothing else. Mandatory = subtle card border (no extra dot).
+ * Focus timer appears only for timed tasks.
  */
 export default function TaskCard({
   task,
@@ -22,12 +30,12 @@ export default function TaskCard({
   onToggleComplete,
   onStartFocus,
   onStopFocus,
-  onAttachPhoto,
 }) {
   const { t } = useLang();
   const focusable = Boolean(task.durationMin);
   const points = task.points !== undefined ? task.points : task.exp;
   const pending = task.approval === "pending";
+  const title = stripEmoji(task.title);
 
   let itemStyle = "border-sand shadow-game-flat";
   if (task.isMandatory && !task.completed) {
@@ -39,7 +47,7 @@ export default function TaskCard({
   return (
     <div className={`w-full bg-white border-2 rounded-2xl p-3.5 flex flex-col gap-2.5 transition-all ${itemStyle}`}>
       <div className="flex items-center gap-3">
-        {/* Primary action — big, obvious; 44px hit area via hit-target */}
+        {/* Checkbox — 44px hit area via hit-target */}
         <button
           type="button"
           aria-label={task.completed ? "Bỏ đánh dấu hoàn thành" : "Đánh dấu hoàn thành"}
@@ -54,13 +62,12 @@ export default function TaskCard({
           ✓
         </button>
 
-        {/* Title (carries its own emoji) — clamp to 2 tidy lines, never ragged */}
+        {/* Task text — no emoji, clamp to 2 tidy lines */}
         <span className={`flex-grow min-w-0 text-scale-sm font-extrabold leading-snug line-clamp-2 ${task.completed ? "text-gray-400 line-through" : "text-forest-dark"}`}>
-          {task.isMandatory && !task.completed && <span className="text-terracotta mr-0.5">●</span>}
-          {task.title}
+          {title}
         </span>
 
-        {/* ONE reward — the star points they spend on rewards */}
+        {/* One reward chip */}
         <span
           className={`flex-shrink-0 flex items-center gap-1 text-scale-2xs font-black px-2.5 py-1 rounded-full select-none ${
             task.completed
@@ -70,21 +77,17 @@ export default function TaskCard({
                 : "bg-amber-light text-amber-dark"
           }`}
         >
-          {pending ? (
-            <Clock size={13} />
-          ) : (
-            <>+{points} <Star size={13} fill="currentColor" /></>
-          )}
+          {pending ? <Clock size={13} /> : <>+{points} <Star size={13} fill="currentColor" /></>}
         </span>
       </div>
 
-      {/* Focus timer — only for focusable tasks, icon-only, no hint text */}
+      {/* Focus timer — only for timed tasks */}
       {focusable && !task.completed && (
         <div className="flex items-center gap-2 border-t border-sand pt-2.5">
           {isFocusing ? (
             <>
               <span className="mr-auto flex items-center gap-1.5 font-mono text-scale-sm font-black text-forest">
-                <span className="animate-pulse">🌳</span> {formatStopwatch(elapsedSeconds)}
+                <Trees size={16} className="animate-pulse" /> {formatStopwatch(elapsedSeconds)}
               </span>
               <button
                 type="button"
@@ -102,23 +105,13 @@ export default function TaskCard({
               </button>
             </>
           ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => onAttachPhoto(task.id)}
-                aria-label={t("game.task.photoTitle")}
-                className="min-w-tap min-h-tap flex items-center justify-center bg-white text-gray-400 rounded-xl border border-sand active:scale-95 transition-all"
-              >
-                📷
-              </button>
-              <button
-                type="button"
-                onClick={() => onStartFocus(task.id)}
-                className="mr-auto min-h-tap text-scale-2xs font-black px-4 rounded-xl border-2 border-forest text-forest bg-white active:scale-95 transition-all"
-              >
-                {t("game.task.startFocus")}
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={() => onStartFocus(task.id)}
+              className="mr-auto min-h-tap text-scale-2xs font-black px-4 rounded-xl border-2 border-forest text-forest bg-white active:scale-95 transition-all"
+            >
+              {t("game.task.startFocus")}
+            </button>
           )}
         </div>
       )}

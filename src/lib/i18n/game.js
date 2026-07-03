@@ -98,14 +98,14 @@ export const gameDict = {
     "game.task.parentAssigned": "Bố mẹ giao 👑",
     "game.task.waiting": "⏳ Chờ duyệt",
     "game.task.minutes": "🌳 {n}p",
-    "game.task.focusDone": "XONG ✅",
+    "game.task.focusDone": "Xong",
     "game.task.focusStop": "Dừng",
     "game.task.focusLabel": "Tập trung: {time}",
     "game.task.focusHintA": "🌳 Bật tập trung để nhận ",
     "game.task.focusHintBold": "điểm thưởng",
     "game.task.focusHintB": " (tùy chọn)",
     "game.task.tickHint": "✓ Làm xong thì tích ô bên trên",
-    "game.task.startFocus": "🌳 Tập trung",
+    "game.task.startFocus": "Tập trung",
     "game.task.photoTitle": "Đính ảnh (tùy chọn, lưu trên máy)",
 
     // Kanban lanes
@@ -464,14 +464,14 @@ export const gameDict = {
     "game.task.parentAssigned": "Parent-assigned 👑",
     "game.task.waiting": "⏳ Awaiting",
     "game.task.minutes": "🌳 {n}m",
-    "game.task.focusDone": "DONE ✅",
+    "game.task.focusDone": "Done",
     "game.task.focusStop": "Stop",
     "game.task.focusLabel": "Focus: {time}",
     "game.task.focusHintA": "🌳 Start focus to earn ",
     "game.task.focusHintBold": "bonus points",
     "game.task.focusHintB": " (optional)",
     "game.task.tickHint": "✓ Tick the box above when you're done",
-    "game.task.startFocus": "🌳 Focus",
+    "game.task.startFocus": "Focus",
     "game.task.photoTitle": "Attach photo (optional, saved on device)",
 
     // Kanban lanes
