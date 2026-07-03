@@ -3,11 +3,14 @@
 import ThemeScope from "@/components/ThemeScope";
 import DemoBanner from "@/components/DemoBanner";
 
-/** PUBLIC context — landing / auth / onboarding. Warm kid look by default. */
+/**
+ * PUBLIC context — landing / auth / onboarding. Uses the BASE palette (no
+ * accent remap) so marketing keeps the forest-green brand identity intact.
+ */
 export default function PublicLayout({ children }) {
   return (
     <>
-      <ThemeScope mode="kid" />
+      <ThemeScope mode="public" />
       {children}
       <DemoBanner />
     </>
