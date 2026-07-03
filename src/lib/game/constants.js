@@ -153,6 +153,33 @@ export function defaultRewardsFor(uiMode) {
   return DEFAULT_REWARDS;
 }
 
+// Default kid perk id→title, to recognise the UNTOUCHED seed for migration.
+const KID_PERK_DEFAULTS = Object.fromEntries(
+  DEFAULT_REWARDS.filter((r) => KID_PERK_IDS.includes(r.id)).map((r) => [r.id, r.title])
+);
+
+/**
+ * One-time self-heal for children seeded BEFORE age-aware rewards: if a teen
+ * still has the untouched default kid perks (kem/đồ chơi/lego), swap them for
+ * teen perks. Safe + idempotent — only touches perks the parent never edited
+ * (title still equals the default); custom rewards and deletions are preserved.
+ * @param {Array} rewards
+ * @param {"kid"|"teen"} [uiMode]
+ * @returns {{ rewards: Array, changed: boolean }}
+ */
+export function reconcileRewardsForAge(rewards, uiMode) {
+  if (uiMode !== "teen" || !Array.isArray(rewards)) return { rewards, changed: false };
+  const untouchedKidPerks = rewards.filter(
+    (r) => KID_PERK_DEFAULTS[r.id] !== undefined && r.title === KID_PERK_DEFAULTS[r.id]
+  );
+  if (untouchedKidPerks.length === 0) return { rewards, changed: false };
+
+  const kept = rewards.filter((r) => !untouchedKidPerks.includes(r));
+  const existingIds = new Set(kept.map((r) => r.id));
+  const add = TEEN_PERKS.filter((r) => !existingIds.has(r.id)).map((r) => ({ ...r }));
+  return { rewards: [...kept, ...add], changed: true };
+}
+
 export const DEFAULT_INVENTORY = {
   eggs: { base: 0, dragon: 0, wolf: 0 },
   potions: { fire: 0, ice: 0, magic: 0 },

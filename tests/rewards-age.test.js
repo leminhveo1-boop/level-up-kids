@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { defaultRewardsFor, createInitialState } from "@/lib/game/constants";
+import { defaultRewardsFor, createInitialState, reconcileRewardsForAge } from "@/lib/game/constants";
 
 describe("defaultRewardsFor — quà mặc định đúng độ tuổi (Value Gap)", () => {
   const kidPerkIds = ["r5", "r6", "r7", "r8"]; // kem, phim, đồ chơi, lego
@@ -34,5 +34,42 @@ describe("defaultRewardsFor — quà mặc định đúng độ tuổi (Value Ga
 
   test("không truyền uiMode → mặc định quà kid (an toàn ngược)", () => {
     expect(createInitialState({ name: "K" }).rewards.some((r) => r.id === "r5")).toBe(true);
+  });
+});
+
+describe("reconcileRewardsForAge — vá teen đã seed quà kid từ trước", () => {
+  const kidSeed = () => createInitialState({ name: "T" }).rewards; // có r5-r8 kid perks
+
+  test("teen còn quà kid mặc định (chưa sửa) → đổi sang quà teen", () => {
+    const { rewards, changed } = reconcileRewardsForAge(kidSeed(), "teen");
+    expect(changed).toBe(true);
+    const ids = rewards.map((r) => r.id);
+    ["r5", "r6", "r7", "r8"].forEach((k) => expect(ids).not.toContain(k));
+    expect(ids).toEqual(expect.arrayContaining(["t_money1", "t_tech"]));
+  });
+
+  test("kid → không đổi gì", () => {
+    expect(reconcileRewardsForAge(kidSeed(), "kid").changed).toBe(false);
+  });
+
+  test("GIỮ tuỳ biến: nếu bố mẹ đã đổi tên r5 thì không đụng", () => {
+    const custom = kidSeed().map((r) => (r.id === "r5" ? { ...r, title: "Quà bố mẹ tự đặt" } : r));
+    const { rewards, changed } = reconcileRewardsForAge(custom, "teen");
+    // r6/r7/r8 vẫn mặc định → vẫn migrate, nhưng r5 đã custom → giữ nguyên
+    expect(rewards.find((r) => r.id === "r5")?.title).toBe("Quà bố mẹ tự đặt");
+    expect(changed).toBe(true);
+  });
+
+  test("idempotent: chạy 2 lần không đổi thêm", () => {
+    const once = reconcileRewardsForAge(kidSeed(), "teen").rewards;
+    const twice = reconcileRewardsForAge(once, "teen");
+    expect(twice.changed).toBe(false);
+    expect(twice.rewards).toEqual(once);
+  });
+
+  test("GIỮ quà tự thêm của bố mẹ (id lạ)", () => {
+    const withCustom = [...kidSeed(), { id: "reward_custom_1", title: "Quà riêng", cost: 50, currency: "heroCoins", type: "perk" }];
+    const { rewards } = reconcileRewardsForAge(withCustom, "teen");
+    expect(rewards.some((r) => r.id === "reward_custom_1")).toBe(true);
   });
 });

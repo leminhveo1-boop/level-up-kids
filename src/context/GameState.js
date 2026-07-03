@@ -11,7 +11,7 @@ import React, {
 import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
-import { createInitialState, BOSS_MAX_HP } from "@/lib/game/constants";
+import { createInitialState, reconcileRewardsForAge, BOSS_MAX_HP } from "@/lib/game/constants";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
@@ -99,6 +99,11 @@ export function GameProvider({ children }) {
       if (!nextState.charName && activeChild?.name) {
         nextState = { ...nextState, charName: activeChild.name };
       }
+
+      // One-time Value-Gap self-heal: teens seeded before age-aware rewards
+      // still carry the kid perks (kem/đồ chơi) — swap to teen perks on load.
+      const reconciled = reconcileRewardsForAge(nextState.rewards, activeChild?.ui_mode);
+      if (reconciled.changed) nextState = { ...nextState, rewards: reconciled.rewards };
 
       loadedChildRef.current = activeChildId;
       setState(nextState);
