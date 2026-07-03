@@ -63,7 +63,7 @@
    Keep the warm colours, roundness and big friendly shapes — just remove the
    "AI đời đầu" clutter: thin the heavy 2px borders, stop the ALL-CAPS shouting,
    and make card corners consistently soft. Colours + fun stay untouched. */
-[data-ui-mode="kid"] .border-2 { border-width: 1.5px; }
+[data-ui-mode="kid"] .border-2 { border-width: 1px; }  /* hairline, declutter */
 [data-ui-mode="kid"] .uppercase { text-transform: none; letter-spacing: 0.01em; }
 [data-ui-mode="kid"] .tracking-wider,
 [data-ui-mode="kid"] .tracking-wide { letter-spacing: 0.01em; }

@@ -21,10 +21,11 @@ export default function StatusBar({
   const router = useRouter();
   const { t } = useLang();
 
-  const pill = "flex items-center gap-1 bg-white border border-sand px-2.5 py-1.5 rounded-full shadow-game-flat flex-shrink-0";
+  const pill = "flex items-center gap-1.5 bg-white border border-sand px-3 py-2 rounded-full shadow-game-flat flex-shrink-0";
+  const num = "text-scale-2xs font-black text-gray-800";
 
   return (
-    <div className="flex items-center gap-1.5 select-none">
+    <div className="flex items-center gap-2 select-none">
       {/* Energy */}
       <div className={pill}>
         <Zap size={14} className="text-terracotta" fill="currentColor" />
@@ -35,23 +36,23 @@ export default function StatusBar({
 
       {/* Points */}
       <button type="button" onClick={() => router.push("/rewards")} className={`${pill} active:scale-95 transition-transform`}>
-        <Star size={14} className="text-forest" fill="currentColor" />
-        <span className="text-scale-2xs font-black text-forest-dark">{points}</span>
+        <Star size={14} className="text-amber" fill="currentColor" />
+        <span className={num}>{points}</span>
       </button>
 
       {/* Coins */}
       <button type="button" onClick={() => router.push("/rewards")} className={`${pill} active:scale-95 transition-transform`}>
         <Coins size={14} className="text-amber" />
-        <span className="text-scale-2xs font-black text-amber-dark">{heroCoins}</span>
+        <span className={num}>{heroCoins}</span>
       </button>
 
       {/* Streak (+ freeze) */}
       <div className={pill}>
         <Flame size={14} className="text-amber animate-flame" fill="currentColor" />
-        <span className="text-scale-2xs font-black text-amber">{streak}</span>
+        <span className={num}>{streak}</span>
         {streakFreezes > 0 && (
-          <span className="flex items-center gap-0.5 text-scale-2xs font-black text-sky-dark ml-0.5">
-            <Snowflake size={11} />{streakFreezes}
+          <span className="flex items-center gap-0.5 text-scale-2xs font-black text-gray-800 ml-0.5">
+            <Snowflake size={11} className="text-sky" />{streakFreezes}
           </span>
         )}
       </div>
