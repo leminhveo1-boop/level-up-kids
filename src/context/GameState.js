@@ -94,7 +94,7 @@ export function GameProvider({ children }) {
 
       let nextState = chosen
         ? migrateState(chosen)
-        : createInitialState({ name: activeChild?.name, charClass: activeChild?.char_class });
+        : createInitialState({ name: activeChild?.name, charClass: activeChild?.char_class, uiMode: activeChild?.ui_mode });
 
       if (!nextState.charName && activeChild?.name) {
         nextState = { ...nextState, charName: activeChild.name };
@@ -761,6 +761,7 @@ export function GameProvider({ children }) {
       const fresh = createInitialState({
         name: activeChild?.name || prev?.charName || "",
         charClass: activeChild?.char_class || prev?.charClass || "Warrior",
+        uiMode: activeChild?.ui_mode,
       });
       return {
         ...fresh,

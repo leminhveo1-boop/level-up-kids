@@ -129,6 +129,30 @@ export const DEFAULT_REWARDS = [
   { id: "r8", title: "Một bộ đồ chơi xếp hình LEGO siêu xịn 🧩", cost: 1000, currency: "heroCoins", type: "perk", value: "lego_set", parentApproved: false, rarity: "legendary" },
 ];
 
+// Value Gap fix: real-world perks seeded per age. Screen-time / skip-card /
+// streak-freeze / pet rewards above are universal; only the coin "perks" differ.
+// Teens don't want "một ly kem" — they want money, autonomy, tech.
+const TEEN_PERKS = [
+  { id: "t_money1", title: "Tiền tiêu vặt 50.000₫ 💵", cost: 200, currency: "heroCoins", type: "perk", value: "cash_small", parentApproved: false, rarity: "rare" },
+  { id: "t_late", title: "Thức khuya thêm 1 tiếng cuối tuần 🌙", cost: 250, currency: "heroCoins", type: "perk", value: "late_night", parentApproved: false, rarity: "rare" },
+  { id: "t_out", title: "Đi chơi/cà phê với bạn (bố mẹ tài trợ) ☕", cost: 400, currency: "heroCoins", type: "perk", value: "hangout", parentApproved: false, rarity: "epic" },
+  { id: "t_tech", title: "Phụ kiện công nghệ tự chọn (tai nghe, ốp...) 🎧", cost: 700, currency: "heroCoins", type: "perk", value: "tech_gear", parentApproved: false, rarity: "epic" },
+  { id: "t_money2", title: "Tiền tiêu vặt 200.000₫ tự quản 💳", cost: 1000, currency: "heroCoins", type: "perk", value: "cash_big", parentApproved: false, rarity: "legendary" },
+];
+
+const KID_PERK_IDS = ["r5", "r6", "r7", "r8"];
+
+/**
+ * Default rewards for a fresh child, age-appropriate.
+ * @param {"kid"|"teen"} [uiMode]
+ */
+export function defaultRewardsFor(uiMode) {
+  if (uiMode === "teen") {
+    return [...DEFAULT_REWARDS.filter((r) => !KID_PERK_IDS.includes(r.id)), ...TEEN_PERKS];
+  }
+  return DEFAULT_REWARDS;
+}
+
 export const DEFAULT_INVENTORY = {
   eggs: { base: 0, dragon: 0, wolf: 0 },
   potions: { fire: 0, ice: 0, magic: 0 },
@@ -137,7 +161,7 @@ export const DEFAULT_INVENTORY = {
 
 /**
  * Build a fresh full game state for a child.
- * @param {{ name?: string, charClass?: string, stats?: object }} [opts]
+ * @param {{ name?: string, charClass?: string, stats?: object, uiMode?: "kid"|"teen" }} [opts]
  * @returns {object} full game state
  */
 export function createInitialState(opts = {}) {
@@ -156,7 +180,7 @@ export function createInitialState(opts = {}) {
     energy: STARTING_ENERGY,
     stats: opts.stats || (classDef ? { ...classDef.baseStats } : { ...DEFAULT_STATS }),
     tasks: DEFAULT_TASKS.map((t) => ({ ...t })),
-    rewards: DEFAULT_REWARDS.map((r) => ({ ...r })),
+    rewards: defaultRewardsFor(opts.uiMode).map((r) => ({ ...r })),
     bossHp: BOSS_MAX_HP,
     bossMaxHp: BOSS_MAX_HP,
     bossName: "Thần Lười Biếng 😴",

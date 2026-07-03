@@ -50,11 +50,29 @@ const TASKS_BY_AGE = {
   ],
 };
 
-const REWARD_SUGGESTIONS = [
-  { title: "🍨 Một ly kem yêu thích", vnd: 25000 },
-  { title: "🍕 Đi ăn món con thích cuối tuần", vnd: 100000 },
-  { title: "🧩 Món đồ chơi con mơ ước", vnd: 300000 },
-];
+// Value Gap: reward suggestions match the child's age (teens ≠ kids).
+const REWARDS_BY_AGE = {
+  "4-6": [
+    { title: "🍨 Một que kem yêu thích", vnd: 20000 },
+    { title: "🎈 Đi công viên/khu vui chơi", vnd: 80000 },
+    { title: "🧸 Món đồ chơi con mơ ước", vnd: 200000 },
+  ],
+  "7-9": [
+    { title: "🍨 Một ly kem yêu thích", vnd: 25000 },
+    { title: "🎬 Đi xem phim cuối tuần", vnd: 100000 },
+    { title: "🧩 Món đồ chơi/bộ Lego con thích", vnd: 300000 },
+  ],
+  "10-12": [
+    { title: "💵 Tiền tiêu vặt tự quản", vnd: 50000 },
+    { title: "🎮 Mua game/vật phẩm trong game", vnd: 150000 },
+    { title: "⚽ Đồ thể thao/sở thích con chọn", vnd: 300000 },
+  ],
+  "13-15": [
+    { title: "💵 Tiền tiêu vặt 100.000₫ tự quản", vnd: 100000 },
+    { title: "☕ Đi chơi/cà phê với bạn", vnd: 150000 },
+    { title: "🎧 Phụ kiện công nghệ tự chọn", vnd: 500000 },
+  ],
+};
 
 export default function SetupWizardPage() {
   const router = useRouter();
@@ -66,7 +84,7 @@ export default function SetupWizardPage() {
   const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge("7-9")[0]?.id || null);
   const [showExtraTasks, setShowExtraTasks] = useState(false);
   const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE["7-9"].map(() => false));
-  const [rewards, setRewards] = useState(REWARD_SUGGESTIONS.map((r) => ({ ...r, enabled: true })));
+  const [rewards, setRewards] = useState(REWARDS_BY_AGE["7-9"].map((r) => ({ ...r, enabled: true })));
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
   const [pinError, setPinError] = useState("");
@@ -97,6 +115,7 @@ export default function SetupWizardPage() {
     setSelectedJourney(getJourneysForAge(band)[0]?.id || null);
     setShowExtraTasks(false);
     setCheckedTasks(TASKS_BY_AGE[band].map(() => false));
+    setRewards(REWARDS_BY_AGE[band].map((r) => ({ ...r, enabled: true })));
   };
 
   const selectNoJourney = () => {
