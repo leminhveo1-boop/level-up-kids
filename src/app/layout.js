@@ -43,15 +43,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="vi">
       <body className={`${appFont.variable} font-outfit antialiased bg-sand-light text-forest-dark`}>
-        {/* Root = providers only. Theme + banner live in each route group's
-            layout (dual bounded context); the phone frame stays shared for now. */}
-        <div className="min-h-screen flex flex-col max-w-md mx-auto bg-sand-light shadow-2xl relative border-x border-sand">
-          <LanguageProvider>
-            <AuthProvider>
-              <GameProvider>{children}</GameProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </div>
+        {/* Root = providers + full-width column. The visual FRAME (width, bg,
+            shadow) now lives in each route group's layout so parent can widen
+            on desktop while kid stays phone-width. */}
+        <LanguageProvider>
+          <AuthProvider>
+            <GameProvider>
+              <div className="min-h-screen flex flex-col">{children}</div>
+            </GameProvider>
+          </AuthProvider>
+        </LanguageProvider>
         <ServiceWorkerRegistrar />
       </body>
     </html>

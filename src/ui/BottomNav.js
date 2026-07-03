@@ -23,7 +23,7 @@ export default function BottomNav({ active = "adventure" }) {
   const { t } = useLang();
 
   return (
-    <div className="absolute bottom-0 inset-x-0 bg-white border-t border-sand px-2 py-2 flex items-center justify-around z-40 max-w-md mx-auto">
+    <div className="absolute bottom-0 inset-x-0 bg-white border-t border-sand px-2 py-2 flex items-center justify-around z-40">
       {ITEMS.map(({ id, icon: Icon, labelKey, go }) => {
         const isActive = id === active;
         return (

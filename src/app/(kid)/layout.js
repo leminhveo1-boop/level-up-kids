@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import ThemeScope from "@/components/ThemeScope";
 import DemoBanner from "@/components/DemoBanner";
+import AppFrame from "@/ui/AppFrame";
 
 /**
  * KID bounded context — the child's playful world.
@@ -14,7 +15,7 @@ export default function KidLayout({ children }) {
   return (
     <>
       <ThemeScope mode={uiMode || "kid"} />
-      {children}
+      <AppFrame>{children}</AppFrame>
       <DemoBanner />
     </>
   );
