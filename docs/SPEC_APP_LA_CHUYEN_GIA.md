@@ -18,7 +18,7 @@
 | 6 | Vị trí xuất hiện | **Trong phòng bố mẹ, gắn việc/lộ trình đang chạy** (point-of-need, không kho thụ động) |
 | 7 | Đánh giá đầu vào hỏi gì | **Tuổi + tick 3–4 painpoint nóng** (~30 giây) |
 | 8 | Phục vụ ai | **Bố mẹ** (người trả tiền + cần chuyên gia); con là người thực thi qua game |
-| 9 | Ranh giới free/paid | **Nội dung chuyên gia = premium** (vài thẻ free làm mồi) → đòn bẩy gia hạn |
+| 9 | Mô hình thu tiền | **Giữ 199k/năm cho CẢ app** (demo → trả tiền mở full; KHÔNG freemium). Không đập cấu trúc doanh thu đang chạy. Lộ trình + kho thẻ là **chiều sâu giữ chân** để tháng 12 khách muốn gia hạn — không phải paywall riêng |
 | 10 | Nhịp đẩy | **Theo nhịp lộ trình + khi có sự kiện** (con trượt việc → thẻ liên quan) |
 
 ---
@@ -27,7 +27,7 @@
 
 1. **Onboarding = "chẩn đoán":** bố mẹ chọn tuổi con (7–11) + tick 3–4 painpoint (lười học / không tự giác / mè nheo / nản / bừa bộn…). App **"kê" một lộ trình riêng** (chọn + sắp từ `JOURNEY_CATALOG` theo tuổi × painpoint). → Đây là khoảnh khắc *"app nghiên cứu hộ con tôi"*.
 2. **Trong quá trình dùng:** phòng bố mẹ hiện **thẻ Khoảnh khắc đúng lúc** — gắn việc con đang làm / vừa trượt / cột mốc lộ trình. Giọng ẩn khoa học, dùng-được-ngay.
-3. **Kiếm tiền:** game cơ bản free; **lộ trình riêng đầy đủ + kho Khoảnh khắc = premium.** Chính là thứ đáng để gia hạn (không phải email nhắc — theo [PARENT_DEEP_RESEARCH.md](PARENT_DEEP_RESEARCH.md)).
+3. **Thu tiền:** **giữ 199k/năm cho cả app** (demo → trả tiền, KHÔNG freemium — founder chốt "thu tiền luôn"). Lộ trình riêng + kho Khoảnh khắc **không phải paywall riêng** — chúng là **chiều sâu giữ chân** khiến tháng 12 khách chịu tự chuyển khoản gia hạn (SePay không auto-renew). Đây là đòn bẩy gia hạn gốc, không phải email nhắc — theo [PARENT_DEEP_RESEARCH.md](PARENT_DEEP_RESEARCH.md).
 
 **Thẻ Khoảnh khắc = một mũi tên 3 đích:** mảnh *vì sao* → cơ chế "hiểu con" (DEEP #3); mảnh *NÊN/TRÁNH nói* → đạn viral "nói hộ nỗi khổ" (DEEP #4).
 
