@@ -32,16 +32,7 @@ export default function ParentDashboard() {
     if (isLoaded && !charName) router.push("/");
   }, [isLoaded, charName, router]);
 
-  // Parent room gets its OWN interface theme (Apple-clean / pro), independent of
-  // the active child's kid/teen mode. Restore the child's mode on leaving.
-  useEffect(() => {
-    const html = document.documentElement;
-    const prev = html.dataset.uiMode;
-    html.dataset.uiMode = "parent";
-    return () => {
-      html.dataset.uiMode = prev || "kid";
-    };
-  }, []);
+  // Theme "parent" is applied by app/(parent)/layout.js via ThemeScope.
 
   if (!isLoaded) {
     return (

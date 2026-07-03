@@ -4,8 +4,6 @@ import { GameProvider } from "@/context/GameState";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
-import DemoBanner from "@/components/DemoBanner";
-import UiModeApplier from "@/components/UiModeApplier";
 
 // Be Vietnam Pro — designed for Vietnamese; includes the `vietnamese` subset
 // (U+1EA0–1EF9 etc.) that Outfit lacked, which broke every accented char on
@@ -45,14 +43,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="vi">
       <body className={`${appFont.variable} font-outfit antialiased bg-sand-light text-forest-dark`}>
+        {/* Root = providers only. Theme + banner live in each route group's
+            layout (dual bounded context); the phone frame stays shared for now. */}
         <div className="min-h-screen flex flex-col max-w-md mx-auto bg-sand-light shadow-2xl relative border-x border-sand">
           <LanguageProvider>
             <AuthProvider>
-              <GameProvider>
-                <UiModeApplier />
-                {children}
-                <DemoBanner />
-              </GameProvider>
+              <GameProvider>{children}</GameProvider>
             </AuthProvider>
           </LanguageProvider>
         </div>
