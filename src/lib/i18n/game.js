@@ -87,6 +87,7 @@ export const gameDict = {
     "game.task.focusStop": "Dừng",
     "game.task.focusLabel": "Tập trung: {time}",
     "game.task.startFocus": "Tập trung",
+    "game.task.instinctGrowing": "Còn {days} ngày thành Bản Năng Anh Hùng",
 
     // Kanban lanes
     "game.lane.doing": "Đang tập trung",
@@ -416,6 +417,7 @@ export const gameDict = {
     "game.task.focusDone": "Done",
     "game.task.focusStop": "Stop",
     "game.task.focusLabel": "Focus: {time}",
+    "game.task.instinctGrowing": "{days} days to become a Hero Instinct",
     "game.task.startFocus": "Focus",
 
     // Kanban lanes

@@ -28,7 +28,6 @@ import {
   FOCUS_BONUS_RATIO,
   FADE_START,
   FADE_FLOOR,
-  GRADUATION_DAYS,
 } from "./constants";
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";

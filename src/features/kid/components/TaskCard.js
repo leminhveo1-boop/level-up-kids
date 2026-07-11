@@ -2,8 +2,10 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
-import { Star, Clock, Trees } from "lucide-react";
+import { Star, Clock, Trees, Sprout } from "lucide-react";
 import { stripEmoji } from "@/lib/text";
+import { rewardDoseFactor } from "@/lib/game/economy";
+import { FADE_START, GRADUATION_DAYS } from "@/lib/game/constants";
 
 const formatStopwatch = (totalSecs) => {
   const m = Math.floor(totalSecs / 60);
@@ -26,7 +28,14 @@ export default function TaskCard({
 }) {
   const { t } = useLang();
   const focusable = Boolean(task.durationMin);
-  const points = task.points !== undefined ? task.points : task.exp;
+  const rawPoints = task.points !== undefined ? task.points : task.exp;
+  // PROD-1: hiển thị điểm nền ĐÃ cân liều (khớp điểm thực nhận, hết lệch).
+  const habitStreak = task.habitStreak || 0;
+  const points = Math.ceil(rawPoints * rewardDoseFactor(habitStreak));
+  // Việc đã thành nếp → chuyển frame tích cực: đếm ngược tới "Bản Năng Anh Hùng"
+  // (KHÔNG nói "trừ điểm"). Chỉ khi đang rút liều và chưa tốt nghiệp.
+  const growingInstinct = habitStreak > FADE_START && !task.completed;
+  const daysToInstinct = Math.max(1, GRADUATION_DAYS - habitStreak);
   const pending = task.approval === "pending";
   const title = stripEmoji(task.title);
 
@@ -65,6 +74,15 @@ export default function TaskCard({
           {pending ? <Clock size={14} /> : <>+{points} <Star size={13} className="text-amber" fill="currentColor" /></>}
         </span>
       </div>
+
+      {/* PROD-1 — instinct countdown: reframe the fading reward as progress toward
+          "Hero Instinct" (never "points reduced"). Warm brown text + amber sprout. */}
+      {growingInstinct && (
+        <div className="flex items-center gap-1.5 text-scale-2xs font-bold text-gray-500 -mt-1">
+          <Sprout size={14} className="text-amber flex-shrink-0" />
+          {t("game.task.instinctGrowing", { days: daysToInstinct })}
+        </div>
+      )}
 
       {/* Focus timer — only for timed tasks */}
       {focusable && !task.completed && (
