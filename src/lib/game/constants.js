@@ -46,6 +46,13 @@ export const BUSY_MODE_MS = 7 * 24 * 60 * 60 * 1000; // bật 1 lần = 7 ngày
 export const HISTORY_LIMIT_DAYS = 60; // daily snapshots kept in state (weekly report)
 export const GRADUATION_DAYS = 30; // thói quen 30 ngày liên tục → tốt nghiệp 🎓 thành "Bản Năng Anh Hùng"
 
+// ===== PROD-1: cân liều thưởng (fade-out chống overjustification) =====
+// SPEC: docs/SPEC_PROD1_CAN_LIEU_THUONG.md. Việc đã thành nếp rút DẦN liều điểm
+// (ngoại lực) để không dạy con "làm vì thưởng" (thẻ #10) + giữ sensor Đọc vị sạch (DEEP #3).
+// Ease-in p²: nửa đầu cửa sổ giảm rất nhẹ, dốc dồn về sát tốt nghiệp. Chỉ giảm `points`.
+export const FADE_START = 14; // h <= mốc này: đủ liều 1.0 (việc mới/đang khó không bị chạm)
+export const FADE_FLOOR = 0.6; // liều tối thiểu của việc nếp trước tốt nghiệp (không thành "phạt")
+
 // ===== D1: Pet "sống" (hunger + mood) =====
 export const PET_HUNGER_MAX = 100;
 export const PET_HUNGER_DAILY_DECAY = 15; // giảm mỗi ngày qua resetDailyTasks

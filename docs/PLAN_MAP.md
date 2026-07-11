@@ -7,7 +7,7 @@
 ---
 
 ## 📍 ĐANG Ở ĐÂU
-Xong **B2 + B3** (chẩn đoán→kê lộ trình, thẻ Khoảnh khắc) — đều live + verify mắt. Đang **chờ phản hồi 10 thẻ từ khách** trước khi làm sâu tiếp. **PROD-1 bước 1 (SPEC luật cân liều) xong — chờ founder chốt con số fade-out trước khi implement.** B4/B5 chưa khởi công.
+Xong **B2 + B3** (chẩn đoán→kê lộ trình, thẻ Khoảnh khắc) — đều live + verify mắt. Đang **chờ phản hồi 10 thẻ từ khách** trước khi làm sâu tiếp. **PROD-1: logic cân liều + test xong (220/220 xanh) — chờ founder gật con số + làm nốt UI chuyển-frame trước khi deploy.** B4/B5 chưa khởi công.
 
 ---
 
@@ -72,7 +72,7 @@ Claude Code (Opus) chỉ nên tiêu token ở **2 đầu có phán xét cao**: (
 
 | ID | Task | Trạng thái | Model/Công cụ | Ưu tiên | DoD |
 |---|---|---|---|---|---|
-| **PROD-1** | Cân liều thưởng — tránh dạy con "làm vì thưởng" + không nhiễu sensor Đọc vị | 🔨 spec ✅ (chờ founder chốt số → impl) | 🔴spec→🟡impl→🔴verify | **Cao — trước B4** | rà cơ chế điểm/thưởng; đặt trần/tần suất; test không đảo ngược động lực nội tại (thẻ #10 + DEEP #3 + report persona). **Bước 1 xong:** [SPEC_PROD1_CAN_LIEU_THUONG.md](SPEC_PROD1_CAN_LIEU_THUONG.md) — luật fade-out theo `habitStreak` (KHÔNG trần cứng: vector farm hẹp); 3 câu hỏi con số chờ chốt |
+| **PROD-1** | Cân liều thưởng — tránh dạy con "làm vì thưởng" + không nhiễu sensor Đọc vị | 🔨 **logic+test ✅** (nợ UI + chờ founder gật số → deploy) | 🔴spec→🔴impl→🔴verify | **Cao — trước B4** | rà cơ chế điểm/thưởng; đặt trần/tần suất; test không đảo ngược động lực nội tại (thẻ #10 + DEEP #3 + report persona). **Xong:** [SPEC](SPEC_PROD1_CAN_LIEU_THUONG.md) fade-out ease-in theo `habitStreak` (FADE_START=14, FADE_FLOOR=0.6, KHÔNG trần cứng); `rewardDoseFactor` + áp vào `completeTask`; `reward-dose.test.js` 12 ca; **220/220 vitest xanh** (INV-1/7 tự thoả). **Nợ:** UI chuyển-frame TaskCard (INV-5) + founder gật số → mới `cf:deploy` |
 | **PROD-2** | 12–13 checklist người lớn (đảo cơ chế: tự đặt/tự tick, bỏ escrow) | ⏳ | 🔴spec→🟡/🔷impl | Sau khi 7–11 ổn | giao diện riêng theo DEEP #1; A/B giữ chân vs hero-journey |
 | **PROD-3** | Value Gap — quà/việc đề xuất đúng tuổi, danh mục việc theo painpoint | ⏳ | 🔷 **AG** (nội dung theo mẫu) | Trung bình | catalog việc phủ 10 painpoint × 3 lát tuổi 7–11 |
 | **PROD-4** | Phòng bố mẹ tab Tuần còn dày ("ngộp") | ⏳ | 🟡 S / 🔷 AG | Thấp | progressive disclosure; giảm chữ theo quân luật parent monochrome |

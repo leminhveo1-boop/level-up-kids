@@ -26,11 +26,34 @@ import {
   GRADUATION_DAYS,
   FOCUS_BONUS_MIN,
   FOCUS_BONUS_RATIO,
+  FADE_START,
+  FADE_FLOOR,
+  GRADUATION_DAYS,
 } from "./constants";
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
 import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 import { advanceJourneyDaily } from "./journeys";
+
+/**
+ * PROD-1 — reward dose factor: việc đã thành nếp (habitStreak cao) rút DẦN liều điểm.
+ * Ease-in `p²` (lồi): nửa đầu cửa sổ phẳng, dốc dồn về sát tốt nghiệp. Luôn ∈ [FADE_FLOOR, 1].
+ * Chống overjustification (thẻ #10 + DEEP #3). SPEC: docs/SPEC_PROD1_CAN_LIEU_THUONG.md.
+ * @param {number} habitStreak số ngày làm liên tục của việc (thiếu → 0 → đủ liều)
+ * @returns {number} hệ số nhân lên điểm cơ bản của việc
+ */
+export function rewardDoseFactor(
+  habitStreak,
+  fadeStart = FADE_START,
+  floor = FADE_FLOOR,
+  graduation = GRADUATION_DAYS
+) {
+  const h = habitStreak || 0;
+  if (h <= fadeStart) return 1;
+  if (h >= graduation) return floor; // đã tốt nghiệp (rời list) — clamp phòng thủ
+  const p = (h - fadeStart) / (graduation - fadeStart);
+  return Math.max(floor, 1 - (1 - floor) * p * p);
+}
 
 /** Streak → points multiplier (balanced against inflation). */
 export function getStreakMultiplier(streak) {
@@ -73,7 +96,10 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
   // Points: crit 15% then streak multiplier
   const isCritical = rng() < CRIT_POINT_CHANCE;
   const rawPoints = task.points !== undefined ? task.points : task.exp;
-  let basePoints = rawPoints;
+  // PROD-1: việc đã thành nếp rút DẦN liều điểm (chống "làm vì thưởng"). Áp lên
+  // điểm CƠ BẢN trước crit/streak; focus-bonus (thưởng nỗ lực thêm) KHÔNG fade.
+  const dose = rewardDoseFactor(task.habitStreak);
+  let basePoints = rawPoints * dose;
   if (isCritical) basePoints *= 2;
   // V1.3: optional focus-session bonus (never required — Forest-style reward)
   const focusBonus = opts.focusEarned ? Math.max(FOCUS_BONUS_MIN, Math.round(rawPoints * FOCUS_BONUS_RATIO)) : 0;
