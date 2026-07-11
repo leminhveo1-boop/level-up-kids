@@ -28,6 +28,8 @@ Claude Code (Opus/Fable) chỉ nên tiêu token ở **2 đầu có phán xét ca
 
 **⚠️ Chi phí handoff:** tách task giữa 2 công cụ tốn công tái tạo ngữ cảnh → **chỉ đẩy việc BULK hoặc TÁCH RỜI**, không đẩy việc suy luận dính chặt. Việc nhỏ dính context thì làm luôn ở Claude, đừng cắt.
 
+**▶️ Mở phiên mới chạy theo plan:** prompt bootstrap tự chứa ở [SESSION_BOOTSTRAP.md](SESSION_BOOTSTRAP.md) — dán vào Claude Code / gemini CLI / Antigravity. Lưu ý: Antigravity **không có CLI headless** (chỉ là IDE lái tay); đường script là **gemini CLI** (đã cài 0.37.1).
+
 ---
 
 ## ⏭️ CHUỖI THỰC THI THEO THỨ TỰ (kèm model mỗi bước)
