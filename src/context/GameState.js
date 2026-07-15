@@ -31,6 +31,8 @@ const CLOUD_SYNC_DEBOUNCE_MS = 2500;
 
 const stateKeyFor = (childId) => `luk_state_${childId}`;
 
+const CUSTOM_TASK_STAT_KEY_MAP = { strength: "strength", intellect: "intellect", creative: "creative", help: "help", connection: "help" };
+
 export function GameProvider({ children }) {
   const { authLoaded, cloudEnabled, user, activeChild, activeChildId, childProfiles, isCloudChild, verifyParentPin } = useAuth();
   const supabase = getSupabase();
@@ -618,7 +620,6 @@ export function GameProvider({ children }) {
     (title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0, verifyType = "trust", durationMin = 0) => {
       setState((prev) => {
         if (!prev) return prev;
-        const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help", connection: "help" };
         const newTask = {
           id: makeUniqueId("custom"),
           title,
@@ -627,7 +628,7 @@ export function GameProvider({ children }) {
           energy: parseInt(energyVal) || 15,
           category,
           completed: false,
-          statKey: statKeyMap[category] || "discipline",
+          statKey: CUSTOM_TASK_STAT_KEY_MAP[category] || "discipline",
           statVal: 2,
           custom: true,
           isMandatory,
@@ -652,13 +653,12 @@ export function GameProvider({ children }) {
       if (!prev) return prev;
       const target = prev.tasks.find((t) => t.id === id);
       if (!target) return prev;
-      const statKeyMap = { strength: "strength", intellect: "intellect", creative: "creative", help: "help", connection: "help" };
       const spec = buildTinyTask(target);
       const tinyTask = {
         id: makeUniqueId("tiny"),
         ...spec,
         completed: false,
-        statKey: statKeyMap[spec.category] || "discipline",
+        statKey: CUSTOM_TASK_STAT_KEY_MAP[spec.category] || "discipline",
         statVal: 1,
         custom: true,
       };
