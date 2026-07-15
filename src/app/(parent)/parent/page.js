@@ -276,7 +276,7 @@ export default function ParentDashboard() {
         {activeTab === "system" && <SystemTab />}
       </div>
 
-      <BottomNav active="parent" />
+      <BottomNav active="parent" wide />
     </div>
   );
 }
