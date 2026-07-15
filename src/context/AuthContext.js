@@ -305,6 +305,24 @@ export function AuthProvider({ children }) {
     [supabase, user]
   );
 
+  /**
+   * Reset a forgotten parent PIN by re-proving the ACCOUNT password. The RPC
+   * verifies the password server-side (child shares the session but not the
+   * password), so no old PIN is needed — see 20260716000003_reset_parent_pin.
+   */
+  const resetParentPin = useCallback(
+    async (accountPassword, newPin) => {
+      if (!supabase || !user) return { success: false, error: "NOT_AUTHENTICATED" };
+      const { data, error } = await supabase.rpc("reset_parent_pin", {
+        p_account_password: accountPassword,
+        p_new_pin: newPin,
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: Boolean(data) };
+    },
+    [supabase, user]
+  );
+
   const activeChild = isDemo
     ? DEMO_CHILD
     : childProfiles.find((c) => c.id === activeChildId) || null;
@@ -339,6 +357,7 @@ export function AuthProvider({ children }) {
         refreshAccount,
         verifyParentPin,
         changeParentPin,
+        resetParentPin,
       }}
     >
       {children}

@@ -25,13 +25,21 @@ const TABS = [
 export default function ParentDashboard() {
   const router = useRouter();
   const { isLoaded, charName, parentPin, pendingCount } = useGame();
-  const { isCloudChild, verifyParentPin } = useAuth();
+  const { isCloudChild, verifyParentPin, resetParentPin } = useAuth();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinEntry, setPinEntry] = useState("");
   const [pinError, setPinError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [activeTab, setActiveTab] = useState("approval");
+
+  // Forgot-PIN reset: re-prove the account password, then set a new PIN. Only
+  // offered for cloud children — local/offline children have no account to check.
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetNewPin, setResetNewPin] = useState("");
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetError, setResetError] = useState("");
 
   useEffect(() => {
     if (isLoaded && !charName) router.push("/");
@@ -73,8 +81,95 @@ export default function ParentDashboard() {
     }
   };
 
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    setResetError("");
+    if (resetNewPin.length < 4) {
+      setResetError("Mã PIN mới phải từ 4 số trở lên.");
+      return;
+    }
+    setResetBusy(true);
+    const result = await resetParentPin(resetPassword, resetNewPin);
+    setResetBusy(false);
+    if (result.success) {
+      // Account password proven + new PIN set — let them straight in.
+      setResetPassword("");
+      setResetNewPin("");
+      setIsResetting(false);
+      setPinError("");
+      setIsAuthenticated(true);
+    } else {
+      setResetError("Mật khẩu tài khoản không đúng (hoặc đang tạm khoá do thử sai nhiều lần). Thử lại sau ít phút.");
+    }
+  };
+
   // ---------- PIN GATE ----------
   if (!isAuthenticated) {
+    // Forgot-PIN reset form (cloud children only).
+    if (isResetting) {
+      return (
+        <div className="flex flex-col flex-grow items-center justify-center p-6 text-center">
+          <form
+            onSubmit={handleResetSubmit}
+            className="bg-white border-2 border-sand rounded-2xl p-6 shadow-lg w-full max-w-sm space-y-4"
+          >
+            <div className="w-14 h-14 bg-sand-light rounded-full border border-sand mx-auto flex items-center justify-center">
+              <KeyRound size={24} className="text-forest-dark" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-scale-lg font-black text-forest-dark">Đặt lại mã PIN</h2>
+              <p className="text-scale-2xs text-gray-500">
+                Nhập mật khẩu tài khoản để xác minh là bố mẹ, rồi đặt mã PIN mới.
+              </p>
+            </div>
+
+            <input
+              type="password"
+              value={resetPassword}
+              onChange={(e) => setResetPassword(e.target.value)}
+              placeholder="Mật khẩu tài khoản..."
+              autoComplete="current-password"
+              className="w-full min-h-tap bg-sand-light border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none focus:border-forest transition-colors"
+              autoFocus
+            />
+            <input
+              type="password"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              maxLength={6}
+              value={resetNewPin}
+              onChange={(e) => setResetNewPin(e.target.value)}
+              placeholder="Mã PIN mới (4-6 số)..."
+              className="w-full min-h-tap text-center bg-sand-light border border-sand rounded-xl text-scale-lg font-black text-forest-dark focus:outline-none focus:border-forest transition-colors"
+            />
+            {resetError && <p className="text-scale-2xs font-bold text-terracotta">⚠️ {resetError}</p>}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsResetting(false);
+                  setResetError("");
+                  setResetPassword("");
+                  setResetNewPin("");
+                }}
+                className="w-1/2 min-h-tap bg-white text-gray-500 font-bold text-scale-xs rounded-xl border border-sand active:scale-[0.98] transition-transform"
+              >
+                Quay lại
+              </button>
+              <button
+                type="submit"
+                disabled={resetBusy}
+                className="w-1/2 min-h-tap bg-forest text-white font-black text-scale-xs rounded-xl active:scale-[0.98] transition-transform disabled:opacity-60"
+              >
+                {resetBusy ? "Đang xác minh..." : "Đặt PIN mới"}
+              </button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col flex-grow items-center justify-center p-6 text-center">
         <form
@@ -118,6 +213,19 @@ export default function ParentDashboard() {
               {isVerifying ? "Đang kiểm tra..." : "Vào quản trị"}
             </button>
           </div>
+
+          {isCloudChild && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsResetting(true);
+                setPinError("");
+              }}
+              className="text-scale-2xs font-bold text-gray-400 underline underline-offset-2 hover:text-forest transition-colors"
+            >
+              Quên mã PIN?
+            </button>
+          )}
         </form>
       </div>
     );
