@@ -6,6 +6,7 @@ import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
+import BottomNav from "@/ui/BottomNav";
 
 export default function MiningCavePage() {
   const router = useRouter();
@@ -720,40 +721,7 @@ export default function MiningCavePage() {
         )}
       </div>
 
-      {/* BOTTOM TAB NAVIGATION (Duolingo style) */}
-      <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-        >
-          <span className="text-xl">🌳</span>
-          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.adventure")}</span>
-        </button>
-
-        <button
-          onClick={() => router.push("/rewards")}
-          className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-        >
-          <span className="text-xl">🛒</span>
-          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.rewards")}</span>
-        </button>
-
-        <button
-          onClick={() => {}}
-          className="flex flex-col items-center p-2 text-forest-medium space-y-0.5"
-        >
-          <span className="text-xl">⛏️</span>
-          <span className="text-[11px] font-black uppercase tracking-wider">{t("nav.mining")}</span>
-        </button>
-
-        <button
-          onClick={() => router.push("/parent")}
-          className="flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5"
-        >
-          <span className="text-xl">🔑</span>
-          <span className="text-[11px] font-extrabold uppercase tracking-wider">{t("nav.parent")}</span>
-        </button>
-      </div>
+      <BottomNav active="mining" />
     </div>
   );
 }

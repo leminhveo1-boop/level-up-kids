@@ -3,17 +3,19 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
+import { useAuth } from "@/context/AuthContext";
 import ApprovalTab from "@/features/parent/components/ApprovalTab";
 import WeekTab from "@/features/parent/components/WeekTab";
 import ManageTab from "@/features/parent/components/ManageTab";
 import SystemTab from "@/features/parent/components/SystemTab";
 import BottomNav from "@/ui/BottomNav";
+import { KeyRound, CheckCircle2, BarChart3, Target, Settings } from "lucide-react";
 
 const TABS = [
-  { id: "approval", label: "✅ Duyệt" },
-  { id: "week", label: "📊 Tuần" },
-  { id: "manage", label: "🎯 Việc & Quà" },
-  { id: "system", label: "⚙️ Hệ thống" },
+  { id: "approval", label: "Duyệt", Icon: CheckCircle2 },
+  { id: "week", label: "Tuần", Icon: BarChart3 },
+  { id: "manage", label: "Việc & Quà", Icon: Target },
+  { id: "system", label: "Hệ thống", Icon: Settings },
 ];
 
 /**
@@ -23,10 +25,12 @@ const TABS = [
 export default function ParentDashboard() {
   const router = useRouter();
   const { isLoaded, charName, parentPin, pendingCount } = useGame();
+  const { isCloudChild, verifyParentPin } = useAuth();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinEntry, setPinEntry] = useState("");
   const [pinError, setPinError] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
   const [activeTab, setActiveTab] = useState("approval");
 
   useEffect(() => {
@@ -44,8 +48,23 @@ export default function ParentDashboard() {
     );
   }
 
-  const handlePinSubmit = (e) => {
+  const handlePinSubmit = async (e) => {
     e.preventDefault();
+    // Cloud children verify server-side (RPC never leaks the hash to the client);
+    // local/offline children have no server to call, so they keep the old
+    // client-side comparison (approved offline fallback).
+    if (isCloudChild) {
+      setIsVerifying(true);
+      const result = await verifyParentPin(pinEntry);
+      setIsVerifying(false);
+      if (result.success) {
+        setIsAuthenticated(true);
+        setPinError("");
+      } else {
+        setPinError("Mã PIN không khớp! Vui lòng thử lại.");
+      }
+      return;
+    }
     if (pinEntry === parentPin) {
       setIsAuthenticated(true);
       setPinError("");
@@ -62,8 +81,8 @@ export default function ParentDashboard() {
           onSubmit={handlePinSubmit}
           className="bg-white border-2 border-sand rounded-2xl p-6 shadow-lg w-full max-w-sm space-y-4"
         >
-          <div className="w-14 h-14 bg-sand-light rounded-full border border-sand mx-auto flex items-center justify-center text-2xl">
-            🔑
+          <div className="w-14 h-14 bg-sand-light rounded-full border border-sand mx-auto flex items-center justify-center">
+            <KeyRound size={24} className="text-forest-dark" />
           </div>
           <div className="space-y-1">
             <h2 className="text-scale-lg font-black text-forest-dark">Phòng Bố Mẹ</h2>
@@ -93,9 +112,10 @@ export default function ParentDashboard() {
             </button>
             <button
               type="submit"
-              className="w-1/2 min-h-tap bg-forest text-white font-black text-scale-xs rounded-xl active:scale-[0.98] transition-transform"
+              disabled={isVerifying}
+              className="w-1/2 min-h-tap bg-forest text-white font-black text-scale-xs rounded-xl active:scale-[0.98] transition-transform disabled:opacity-60"
             >
-              Vào quản trị
+              {isVerifying ? "Đang kiểm tra..." : "Vào quản trị"}
             </button>
           </div>
         </form>
@@ -115,7 +135,9 @@ export default function ParentDashboard() {
           >
             ← Về màn hình của con
           </button>
-          <span className="text-scale-2xs font-black text-amber">🔑 QUẢN TRỊ</span>
+          <span className="text-scale-2xs font-black text-amber flex items-center gap-1">
+            <KeyRound size={14} /> Quản trị
+          </span>
         </div>
 
         {/* Tab bar */}
@@ -124,10 +146,11 @@ export default function ParentDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative min-h-tap rounded-lg text-scale-2xs font-black transition-colors ${
+              className={`relative min-h-tap rounded-lg text-scale-2xs font-black transition-colors flex flex-col items-center justify-center gap-0.5 ${
                 activeTab === tab.id ? "bg-white text-forest-dark shadow-sm" : "text-gray-500 hover:text-forest-dark"
               }`}
             >
+              <tab.Icon size={16} />
               {tab.label}
               {tab.id === "approval" && pendingCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-terracotta text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">

@@ -24,6 +24,7 @@ export const dictionaries = {
     "nav.adventure": "Phiêu Lưu",
     "nav.rewards": "Đổi Quà",
     "nav.mining": "Đào Mỏ",
+    "nav.boss": "Boss",
     "nav.parent": "Bố Mẹ",
 
     // Auth
@@ -110,6 +111,7 @@ export const dictionaries = {
     "nav.adventure": "Adventure",
     "nav.rewards": "Rewards",
     "nav.mining": "Mining",
+    "nav.boss": "Boss",
     "nav.parent": "Parents",
 
     // Auth

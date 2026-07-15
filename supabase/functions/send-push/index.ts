@@ -15,7 +15,17 @@ webpush.setVapidDetails(
   Deno.env.get("VAPID_PRIVATE_KEY")!
 );
 
-Deno.serve(async (_req) => {
+// Shared secret checked against the `x-cron-secret` header set by pg_cron (see
+// supabase/migrations/*_cron_secret_auth.sql). Fails open only while CRON_SECRET
+// is unset, so existing schedules don't break mid-rollout — set the secret on
+// this function ASAP to close the gap.
+const CRON_SECRET = Deno.env.get("CRON_SECRET");
+
+Deno.serve(async (req) => {
+  if (CRON_SECRET && req.headers.get("x-cron-secret") !== CRON_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   // Quiet hours guard: never push after 20:30 VN (13:30 UTC)
   const utcMinutes = new Date().getUTCHours() * 60 + new Date().getUTCMinutes();
   if (utcMinutes > 13 * 60 + 30 && utcMinutes < 23 * 60) {

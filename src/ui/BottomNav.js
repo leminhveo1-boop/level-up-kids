@@ -3,12 +3,13 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/context/LanguageContext";
-import { Home, Gift, Pickaxe, Lock } from "lucide-react";
+import { Home, Gift, Pickaxe, Swords, Lock } from "lucide-react";
 
 const ITEMS = [
   { id: "adventure", icon: Home, labelKey: "nav.adventure", go: "/dashboard" },
   { id: "rewards", icon: Gift, labelKey: "nav.rewards", go: "/rewards" },
   { id: "mining", icon: Pickaxe, labelKey: "nav.mining", go: "/mining" },
+  { id: "boss", icon: Swords, labelKey: "nav.boss", go: "/boss" },
   { id: "parent", icon: Lock, labelKey: "nav.parent", go: "/parent" },
 ];
 
@@ -16,7 +17,7 @@ const ITEMS = [
  * Shared bottom navigation (Core UI). One implementation for every screen —
  * replaces the drifting kid component + hand-written parent copy. Colour comes
  * from the active theme's accent via `text-forest` (kid theme maps it to blue).
- * @param {{ active: "adventure" | "rewards" | "mining" | "parent" }} props
+ * @param {{ active: "adventure" | "rewards" | "mining" | "boss" | "parent" }} props
  */
 export default function BottomNav({ active = "adventure" }) {
   const router = useRouter();

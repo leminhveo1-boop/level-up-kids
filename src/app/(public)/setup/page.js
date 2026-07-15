@@ -78,7 +78,7 @@ const REWARDS_BY_AGE = {
 export default function SetupWizardPage() {
   const router = useRouter();
   const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig, setParentConfig } = useGame();
-  const { authLoaded, activeChildId, isDemo } = useAuth();
+  const { authLoaded, activeChildId, isDemo, isCloudChild, changeParentPin } = useAuth();
 
   const [step, setStep] = useState(1);
   const [ageBand, setAgeBand] = useState("7-9");
@@ -145,7 +145,7 @@ export default function SetupWizardPage() {
     setCheckedTasks(TASKS_BY_AGE[ageBand].map(() => true));
   };
 
-  const handleFinish = (e) => {
+  const handleFinish = async (e) => {
     e.preventDefault();
     if (pin1.length < 4) {
       setPinError("Mã PIN phải từ 4 số trở lên!");
@@ -154,6 +154,18 @@ export default function SetupWizardPage() {
     if (pin1 !== pin2) {
       setPinError("Hai mã PIN không khớp nhau!");
       return;
+    }
+    // First-time PIN: cloud children set it server-side (no old PIN needed yet —
+    // the RPC only requires one once a hash already exists); local/offline
+    // children keep the client-side field (approved offline fallback).
+    if (isCloudChild) {
+      const result = await changeParentPin(pin1, null);
+      if (!result.success) {
+        setPinError("Không thể lưu mã PIN, thử lại nhé!");
+        return;
+      }
+    } else {
+      setParentPin(pin1);
     }
 
     // Apply everything at once
@@ -173,7 +185,6 @@ export default function SetupWizardPage() {
         addCustomReward(r.title.trim(), vndToCoins(r.vnd), "perk", 0, "rare", "heroCoins");
       }
     });
-    setParentPin(pin1);
 
     track("onboarding_completed", {
       age_band: ageBand,

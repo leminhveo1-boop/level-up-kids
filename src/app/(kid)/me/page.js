@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { COSMETICS_CATALOG, getEquipped } from "@/lib/game/cosmetics";
 import { PET_ROSTER, getPetMood } from "@/lib/game/pets";
+import BottomNav from "@/ui/BottomNav";
 
 const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
 
@@ -329,25 +330,7 @@ export default function MyCornerPage() {
         ))}
       </div>
 
-      {/* Bottom nav */}
-      <div className="absolute bottom-0 inset-x-0 bg-white border-t-2 border-sand p-2 flex items-center justify-around z-40 max-w-md mx-auto">
-        <button onClick={() => router.push("/dashboard")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">🌳</span>
-          <span className="text-scale-2xs font-extrabold">{t("nav.adventure")}</span>
-        </button>
-        <button onClick={() => router.push("/rewards")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">🛒</span>
-          <span className="text-scale-2xs font-extrabold">{t("nav.rewards")}</span>
-        </button>
-        <button onClick={() => router.push("/mining")} className="min-h-tap flex flex-col items-center p-2 text-gray-400 hover:text-forest space-y-0.5">
-          <span className="text-xl">⛏️</span>
-          <span className="text-scale-2xs font-extrabold">{t("nav.mining")}</span>
-        </button>
-        <button onClick={() => {}} className="min-h-tap flex flex-col items-center p-2 text-forest-medium space-y-0.5">
-          <span className="text-xl">🏠</span>
-          <span className="text-scale-2xs font-black">{t("game.hero.myCorner").replace("🏠 ", "")}</span>
-        </button>
-      </div>
+      <BottomNav active="me" />
     </div>
   );
 }

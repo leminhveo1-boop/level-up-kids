@@ -90,7 +90,17 @@ function childSection(name: string, state: Record<string, unknown>): string {
   </div>`;
 }
 
-Deno.serve(async (_req) => {
+// Shared secret checked against the `x-cron-secret` header set by pg_cron (see
+// supabase/migrations/*_cron_secret_auth.sql). Fails open only while CRON_SECRET
+// is unset, so existing schedules don't break mid-rollout — set the secret on
+// this function ASAP to close the gap.
+const CRON_SECRET = Deno.env.get("CRON_SECRET");
+
+Deno.serve(async (req) => {
+  if (CRON_SECRET && req.headers.get("x-cron-secret") !== CRON_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const { data: parents, error } = await supabase
     .from("profiles")
     .select("id, email, display_name, children(id, name)")

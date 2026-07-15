@@ -274,6 +274,37 @@ export function AuthProvider({ children }) {
     [supabase, user, refreshAccount]
   );
 
+  // True when the parent PIN for this child lives server-side (profiles.parent_pin_hash)
+  // instead of the client-visible game_states JSON — see verifyParentPin/changeParentPin.
+  // Matches the same guard used for cloud saves (GameState.js) so PIN handling and
+  // state sync always agree on which children are "real" cloud children.
+  const isCloudChild = cloudEnabled && Boolean(user) && !String(activeChildId || "").startsWith("local_");
+
+  /** Check the parent PIN via server-side RPC — the hash never reaches the client. */
+  const verifyParentPin = useCallback(
+    async (pin) => {
+      if (!supabase || !user) return { success: false, error: "NOT_AUTHENTICATED" };
+      const { data, error } = await supabase.rpc("verify_parent_pin", { p_pin: pin });
+      if (error) return { success: false, error: error.message };
+      return { success: Boolean(data) };
+    },
+    [supabase, user]
+  );
+
+  /** Change the parent PIN. oldPin is required unless none was ever set (first-time onboarding). */
+  const changeParentPin = useCallback(
+    async (newPin, oldPin) => {
+      if (!supabase || !user) return { success: false, error: "NOT_AUTHENTICATED" };
+      const { data, error } = await supabase.rpc("set_parent_pin", {
+        p_new_pin: newPin,
+        p_old_pin: oldPin || null,
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: Boolean(data) };
+    },
+    [supabase, user]
+  );
+
   const activeChild = isDemo
     ? DEMO_CHILD
     : childProfiles.find((c) => c.id === activeChildId) || null;
@@ -292,6 +323,7 @@ export function AuthProvider({ children }) {
         childProfiles,
         activeChild,
         activeChildId,
+        isCloudChild,
         signUp,
         signIn,
         signOut,
@@ -305,6 +337,8 @@ export function AuthProvider({ children }) {
         redeemActivationCode,
         applyReferralCode,
         refreshAccount,
+        verifyParentPin,
+        changeParentPin,
       }}
     >
       {children}

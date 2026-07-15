@@ -7,7 +7,7 @@ import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
 import { BUSY_MODE_MS } from "@/lib/game/constants";
 import { track } from "@/lib/analytics";
-import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe, Plane } from "lucide-react";
+import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe, Plane, Settings } from "lucide-react";
 
 /** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
 export default function SystemTab() {
@@ -15,11 +15,13 @@ export default function SystemTab() {
     isLoaded,
     parentConfig,
     setParentConfig,
+    parentPin,
     setParentPin,
     resetDailyTasks,
     setScreenRedeemsThisWeek,
     screenRedeemsThisWeek,
   } = useGame();
+  const { isCloudChild, changeParentPin } = useAuth();
 
   const [flash, setFlash] = useState("");
   const showFlash = (text) => {
@@ -35,7 +37,9 @@ export default function SystemTab() {
   const [requireMandatory, setRequireMandatory] = useState(true);
   const [smartAuto, setSmartAuto] = useState(true);
   const [maxCoins, setMaxCoins] = useState(7000);
+  const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
+  const [isChangingPin, setIsChangingPin] = useState(false);
 
   useEffect(() => {
     if (isLoaded && parentConfig) {
@@ -63,13 +67,31 @@ export default function SystemTab() {
     showFlash("Đã lưu thiết lập! ✅");
   };
 
-  const handleChangePin = (e) => {
+  const handleChangePin = async (e) => {
     e.preventDefault();
     if (newPin.length < 4) {
       showFlash("Mã PIN mới phải từ 4 số trở lên! ❌");
       return;
     }
-    setParentPin(newPin);
+    // Re-checking the current PIN here (not just at room entry) matters because the
+    // room-level gate is client-side React state — trivially bypassable via devtools.
+    // Cloud children verify it server-side; local/offline children have no server to
+    // call, so they compare against the client-side copy (approved offline fallback).
+    if (isCloudChild) {
+      setIsChangingPin(true);
+      const result = await changeParentPin(newPin, oldPin);
+      setIsChangingPin(false);
+      if (!result.success) {
+        showFlash("Mã PIN cũ không đúng! ❌");
+        return;
+      }
+    } else if (oldPin !== parentPin) {
+      showFlash("Mã PIN cũ không đúng! ❌");
+      return;
+    } else {
+      setParentPin(newPin);
+    }
+    setOldPin("");
     setNewPin("");
     showFlash("Đã đổi mã PIN! 🔒");
   };
@@ -98,7 +120,9 @@ export default function SystemTab() {
 
       {/* Limits & economy */}
       <form onSubmit={handleSaveConfig} className="bg-white border border-sand rounded-xl p-4 space-y-3">
-        <h3 className="text-scale-sm font-black text-forest-dark">⚙️ Giới hạn & tỷ giá kinh tế</h3>
+        <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+          <Settings size={16} /> Giới hạn & tỷ giá kinh tế
+        </h3>
 
         <div className="grid grid-cols-2 gap-3">
           {numField("TV/iPad tối đa (phút/ngày)", maxMinutes, setMaxMinutes)}
@@ -171,6 +195,16 @@ export default function SystemTab() {
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={6}
+            value={oldPin}
+            onChange={(e) => setOldPin(e.target.value)}
+            placeholder="Mã PIN hiện tại..."
+            className="flex-grow min-h-tap bg-sand-light border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none"
+          />
+          <input
+            type="password"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={6}
             value={newPin}
             onChange={(e) => setNewPin(e.target.value)}
             placeholder="Mã PIN mới (4-6 số)..."
@@ -178,9 +212,10 @@ export default function SystemTab() {
           />
           <button
             type="submit"
-            className="min-h-tap bg-forest text-white text-scale-xs font-black px-4 rounded-xl active:scale-95 transition-transform"
+            disabled={isChangingPin}
+            className="min-h-tap bg-forest text-white text-scale-xs font-black px-4 rounded-xl active:scale-95 transition-transform disabled:opacity-60"
           >
-            Cập nhật
+            {isChangingPin ? "..." : "Cập nhật"}
           </button>
         </div>
       </form>

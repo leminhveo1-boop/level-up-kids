@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import MomentCard from "./MomentCard";
-import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown } from "lucide-react";
+import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap } from "lucide-react";
 
 const VERIFY_META = {
   trust: { icon: HandHeart, label: "Con tự ghi nhận" },
@@ -176,8 +176,8 @@ export default function ApprovalTab() {
           onClick={() => setShowLog((v) => !v)}
           className="w-full flex items-center justify-between p-4 min-h-tap"
         >
-          <h3 className="text-scale-sm font-black text-forest-dark">
-            ✍️ Tick giúp con {notDone.length > 0 && <span className="text-gray-400 font-bold">({notDone.length})</span>}
+          <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+            <PenLine size={16} /> Tick giúp con {notDone.length > 0 && <span className="text-gray-400 font-bold">({notDone.length})</span>}
           </h3>
           <ChevronDown size={18} className={`text-gray-400 transition-transform ${showLog ? "rotate-180" : ""}`} />
         </button>
@@ -191,7 +191,7 @@ export default function ApprovalTab() {
               <div key={task.id} className="border border-sand rounded-xl px-3 py-2 flex items-center gap-2">
                 <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{task.title}</span>
                 {task.verifyType === "parent" && (
-                  <span className="text-[10px] text-forest-medium font-black flex-shrink-0">👨‍👩‍👧</span>
+                  <Users size={12} className="text-forest-medium flex-shrink-0" />
                 )}
                 <button
                   onClick={() => handleParentLog(task)}
@@ -214,7 +214,9 @@ export default function ApprovalTab() {
           onClick={() => setShowQuick((v) => !v)}
           className="w-full flex items-center justify-between p-4 min-h-tap"
         >
-          <h3 className="text-scale-sm font-black text-forest-dark">⚡ Thao tác nhanh</h3>
+          <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+            <Zap size={16} /> Thao tác nhanh
+          </h3>
           <ChevronDown size={18} className={`text-gray-400 transition-transform ${showQuick ? "rotate-180" : ""}`} />
         </button>
         {showQuick && (

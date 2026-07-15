@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  useMemo,
 } from "react";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
@@ -31,7 +32,7 @@ const CLOUD_SYNC_DEBOUNCE_MS = 2500;
 const stateKeyFor = (childId) => `luk_state_${childId}`;
 
 export function GameProvider({ children }) {
-  const { authLoaded, cloudEnabled, user, activeChild, activeChildId, childProfiles } = useAuth();
+  const { authLoaded, cloudEnabled, user, activeChild, activeChildId, childProfiles, isCloudChild, verifyParentPin } = useAuth();
   const supabase = getSupabase();
 
   const [state, setState] = useState(null);
@@ -170,18 +171,27 @@ export function GameProvider({ children }) {
   }, [isLoaded, cloudEnabled, supabase, user, activeChildId]);
 
   // ---------------- Screen-time absolute timer tick ----------------
+  // Ticks a LOCAL state every 500ms instead of `state` itself, so the
+  // autosave/cloud-sync effect below (which depends on `state`) doesn't fire
+  // on every tick and starve cloud sync for the whole countdown. `state` is
+  // only committed once, when the timer actually runs out.
+  const [displaySecondsLeft, setDisplaySecondsLeft] = useState(null);
+
   useEffect(() => {
     if (!state?.isTimerActive || !state?.timerEndTime) return;
+    const endTime = state.timerEndTime;
 
     const tick = () => {
       const now = Date.now();
-      setState((prev) => {
-        if (!prev) return prev;
-        if (now >= prev.timerEndTime) {
+      if (now >= endTime) {
+        setDisplaySecondsLeft(0);
+        setState((prev) => {
+          if (!prev || !prev.isTimerActive) return prev;
           return { ...prev, screenTimeLeft: 0, isTimerActive: false, timerEndTime: 0 };
-        }
-        return { ...prev, screenTimeLeft: Math.ceil((prev.timerEndTime - now) / 1000) };
-      });
+        });
+        return;
+      }
+      setDisplaySecondsLeft(Math.ceil((endTime - now) / 1000));
     };
 
     tick();
@@ -391,39 +401,50 @@ export function GameProvider({ children }) {
     return outcome;
   }, []);
 
-  const claimReward = useCallback((id, pin) => {
-    let outcome = { success: false, message: "Có lỗi xảy ra!" };
-    setState((prev) => {
-      if (!prev) return prev;
-
-      if (pin !== prev.parentPin) {
-        outcome = { success: false, message: "Mã PIN của bố mẹ không đúng! ❌" };
-        return prev;
+  // PIN check runs before the state update (can't await inside a setState updater):
+  // cloud children verify via RPC (hash never reaches the client — see AuthContext.js);
+  // local/offline children still compare against the client-side copy, since there's
+  // no server to call for them.
+  const claimReward = useCallback(
+    async (id, pin) => {
+      if (isCloudChild) {
+        const check = await verifyParentPin(pin);
+        if (!check.success) {
+          return { success: false, message: "Mã PIN của bố mẹ không đúng! ❌" };
+        }
+      } else if (pin !== state?.parentPin) {
+        return { success: false, message: "Mã PIN của bố mẹ không đúng! ❌" };
       }
 
-      const { state: next, result } = economy.claimReward(prev, id);
-      if (!result.success) {
-        const messages = {
-          REWARD_NOT_FOUND: "Phần thưởng không tồn tại! ❌",
-          MANDATORY_TASKS_INCOMPLETE:
-            "Con chưa làm xong các nhiệm vụ BẮT BUỘC hằng ngày! Hãy hoàn thành bài vở và tập thể dục trước nhé! ⚠️",
-          SCREEN_DAILY_LIMIT: `Đã vượt quá giới hạn giờ giải trí hôm nay! (Đã dùng: ${result.used}/${result.max} phút) ⚠️`,
-          SCREEN_WEEKLY_LIMIT: `Đã hết lượt đổi giải trí trong tuần này! (Giới hạn: ${result.max} lần/tuần) ⚠️`,
-          NOT_ENOUGH_COINS: `Con chưa đủ Hero Coins! Cần thêm ${result.shortage} 🪙 nữa nhé! ⚠️`,
-          NOT_ENOUGH_POINTS: `Con chưa đủ Điểm Tích Lũy! Cần thêm ${result.shortage} ⭐ nữa nhé! ⚠️`,
-          FREEZE_CAP: `Chỉ được giữ tối đa ${result.max} Thẻ Đóng Băng ❄️ thôi! Dùng bớt rồi mua thêm nhé!`,
-        };
-        outcome = { success: false, message: messages[result.error] || "Không thể đổi phần thưởng! ❌" };
-        return prev;
-      }
+      let outcome = { success: false, message: "Có lỗi xảy ra!" };
+      setState((prev) => {
+        if (!prev) return prev;
 
-      playSound("reward");
-      fireConfetti({ particleCount: 80, spread: 60, colors: ["#D97706", "#4CAF50", "#2E7D32"] });
-      outcome = { success: true, message: `Thành công! Đã duyệt đổi: ${result.rewardTitle} 🎉` };
-      return next;
-    });
-    return outcome;
-  }, []);
+        const { state: next, result } = economy.claimReward(prev, id);
+        if (!result.success) {
+          const messages = {
+            REWARD_NOT_FOUND: "Phần thưởng không tồn tại! ❌",
+            MANDATORY_TASKS_INCOMPLETE:
+              "Con chưa làm xong các nhiệm vụ BẮT BUỘC hằng ngày! Hãy hoàn thành bài vở và tập thể dục trước nhé! ⚠️",
+            SCREEN_DAILY_LIMIT: `Đã vượt quá giới hạn giờ giải trí hôm nay! (Đã dùng: ${result.used}/${result.max} phút) ⚠️`,
+            SCREEN_WEEKLY_LIMIT: `Đã hết lượt đổi giải trí trong tuần này! (Giới hạn: ${result.max} lần/tuần) ⚠️`,
+            NOT_ENOUGH_COINS: `Con chưa đủ Hero Coins! Cần thêm ${result.shortage} 🪙 nữa nhé! ⚠️`,
+            NOT_ENOUGH_POINTS: `Con chưa đủ Điểm Tích Lũy! Cần thêm ${result.shortage} ⭐ nữa nhé! ⚠️`,
+            FREEZE_CAP: `Chỉ được giữ tối đa ${result.max} Thẻ Đóng Băng ❄️ thôi! Dùng bớt rồi mua thêm nhé!`,
+          };
+          outcome = { success: false, message: messages[result.error] || "Không thể đổi phần thưởng! ❌" };
+          return prev;
+        }
+
+        playSound("reward");
+        fireConfetti({ particleCount: 80, spread: 60, colors: ["#D97706", "#4CAF50", "#2E7D32"] });
+        outcome = { success: true, message: `Thành công! Đã duyệt đổi: ${result.rewardTitle} 🎉` };
+        return next;
+      });
+      return outcome;
+    },
+    [state, isCloudChild, verifyParentPin]
+  );
 
   // ---------------- D2: Boss weekly chest (real loot, once per cycle) ----------------
   const openBossChest = useCallback(() => {
@@ -781,9 +802,8 @@ export function GameProvider({ children }) {
   // ---------------- Context value (same API surface as V0) ----------------
   const s = state || createInitialState();
 
-  return (
-    <GameContext.Provider
-      value={{
+  const contextValue = useMemo(
+    () => ({
         isLoaded: authLoaded && isLoaded,
         hasActiveChild: Boolean(activeChildId && state),
         charName: s.charName,
@@ -832,7 +852,7 @@ export function GameProvider({ children }) {
         bossChestOpened: s.bossChestOpened || false,
         bossCycleCount: s.bossCycleCount || 0,
         openBossChest,
-        screenTimeLeft: s.screenTimeLeft,
+        screenTimeLeft: s.isTimerActive && displaySecondsLeft !== null ? displaySecondsLeft : s.screenTimeLeft,
         setScreenTimeLeft: makeFieldSetter("screenTimeLeft"),
         isTimerActive: s.isTimerActive,
         setIsTimerActive: makeFieldSetter("isTimerActive"),
@@ -886,8 +906,53 @@ export function GameProvider({ children }) {
         screenRedeemsThisWeek: s.screenRedeemsThisWeek,
         setScreenRedeemsThisWeek: makeFieldSetter("screenRedeemsThisWeek"),
         treeGrowth: s.treeGrowth || 0,
-      }}
-    >
+    }),
+    [
+      authLoaded,
+      isLoaded,
+      activeChildId,
+      state,
+      s,
+      displaySecondsLeft,
+      makeFieldSetter,
+      approveTask,
+      approveAllPending,
+      rejectTask,
+      parentCompleteTask,
+      nudgeParents,
+      buyCosmetic,
+      equipCosmetic,
+      clearLastGraduation,
+      sendChildMessage,
+      readAllChildMessages,
+      completeTask,
+      claimReward,
+      toggleTimerState,
+      openBossChest,
+      sendEncouragement,
+      readAllMessages,
+      addCustomTask,
+      deleteTask,
+      splitTask,
+      dismissAtRisk,
+      startJourney,
+      cancelJourney,
+      clearJourneyCelebration,
+      addCustomReward,
+      deleteReward,
+      resetDailyTasks,
+      resetEntireGame,
+      mineTreasure,
+      hatchPet,
+      feedPet,
+      setActiveCompanion,
+      sendGift,
+      markReceivedGiftsRead,
+    ]
+  );
+
+  return (
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );

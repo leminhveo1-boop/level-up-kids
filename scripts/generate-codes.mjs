@@ -20,10 +20,19 @@ const durationDays = parseInt(process.argv[3] || "365", 10);
 
 // Unambiguous alphabet (no 0/O/1/I)
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const segment = (len) =>
-  Array.from(crypto.randomBytes(len))
-    .map((b) => ALPHABET[b % ALPHABET.length])
-    .join("");
+// 256 isn't a multiple of ALPHABET.length (31), so a plain `b % ALPHABET.length`
+// would favor the first few letters. Reject bytes above the last full multiple
+// of ALPHABET.length instead of biasing the modulo.
+const MAX_VALID_BYTE = 256 - (256 % ALPHABET.length);
+const segment = (len) => {
+  let result = "";
+  while (result.length < len) {
+    for (const b of crypto.randomBytes(len - result.length)) {
+      if (b < MAX_VALID_BYTE) result += ALPHABET[b % ALPHABET.length];
+    }
+  }
+  return result;
+};
 
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 

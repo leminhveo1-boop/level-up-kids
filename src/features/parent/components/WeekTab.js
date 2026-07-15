@@ -312,9 +312,9 @@ export default function WeekTab() {
         </p>
         <button
           onClick={handleShareCard}
-          className="w-full min-h-tap bg-clay text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
         >
-          <Share2 size={16} /> XUẤT THẺ KHOE CON
+          <Share2 size={16} /> Xuất thẻ khoe con
         </button>
       </div>
 
