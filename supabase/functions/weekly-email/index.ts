@@ -104,7 +104,10 @@ Deno.serve(async (req) => {
   const { data: parents, error } = await supabase
     .from("profiles")
     .select("id, email, display_name, children(id, name)")
-    .eq("plan", "premium");
+    .eq("plan", "premium")
+    // Belt-and-suspenders alongside the nightly expire_premium() cron: never email
+    // a family whose premium already lapsed (plan can lag until the cron runs).
+    .gt("premium_until", new Date().toISOString());
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   let sentCount = 0;

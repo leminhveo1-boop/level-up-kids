@@ -97,7 +97,9 @@ Deno.serve(async (req) => {
     .from("profiles")
     .select("id, email, display_name, premium_since, children(id, name)")
     .eq("plan", "premium")
-    .not("premium_since", "is", null);
+    .not("premium_since", "is", null)
+    // Never email a lapsed family (plan can lag until expire_premium() cron runs).
+    .gt("premium_until", new Date().toISOString());
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   const { data: logRows } = await supabase.from("lifecycle_log").select("profile_id, kind");

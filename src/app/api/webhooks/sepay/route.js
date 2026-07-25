@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { parsePaymentCode } from "@/lib/payments";
 
 const SIGNATURE_MAX_AGE_SEC = 300; // reject webhooks older than 5 minutes (replay guard)
 
@@ -81,8 +82,7 @@ export async function POST(request) {
   }
 
   // ---- extract payment code (LUK + 8 alphanumerics) from transfer content ----
-  const match = content.toUpperCase().match(/LUK[A-Z0-9]{8}/);
-  const paymentCode = match ? match[0] : null;
+  const paymentCode = parsePaymentCode(content);
 
   const supabase = getSupabaseAdmin();
 
