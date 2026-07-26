@@ -109,6 +109,16 @@ export default function FamilyPage() {
         </div>
       )}
 
+      {/* Admin entry — chỉ hiện với tài khoản quản trị (is_admin) */}
+      {cloudEnabled && profile?.is_admin && (
+        <button
+          onClick={() => router.push("/admin")}
+          className="w-full bg-forest text-sand-light font-black text-xs px-5 py-3 rounded-xl border-2 border-forest shadow-game-forest btn-game-transition active:shadow-game-pressed uppercase tracking-wider"
+        >
+          🛠️ Bảng vận hành
+        </button>
+      )}
+
       {/* Title */}
       <div className="text-center space-y-1">
         <h1 className="text-xl font-black text-forest uppercase tracking-tight">{t("children.title")}</h1>
