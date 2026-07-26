@@ -6,7 +6,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { track } from "@/lib/analytics";
 import { normalizeReferralCode, isValidReferralCode, buildReferralLink } from "@/lib/referral";
+import { startActivationPoll } from "@/lib/payments";
 import { ShieldCheck } from "lucide-react";
+
+// Chờ webhook SePay activate (im lặng phía server): dò lại hồ sơ mỗi 6s, tối đa
+// 5 phút — đủ để bắt lần chuyển khoản vừa xong mà không dò vô hạn.
+const ACTIVATION_POLL_MS = 6000;
+const ACTIVATION_POLL_MAX_MS = 5 * 60 * 1000;
 
 // Referral code from a shared link must survive the sign-up detour, so we stash
 // it on the device the moment the link opens and auto-apply it once authenticated.
@@ -20,7 +26,8 @@ const BANK_HOLDER = process.env.NEXT_PUBLIC_BANK_HOLDER || "";
 function PremiumContent() {
   const router = useRouter();
   const { t, locale } = useLang();
-  const { authLoaded, cloudEnabled, user, profile, isPremium, redeemActivationCode, applyReferralCode } = useAuth();
+  const { authLoaded, cloudEnabled, user, profile, isPremium, redeemActivationCode, applyReferralCode, refreshAccount } =
+    useAuth();
 
   const searchParams = useSearchParams();
   const prefillCode = searchParams.get("code") || "";
@@ -37,6 +44,31 @@ function PremiumContent() {
   const [copied, setCopied] = useState(false);
   const autoRefDone = useRef(false);
   const alreadyReferred = Boolean(profile?.referred_by);
+
+  // ---- Kích hoạt trực tiếp: chờ webhook SePay lật premium ----
+  const [justActivated, setJustActivated] = useState(false);
+  const wasPremium = useRef(isPremium);
+
+  // Poll hồ sơ trong lúc phụ huynh còn ngồi ở paywall sau khi chuyển khoản.
+  // Webhook cập nhật DB im lặng → không poll thì màn không đổi tới khi reload tay.
+  useEffect(() => {
+    if (!authLoaded || !cloudEnabled || !user || isPremium) return;
+    const stop = startActivationPoll({
+      onCheck: () => refreshAccount(),
+      intervalMs: ACTIVATION_POLL_MS,
+      maxMs: ACTIVATION_POLL_MAX_MS,
+    });
+    return stop;
+  }, [authLoaded, cloudEnabled, user, isPremium, refreshAccount]);
+
+  // Bắt đúng lúc chuyển not-premium → premium (chúc mừng + đo lường 1 lần).
+  useEffect(() => {
+    if (isPremium && !wasPremium.current) {
+      setJustActivated(true);
+      track("premium_activated_live");
+    }
+    wasPremium.current = isPremium;
+  }, [isPremium]);
 
   // Stash a link-borne ref code immediately so it outlives the sign-up redirect.
   useEffect(() => {
@@ -208,6 +240,11 @@ function PremiumContent() {
       {/* Current status */}
       {isPremium ? (
         <div className="bg-amber-light border-2 border-amber rounded-2xl p-4 text-center space-y-1">
+          {justActivated && (
+            <p className="text-sm font-black text-forest">
+              🎉 {locale === "vi" ? "Đã kích hoạt Premium thành công!" : "Premium activated successfully!"}
+            </p>
+          )}
           <p className="text-sm font-black text-amber-dark">👑 {t("premium.badge")}</p>
           {profile?.premium_until && (
             <p className="text-[11px] font-bold text-gray-600">
@@ -262,6 +299,16 @@ function PremiumContent() {
                 {BANK_HOLDER && <p>{BANK_HOLDER}</p>}
               </div>
             )}
+
+            {/* Trấn an "đã CK mà chưa thấy gì?" — trang tự dò và lật Premium khi webhook về */}
+            <div className="flex items-center justify-center gap-2 text-[10.5px] font-bold text-forest">
+              <span className="inline-block h-2 w-2 rounded-full bg-forest animate-pulse" />
+              <span>
+                {locale === "vi"
+                  ? "Sau khi chuyển khoản, trang sẽ tự cập nhật Premium trong giây lát."
+                  : "After you transfer, this page updates to Premium automatically in a moment."}
+              </span>
+            </div>
           </div>
         </>
       )}
