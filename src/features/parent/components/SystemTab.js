@@ -5,7 +5,7 @@ import { useGame } from "@/context/GameState";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
-import { BUSY_MODE_MS } from "@/lib/game/constants";
+import { BUSY_MODE_MS, COIN_RATE_VND } from "@/lib/game/constants";
 import { track } from "@/lib/analytics";
 import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe, Plane, Settings } from "lucide-react";
 
@@ -32,11 +32,9 @@ export default function SystemTab() {
   // Config fields
   const [maxMinutes, setMaxMinutes] = useState(60);
   const [maxRedeems, setMaxRedeems] = useState(5);
-  const [topVnd, setTopVnd] = useState(500000);
-  const [topDays, setTopDays] = useState(14);
   const [requireMandatory, setRequireMandatory] = useState(true);
   const [smartAuto, setSmartAuto] = useState(true);
-  const [maxCoins, setMaxCoins] = useState(7000);
+  const [maxCoins, setMaxCoins] = useState(2000);
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [isChangingPin, setIsChangingPin] = useState(false);
@@ -45,11 +43,9 @@ export default function SystemTab() {
     if (isLoaded && parentConfig) {
       setMaxMinutes(parentConfig.screenMaxMinutesPerDay || 60);
       setMaxRedeems(parentConfig.screenRedeemMaxPerWeek || 5);
-      setTopVnd(parentConfig.topRewardMoneyVnd || 500000);
-      setTopDays(parentConfig.topRewardEffortDays || 14);
       setRequireMandatory(parentConfig.requireAllMandatory !== false);
       setSmartAuto(parentConfig.smartAutoApprove !== false);
-      setMaxCoins(parentConfig.maxCoinBalance || 7000);
+      setMaxCoins(parentConfig.maxCoinBalance || 2000);
     }
   }, [isLoaded, parentConfig]);
 
@@ -58,8 +54,6 @@ export default function SystemTab() {
     setParentConfig({
       screenMaxMinutesPerDay: maxMinutes,
       screenRedeemMaxPerWeek: maxRedeems,
-      topRewardMoneyVnd: topVnd,
-      topRewardEffortDays: topDays,
       requireAllMandatory: requireMandatory,
       smartAutoApprove: smartAuto,
       maxCoinBalance: maxCoins,
@@ -127,8 +121,6 @@ export default function SystemTab() {
         <div className="grid grid-cols-2 gap-3">
           {numField("TV/iPad tối đa (phút/ngày)", maxMinutes, setMaxMinutes)}
           {numField("Lượt đổi tối đa (tuần)", maxRedeems, setMaxRedeems)}
-          {numField("Ngân sách quà đỉnh (VNĐ)", topVnd, setTopVnd)}
-          {numField("Số ngày cày quà đỉnh", topDays, setTopDays)}
           {numField("Trần ví coin của con", maxCoins, setMaxCoins)}
           <label className="flex items-end gap-2 text-scale-2xs font-bold text-gray-600 cursor-pointer min-h-tap pb-2">
             <input
@@ -158,7 +150,7 @@ export default function SystemTab() {
         </label>
 
         <div className="bg-sand-light rounded-xl p-3 text-scale-2xs text-gray-500 font-bold">
-          📊 Tỷ giá hiện tại: 1 🪙 ≈ {Math.round(topVnd / (250 * Math.max(1, topDays)))} VNĐ · Tuần này con đã đổi {screenRedeemsThisWeek}/{maxRedeems} lượt giải trí
+          📊 Tỷ giá cố định: 1 🪙 = {COIN_RATE_VND.toLocaleString("vi-VN")}₫ · Tuần này con đã đổi {screenRedeemsThisWeek}/{maxRedeems} lượt giải trí
         </div>
 
         <div className="flex gap-2">

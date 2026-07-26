@@ -83,7 +83,7 @@ describe("completeTask", () => {
     expect(done.pendingPoints).toBe(5);
     expect(next.exp).toBe(10); // exp immediate
     expect(next.points).toBe(0); // points HELD, not credited
-    expect(next.energy).toBe(state.energy + 2); // energy immediate (fun loop preserved)
+    expect(next.energy).toBe(state.energy + 1); // energy immediate (fun loop preserved)
     expect(next.stats.discipline).toBe(state.stats.discipline + 1);
     expect(events.isCritical).toBe(false);
     expect(events.pointsPending).toBe(true);
@@ -117,9 +117,9 @@ describe("completeTask", () => {
   test("mount adds 10% energy (ceil)", () => {
     const pet = { id: "pet_1", isMount: true };
     const state = freshState({ pets: [pet], activeMount: "pet_1", energy: 0 });
-    const task = state.tasks[0]; // energy 2 → ceil(2.2)=3
+    const task = state.tasks[0]; // energy 1 → ceil(1.1)=2
     const { state: next } = completeTask(state, task.id, rngQueue(0.99));
-    expect(next.energy).toBe(3);
+    expect(next.energy).toBe(2);
   });
 
   test("boss takes ceil(exp/3) damage and can be defeated", () => {
@@ -332,9 +332,9 @@ describe("claimReward", () => {
   test("heroCoins reward deducts coins and adds pet egg", () => {
     const base = completeAllMandatory(freshState());
     const state = { ...base, heroCoins: 100 };
-    const { state: next, result } = claimReward(state, "rp1"); // base egg, 30 coins
+    const { state: next, result } = claimReward(state, "rp1"); // base egg, 15 coins
     expect(result.success).toBe(true);
-    expect(next.heroCoins).toBe(70);
+    expect(next.heroCoins).toBe(85);
     expect(next.inventory.eggs.base).toBe(1);
   });
 
@@ -360,7 +360,7 @@ describe("resetDailyTasks", () => {
     expect(next.streak).toBe(3);
     expect(next.tasks.every((t) => !t.completed)).toBe(true);
     expect(next.screenMinutesUsedToday).toBe(0);
-    expect(next.energy).toBe(state.energy + 10);
+    expect(next.energy).toBe(state.energy + 5);
   });
 
   test("streak resets to 0 when nothing completed and no freeze cards", () => {
@@ -664,7 +664,7 @@ describe("streak freeze ❄️", () => {
     });
     const { state: next, result } = claimReward(base, "rf1");
     expect(result.success).toBe(true);
-    expect(next.heroCoins).toBe(40); // cost 60
+    expect(next.heroCoins).toBe(70); // cost 30
     expect(next.streakFreezes).toBe(1);
   });
 

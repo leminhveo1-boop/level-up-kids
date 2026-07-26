@@ -35,7 +35,7 @@ export default function ApprovalTab() {
 
   const [flash, setFlash] = useState("");
   const [quickMsg, setQuickMsg] = useState("");
-  const [bonusAmount, setBonusAmount] = useState(20);
+  const [bonusAmount, setBonusAmount] = useState(10);
   // Progressive disclosure — secondary tools stay folded so the landing isn't
   // overwhelming (real parent feedback: "vào thấy ngộp, quá nhiều chữ").
   const [showLog, setShowLog] = useState(false);

@@ -28,6 +28,7 @@ import {
   FOCUS_BONUS_RATIO,
   FADE_START,
   FADE_FLOOR,
+  DEFAULT_PARENT_CONFIG,
 } from "./constants";
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
@@ -460,7 +461,7 @@ export function mineTreasure(state, rng = Math.random) {
 
   if (isCritical) coinReward *= 2;
 
-  const maxCoins = state.parentConfig?.maxCoinBalance ?? 7000;
+  const maxCoins = state.parentConfig?.maxCoinBalance ?? DEFAULT_PARENT_CONFIG.maxCoinBalance;
   const record = {
     id: makeId(),
     title,

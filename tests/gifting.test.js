@@ -50,7 +50,7 @@ describe("applyGiftToRecipient", () => {
   test("coin gift adds heroCoins to the recipient", () => {
     const recipient = { ...createInitialState({ name: "Sibling" }), heroCoins: 10 };
     const next = applyGiftToRecipient(recipient, "gift_coins", "Chị Ba");
-    expect(next.heroCoins).toBe(25);
+    expect(next.heroCoins).toBe(17); // 10 + gift_coins amount 7
   });
 
   test("caps the received-gifts log at 20 entries", () => {

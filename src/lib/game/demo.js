@@ -62,7 +62,7 @@ export function createDemoState() {
     exp: 320,
     streak: 6,
     energy: 72,
-    heroCoins: 385,
+    heroCoins: 180,
     points: 96,
     trustScore: 88, // Uy Tín cao → demo khoe luôn auto-duyệt thông minh
     treeGrowth: 175, // D5: demo tree già dặn (giai đoạn "Cây Nhỏ") để khoe sứ mệnh chung

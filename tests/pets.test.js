@@ -99,7 +99,8 @@ describe("migrateState (legacy saves)", () => {
       rewards: [{ id: "r5", title: "Kem", cost: 100, currency: "gold", type: "perk" }],
     };
     const migrated = migrateState(legacy);
-    expect(migrated.heroCoins).toBe(120);
+    // Save v1 (chưa có stateVersion) → rescale ví sang tỷ giá mới: 120 / 7 ≈ 17
+    expect(migrated.heroCoins).toBe(17);
     expect(migrated.tasks[0].energy).toBe(15); // gold 3 * 5
     expect(migrated.rewards[0].currency).toBe("heroCoins");
   });
@@ -108,7 +109,7 @@ describe("migrateState (legacy saves)", () => {
     const migrated = migrateState(null);
     expect(migrated.level).toBe(1);
     expect(Array.isArray(migrated.tasks)).toBe(true);
-    expect(migrated.parentConfig.maxCoinBalance).toBe(7000);
+    expect(migrated.parentConfig.maxCoinBalance).toBe(2000);
   });
 
   test("heals duplicate task/reward ids from same-millisecond batch inserts", () => {

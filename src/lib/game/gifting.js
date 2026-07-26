@@ -6,10 +6,10 @@
  */
 
 export const GIFT_CATALOG = [
-  { id: "gift_meat", label: "Thịt Bò 🥩 cho thú cưng", emoji: "🥩", kind: "food", key: "meat", cost: 12 },
-  { id: "gift_candy", label: "Kẹo Ngọt 🍬 cho thú cưng", emoji: "🍬", kind: "food", key: "candy", cost: 12 },
-  { id: "gift_leaf", label: "Lá Cây 🌿 cho thú cưng", emoji: "🌿", kind: "food", key: "leaf", cost: 12 },
-  { id: "gift_coins", label: "15 Hero Coins 🪙", emoji: "🪙", kind: "coins", amount: 15, cost: 20 },
+  { id: "gift_meat", label: "Thịt Bò 🥩 cho thú cưng", emoji: "🥩", kind: "food", key: "meat", cost: 6 },
+  { id: "gift_candy", label: "Kẹo Ngọt 🍬 cho thú cưng", emoji: "🍬", kind: "food", key: "candy", cost: 6 },
+  { id: "gift_leaf", label: "Lá Cây 🌿 cho thú cưng", emoji: "🌿", kind: "food", key: "leaf", cost: 6 },
+  { id: "gift_coins", label: "7 Hero Coins 🪙", emoji: "🪙", kind: "coins", amount: 7, cost: 10 },
 ];
 
 export function findGift(giftId) {

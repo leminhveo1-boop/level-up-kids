@@ -9,42 +9,42 @@ export const COSMETIC_SLOTS = ["hat", "frame", "petAccessory", ...ROOM_SLOTS];
 
 export const COSMETICS_CATALOG = [
   // Hats (đội lên avatar)
-  { id: "hat_crown", slot: "hat", name: "Vương Miện Vàng", emoji: "👑", cost: 120, rarity: "epic" },
-  { id: "hat_wizard", slot: "hat", name: "Mũ Phù Thủy", emoji: "🧙", cost: 80, rarity: "rare" },
-  { id: "hat_cap", slot: "hat", name: "Mũ Lưỡi Trai Cool", emoji: "🧢", cost: 40, rarity: "common" },
-  { id: "hat_flower", slot: "hat", name: "Vòng Hoa Mùa Xuân", emoji: "🌸", cost: 40, rarity: "common" },
-  { id: "hat_ninja", slot: "hat", name: "Khăn Ninja Bí Ẩn", emoji: "🥷", cost: 80, rarity: "rare" },
+  { id: "hat_crown", slot: "hat", name: "Vương Miện Vàng", emoji: "👑", cost: 60, rarity: "epic" },
+  { id: "hat_wizard", slot: "hat", name: "Mũ Phù Thủy", emoji: "🧙", cost: 40, rarity: "rare" },
+  { id: "hat_cap", slot: "hat", name: "Mũ Lưỡi Trai Cool", emoji: "🧢", cost: 20, rarity: "common" },
+  { id: "hat_flower", slot: "hat", name: "Vòng Hoa Mùa Xuân", emoji: "🌸", cost: 20, rarity: "common" },
+  { id: "hat_ninja", slot: "hat", name: "Khăn Ninja Bí Ẩn", emoji: "🥷", cost: 40, rarity: "rare" },
 
   // Frames (khung avatar — đổi màu viền)
-  { id: "frame_gold", slot: "frame", name: "Khung Hoàng Kim", value: "#D97706", cost: 100, rarity: "epic" },
-  { id: "frame_ice", slot: "frame", name: "Khung Băng Giá", value: "#0284C7", cost: 60, rarity: "rare" },
-  { id: "frame_nature", slot: "frame", name: "Khung Rừng Xanh", value: "#2E7D32", cost: 60, rarity: "rare" },
-  { id: "frame_candy", slot: "frame", name: "Khung Kẹo Ngọt", value: "#E11D48", cost: 60, rarity: "rare" },
+  { id: "frame_gold", slot: "frame", name: "Khung Hoàng Kim", value: "#D97706", cost: 50, rarity: "epic" },
+  { id: "frame_ice", slot: "frame", name: "Khung Băng Giá", value: "#0284C7", cost: 30, rarity: "rare" },
+  { id: "frame_nature", slot: "frame", name: "Khung Rừng Xanh", value: "#2E7D32", cost: 30, rarity: "rare" },
+  { id: "frame_candy", slot: "frame", name: "Khung Kẹo Ngọt", value: "#E11D48", cost: 30, rarity: "rare" },
 
   // Pet accessories (phụ kiện cho thú cưng — "mua áo cho cú")
-  { id: "pet_bow", slot: "petAccessory", name: "Nơ Xinh Cho Pet", emoji: "🎀", cost: 50, rarity: "common" },
-  { id: "pet_glasses", slot: "petAccessory", name: "Kính Ngầu Cho Pet", emoji: "🕶️", cost: 70, rarity: "rare" },
-  { id: "pet_scarf", slot: "petAccessory", name: "Khăn Ấm Cho Pet", emoji: "🧣", cost: 50, rarity: "common" },
+  { id: "pet_bow", slot: "petAccessory", name: "Nơ Xinh Cho Pet", emoji: "🎀", cost: 25, rarity: "common" },
+  { id: "pet_glasses", slot: "petAccessory", name: "Kính Ngầu Cho Pet", emoji: "🕶️", cost: 35, rarity: "rare" },
+  { id: "pet_scarf", slot: "petAccessory", name: "Khăn Ấm Cho Pet", emoji: "🧣", cost: 25, rarity: "common" },
 
   // D6 Căn Cứ — Walls (nền cảnh phía sau)
-  { id: "wall_brick", slot: "roomWall", name: "Tường Gạch Ấm Cúng", emoji: "🧱", cost: 60, rarity: "common" },
-  { id: "wall_rainbow", slot: "roomWall", name: "Tường Cầu Vồng", emoji: "🌈", cost: 90, rarity: "rare" },
-  { id: "wall_galaxy", slot: "roomWall", name: "Tường Ngân Hà", emoji: "🌌", cost: 160, rarity: "epic" },
+  { id: "wall_brick", slot: "roomWall", name: "Tường Gạch Ấm Cúng", emoji: "🧱", cost: 30, rarity: "common" },
+  { id: "wall_rainbow", slot: "roomWall", name: "Tường Cầu Vồng", emoji: "🌈", cost: 45, rarity: "rare" },
+  { id: "wall_galaxy", slot: "roomWall", name: "Tường Ngân Hà", emoji: "🌌", cost: 80, rarity: "epic" },
 
   // D6 Căn Cứ — Floors (sàn nhà)
-  { id: "floor_wood", slot: "roomFloor", name: "Sàn Gỗ Mộc", emoji: "🟫", cost: 60, rarity: "common" },
-  { id: "floor_grass", slot: "roomFloor", name: "Thảm Cỏ Xanh", emoji: "🟩", cost: 90, rarity: "rare" },
-  { id: "floor_crystal", slot: "roomFloor", name: "Sàn Pha Lê", emoji: "🔷", cost: 160, rarity: "epic" },
+  { id: "floor_wood", slot: "roomFloor", name: "Sàn Gỗ Mộc", emoji: "🟫", cost: 30, rarity: "common" },
+  { id: "floor_grass", slot: "roomFloor", name: "Thảm Cỏ Xanh", emoji: "🟩", cost: 45, rarity: "rare" },
+  { id: "floor_crystal", slot: "roomFloor", name: "Sàn Pha Lê", emoji: "🔷", cost: 80, rarity: "epic" },
 
   // D6 Căn Cứ — Furniture (nội thất chính)
-  { id: "furn_desk", slot: "roomFurniture", name: "Bàn Học Anh Hùng", emoji: "🪑", cost: 80, rarity: "common" },
-  { id: "furn_books", slot: "roomFurniture", name: "Kệ Sách Trí Tuệ", emoji: "📚", cost: 100, rarity: "rare" },
-  { id: "furn_game", slot: "roomFurniture", name: "Góc Game Thư Giãn", emoji: "🎮", cost: 140, rarity: "epic" },
-  { id: "furn_trophy", slot: "roomFurniture", name: "Tủ Cúp Vinh Danh", emoji: "🏆", cost: 200, rarity: "epic" },
+  { id: "furn_desk", slot: "roomFurniture", name: "Bàn Học Anh Hùng", emoji: "🪑", cost: 40, rarity: "common" },
+  { id: "furn_books", slot: "roomFurniture", name: "Kệ Sách Trí Tuệ", emoji: "📚", cost: 50, rarity: "rare" },
+  { id: "furn_game", slot: "roomFurniture", name: "Góc Game Thư Giãn", emoji: "🎮", cost: 70, rarity: "epic" },
+  { id: "furn_trophy", slot: "roomFurniture", name: "Tủ Cúp Vinh Danh", emoji: "🏆", cost: 100, rarity: "epic" },
 
   // D6 Căn Cứ — Pet corner (chỗ ở cho thú cưng)
-  { id: "petroom_house", slot: "roomPet", name: "Nhà Nhỏ Cho Pet", emoji: "🏠", cost: 70, rarity: "common" },
-  { id: "petroom_bed", slot: "roomPet", name: "Ổ Nệm Êm Cho Pet", emoji: "🧺", cost: 90, rarity: "rare" },
+  { id: "petroom_house", slot: "roomPet", name: "Nhà Nhỏ Cho Pet", emoji: "🏠", cost: 35, rarity: "common" },
+  { id: "petroom_bed", slot: "roomPet", name: "Ổ Nệm Êm Cho Pet", emoji: "🧺", cost: 45, rarity: "rare" },
 ];
 
 export const DEFAULT_COSMETICS = {

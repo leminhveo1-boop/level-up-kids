@@ -4,7 +4,7 @@
  * scales up each week, and defeating it unlocks a real loot chest.
  */
 
-import { BOSS_MAX_HP, BOSS_HP_SCALE_PER_CYCLE, BOSS_HP_SCALE_MAX_CYCLES, BOSS_LOOT_COIN_MIN, BOSS_LOOT_COIN_MAX } from "./constants";
+import { BOSS_MAX_HP, BOSS_HP_SCALE_PER_CYCLE, BOSS_HP_SCALE_MAX_CYCLES, BOSS_LOOT_COIN_MIN, BOSS_LOOT_COIN_MAX, DEFAULT_PARENT_CONFIG } from "./constants";
 
 const BOSS_NAMES = [
   "Thần Lười Biếng 😴",
@@ -80,7 +80,7 @@ export function openBossChest(state, rng = Math.random) {
   if (state.bossChestOpened) return { state, result: { success: false, error: "CHEST_ALREADY_OPENED" } };
 
   const loot = rollBossLoot(rng);
-  const maxCoins = state.parentConfig?.maxCoinBalance ?? 7000;
+  const maxCoins = state.parentConfig?.maxCoinBalance ?? DEFAULT_PARENT_CONFIG.maxCoinBalance;
   const inventory = loot.egg
     ? { ...state.inventory, eggs: { ...state.inventory.eggs, [loot.egg]: (state.inventory.eggs[loot.egg] || 0) + 1 } }
     : state.inventory;

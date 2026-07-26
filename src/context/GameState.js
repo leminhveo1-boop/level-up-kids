@@ -878,6 +878,8 @@ export function GameProvider({ children }) {
         resetEntireGame,
         heroCoins: s.heroCoins,
         setHeroCoins: makeFieldSetter("heroCoins"),
+        coinRescaleNotice: s.coinRescaleNotice || false,
+        clearCoinRescaleNotice: () => makeFieldSetter("coinRescaleNotice")(false),
         points: s.points,
         setPoints: makeFieldSetter("points"),
         lastPointsGain: s.lastPointsGain,

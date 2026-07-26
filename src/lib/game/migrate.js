@@ -13,7 +13,21 @@ import {
   STARTING_ENERGY,
   BOSS_MAX_HP,
   PET_HUNGER_MAX,
+  COIN_RATE_VND,
+  STATE_VERSION,
+  ALL_DEFAULT_REWARDS,
 } from "./constants";
+
+// Tỷ giá cũ (động) mà state v1 đã dùng để định giá quà + tích ví:
+// coinRate = topRewardMoneyVnd / (250 × topRewardEffortDays). Default = 500000/(250×14) ≈ 142.86đ/xu.
+// F = tỷ giá mới / tỷ giá cũ ≈ 7 → chia để bảo toàn GIÁ TRỊ TIỀN THẬT khi 1 xu giờ = 1000đ.
+function legacyRescaleFactor(data) {
+  const cfg = data.parentConfig || {};
+  const legacyRate = (cfg.topRewardMoneyVnd || 500000) / (250 * (cfg.topRewardEffortDays || 14));
+  return COIN_RATE_VND / legacyRate; // ≈ 7.0
+}
+
+const DEFAULT_REWARD_BY_ID = new Map(ALL_DEFAULT_REWARDS.map((r) => [r.id, r]));
 
 /**
  * Rewrite duplicated ids (bug: same-millisecond batch inserts shared Date.now() ids).
@@ -40,6 +54,11 @@ function dedupeIds(items) {
  */
 export function migrateState(data) {
   if (!data || typeof data !== "object") return createInitialState();
+
+  // Rescale 1 lần cho state v1 (chưa có stateVersion) sang tỷ giá 1 xu = 1000đ.
+  // GATE CỨNG: state v2+ không rescale lại → chống chia lặp ví mỗi lần reload.
+  const needsRescale = !data.stateVersion;
+  const F = needsRescale ? legacyRescaleFactor(data) : 1;
 
   // Legacy: task.gold → task.energy
   let tasks = Array.isArray(data.tasks) ? data.tasks : DEFAULT_TASKS;
@@ -75,10 +94,29 @@ export function migrateState(data) {
   });
   rewards = dedupeIds(rewards);
 
+  // Rescale giá quà sang tỷ giá mới (chỉ v1):
+  //  - seed mặc định CHƯA sửa (id + title khớp default) → thay bằng entry giá mới;
+  //  - quà heroCoins custom/đã sửa → chia F (bảo toàn giá trị tiền thật);
+  //  - quà `points` (screen-time/skip-card) → giữ nguyên, không liên quan tỷ giá.
+  if (needsRescale) {
+    rewards = rewards.map((r) => {
+      const def = DEFAULT_REWARD_BY_ID.get(r.id);
+      if (def && r.title === def.title) return { ...def };
+      if (r.currency === "heroCoins" && typeof r.cost === "number") {
+        return { ...r, cost: Math.max(1, Math.round(r.cost / F)) };
+      }
+      return r;
+    });
+  }
+
   // Legacy: gold wallet → heroCoins
-  const heroCoins = data.heroCoins !== undefined ? data.heroCoins : data.gold || 0;
+  const rawHeroCoins = data.heroCoins !== undefined ? data.heroCoins : data.gold || 0;
+  const heroCoins = needsRescale ? Math.round(rawHeroCoins / F) : rawHeroCoins;
 
   return {
+    stateVersion: STATE_VERSION,
+    // Cờ 1-lần để UI kid hiện banner "tiền đã quy đổi theo tỷ giá mới, giá trị không đổi".
+    coinRescaleNotice: needsRescale ? true : (data.coinRescaleNotice || false),
     charName: data.charName || "",
     charClass: data.charClass || "Warrior",
     level: data.level || 1,

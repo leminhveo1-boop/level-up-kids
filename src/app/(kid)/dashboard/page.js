@@ -20,7 +20,7 @@ import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
 import BottomNav from "@/ui/BottomNav";
-import { Target, SlidersHorizontal } from "lucide-react";
+import { Target, SlidersHorizontal, Coins } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -61,6 +61,8 @@ export default function DashboardPage() {
     receivedGifts,
     markReceivedGiftsRead,
     sendGift,
+    coinRescaleNotice,
+    clearCoinRescaleNotice,
   } = useGame();
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -225,6 +227,24 @@ export default function DashboardPage() {
           unreadCount={unreadLetters.length}
           onOpenLetter={handleOpenLetter}
         />
+
+        {/* 💫 Thông báo 1-lần: ví đã quy đổi sang tỷ giá mới (1 xu = 1.000đ), giá trị KHÔNG đổi */}
+        {coinRescaleNotice && (
+          <div className="w-full bg-amber-light border-2 border-amber p-3.5 rounded-2xl flex items-start gap-2.5 animate-fade-in">
+            <Coins size={20} className="text-amber-dark flex-shrink-0 mt-0.5" />
+            <div className="space-y-2 flex-grow min-w-0">
+              <p className="text-[12px] font-black text-amber-dark leading-snug">
+                Xu của con vừa đổi sang tỷ giá mới — mỗi xu giờ đáng 1.000đ. Giá quà cũng đổi theo nên giá trị vẫn y nguyên nhé! 💫
+              </p>
+              <button
+                onClick={clearCoinRescaleNotice}
+                className="min-h-tap bg-sky text-white text-[10px] font-black px-5 rounded-xl active:scale-95 transition-transform"
+              >
+                Con hiểu rồi!
+              </button>
+            </div>
+          </div>
+        )}
 
         <HeroCard
           charName={charName}

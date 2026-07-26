@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getJourneysForAge, JOURNEY_AGE_BANDS, recommendJourneys, getPainpointById } from "@/lib/game/journeys";
 import PainpointPicker from "@/features/parent/components/PainpointPicker";
 import { track } from "@/lib/analytics";
+import { COIN_RATE_VND } from "@/lib/game/constants";
 
 /**
  * Onboarding wizard — from "paid" to "child playing" in under 3 minutes.
@@ -91,10 +92,8 @@ export default function SetupWizardPage() {
   const [pin2, setPin2] = useState("");
   const [pinError, setPinError] = useState("");
 
-  // VND → coin theo tỷ giá kinh tế của app (đồng bộ với trang parent)
-  const coinRate =
-    (parentConfig?.topRewardMoneyVnd || 500000) / (250 * (parentConfig?.topRewardEffortDays || 14));
-  const vndToCoins = (vnd) => Math.max(1, Math.round(vnd / coinRate));
+  // VND → xu theo tỷ giá CỐ ĐỊNH 1 xu = 1000đ (đồng bộ toàn app, phụ huynh nhẩm được)
+  const vndToCoins = (vnd) => Math.max(1, Math.round(vnd / COIN_RATE_VND));
 
   useEffect(() => {
     if (authLoaded && isLoaded && (!activeChildId || isDemo)) router.replace("/family");
@@ -342,8 +341,8 @@ export default function SetupWizardPage() {
       {step === 2 && (
         <div className="space-y-4 flex-grow">
           <p className="text-xs font-bold text-gray-500">
-            Đặt 3 phần quà đầu tiên — bé nhìn thấy mục tiêu là có động lực ngay! (1 🪙 ≈{" "}
-            {Math.round(coinRate).toLocaleString("vi-VN")}₫)
+            Đặt 3 phần quà đầu tiên — bé nhìn thấy mục tiêu là có động lực ngay! (1 🪙 ={" "}
+            {COIN_RATE_VND.toLocaleString("vi-VN")}₫)
           </p>
 
           {rewards.map((r, i) => (

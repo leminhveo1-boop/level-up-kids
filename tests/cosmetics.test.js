@@ -8,10 +8,10 @@ const freshState = (overrides = {}) => ({ ...createInitialState({ name: "Tí" })
 describe("cosmetics shop (Góc Của Tớ)", () => {
   test("buy deducts coins, adds ownership, auto-equips", () => {
     const state = freshState({ heroCoins: 100 });
-    const { state: next, result } = buyCosmetic(state, "hat_cap"); // 40c
+    const { state: next, result } = buyCosmetic(state, "hat_cap"); // 20c
 
     expect(result.success).toBe(true);
-    expect(next.heroCoins).toBe(60);
+    expect(next.heroCoins).toBe(80);
     expect(next.cosmetics.owned).toContain("hat_cap");
     expect(next.cosmetics.equipped.hat).toBe("hat_cap");
     // immutability

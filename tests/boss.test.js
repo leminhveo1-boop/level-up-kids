@@ -72,8 +72,8 @@ describe("advanceBossWeek", () => {
 describe("rollBossLoot", () => {
   test("rolls coins within the generous boss range", () => {
     const loot = rollBossLoot(rngQueue(0, 0.99));
-    expect(loot.coins).toBeGreaterThanOrEqual(40);
-    expect(loot.coins).toBeLessThanOrEqual(80);
+    expect(loot.coins).toBeGreaterThanOrEqual(20);
+    expect(loot.coins).toBeLessThanOrEqual(40);
   });
 
   test("low roll grants a dragon egg", () => {

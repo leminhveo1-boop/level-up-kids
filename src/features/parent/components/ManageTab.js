@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
+import { COIN_RATE_VND } from "@/lib/game/constants";
 import JourneySection from "@/features/parent/components/JourneySection";
 import { Trash2, Plus } from "lucide-react";
 
@@ -102,7 +103,7 @@ export default function ManageTab() {
   const [rewardMinutes, setRewardMinutes] = useState(20);
   const [rewardCurrency, setRewardCurrency] = useState("points");
 
-  const coinRate = (parentConfig?.topRewardMoneyVnd || 500000) / (250 * (parentConfig?.topRewardEffortDays || 14));
+  const coinRate = COIN_RATE_VND; // tỷ giá cố định 1 xu = 1000đ
 
   const handleAddReward = (e) => {
     e.preventDefault();
@@ -341,7 +342,7 @@ export default function ManageTab() {
                 setRewardVnd(vnd || "");
                 setRewardCost(Math.max(1, Math.round(vnd / coinRate)) || 1);
               }}
-              placeholder={`Giá tiền thật VNĐ (1🪙 ≈ ${Math.round(coinRate)}₫)...`}
+              placeholder={`Giá tiền thật VNĐ (1🪙 = ${coinRate.toLocaleString("vi-VN")}₫)...`}
               className="w-full min-h-tap bg-white border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none"
             />
           )}
