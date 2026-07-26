@@ -73,14 +73,20 @@ export function AuthProvider({ children }) {
     };
 
     const bootstrapCloud = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const sessionUser = sessionData?.session?.user || null;
-      if (cancelled) return;
-      setUser(sessionUser);
-      if (sessionUser) {
-        await refreshAccount(sessionUser.id);
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const sessionUser = sessionData?.session?.user || null;
+        if (cancelled) return;
+        setUser(sessionUser);
+        if (sessionUser) {
+          await refreshAccount(sessionUser.id);
+        }
+      } catch {
+        // getSession / nạp hồ sơ lỗi → vẫn cho app thoát loading (hiện màn
+        // chưa-đăng-nhập hoặc lỗi) thay vì treo spinner vô hạn.
+      } finally {
+        if (!cancelled) setAuthLoaded(true);
       }
-      if (!cancelled) setAuthLoaded(true);
     };
 
     if (cloudEnabled && supabase) {

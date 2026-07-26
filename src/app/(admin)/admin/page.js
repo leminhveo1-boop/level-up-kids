@@ -48,6 +48,33 @@ function mapError(msg) {
   return msg;
 }
 
+// ─── LoadingGate — spinner có lối thoát ─────────────────────────────────────
+
+const STUCK_AFTER_MS = 8000;
+
+/** Spinner cổng auth; nếu quá STUCK_AFTER_MS vẫn chưa qua → hiện nút Tải lại để
+ *  người dùng tự thoát, thay vì treo xoay vô hạn khi profile/session kẹt. */
+function LoadingGate() {
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setStuck(true), STUCK_AFTER_MS);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-forest" />
+      {stuck && (
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-gray-500 text-sm">Tải lâu hơn bình thường?</p>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Tải lại trang
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── StatCard ────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value, highlight }) {
@@ -448,13 +475,7 @@ export default function AdminPage() {
 
   // ─── gates ──────────────────────────────────────────────────────────────────
 
-  if (!authLoaded) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-forest" />
-      </div>
-    );
-  }
+  if (!authLoaded) return <LoadingGate />;
 
   if (!user) return null;
 
@@ -473,14 +494,8 @@ export default function AdminPage() {
     );
   }
 
-  // profile chưa load xong (null) → spinner
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-forest" />
-      </div>
-    );
-  }
+  // profile chưa load xong (null) → spinner có lối thoát
+  if (!profile) return <LoadingGate />;
 
   // ─── console ─────────────────────────────────────────────────────────────────
 
