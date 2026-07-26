@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import BottomNav from "@/ui/BottomNav";
+import { ChevronLeft } from "lucide-react";
 
 export default function RewardsPage() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export default function RewardsPage() {
             onClick={() => router.push("/dashboard")}
             className="text-xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider flex items-center gap-1"
           >
-            🌳 Dashboard
+            <ChevronLeft size={14} /><span>Trang chính</span>
           </button>
           
           {/* Dual Wallet Display */}

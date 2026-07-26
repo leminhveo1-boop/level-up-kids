@@ -8,6 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { COSMETICS_CATALOG, getEquipped } from "@/lib/game/cosmetics";
 import { PET_ROSTER, getPetMood } from "@/lib/game/pets";
 import BottomNav from "@/ui/BottomNav";
+import { ChevronLeft } from "lucide-react";
 
 const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
 
@@ -96,9 +97,9 @@ export default function MyCornerPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.push("/dashboard")}
-            className="min-h-tap text-scale-2xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider"
+            className="min-h-tap text-scale-2xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider flex items-center gap-1"
           >
-            🌳 Dashboard
+            <ChevronLeft size={14} /><span>Trang chính</span>
           </button>
           <div className="bg-amber-light border border-amber/30 px-3 py-1.5 rounded-full flex items-center gap-1">
             <span>🪙</span>

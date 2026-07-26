@@ -276,7 +276,7 @@ export default function ManageTab() {
             type="submit"
             className="w-full min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <Plus size={16} /> THÊM NHIỆM VỤ
+            <Plus size={16} /> Thêm nhiệm vụ
           </button>
         </form>
 
@@ -376,7 +376,7 @@ export default function ManageTab() {
             type="submit"
             className="w-full min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <Plus size={16} /> THÊM PHẦN THƯỞNG
+            <Plus size={16} /> Thêm phần thưởng
           </button>
         </form>
 

@@ -29,9 +29,7 @@ export default function StatusBar({
       {/* Energy */}
       <div className={pill}>
         <Zap size={14} className="text-terracotta" fill="currentColor" />
-        <div className="w-6 bg-sand h-1.5 rounded-full overflow-hidden">
-          <div className="bg-terracotta h-full transition-all duration-300" style={{ width: `${energy}%` }} />
-        </div>
+        <span className={num}>{energy}</span>
       </div>
 
       {/* Points */}

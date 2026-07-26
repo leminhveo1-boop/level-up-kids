@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
 import BottomNav from "@/ui/BottomNav";
+import { ChevronLeft } from "lucide-react";
 
 export default function MiningCavePage() {
   const router = useRouter();
@@ -161,7 +162,7 @@ export default function MiningCavePage() {
             onClick={() => router.push("/dashboard")}
             className="text-xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider flex items-center gap-1"
           >
-            🌳 Dashboard
+            <ChevronLeft size={14} /><span>Trang chính</span>
           </button>
           
           {/* Dual Wallet Display */}

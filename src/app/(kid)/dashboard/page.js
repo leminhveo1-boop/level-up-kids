@@ -20,7 +20,7 @@ import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
 import BottomNav from "@/ui/BottomNav";
-import { Target, SlidersHorizontal, Coins } from "lucide-react";
+import { Target, SlidersHorizontal, Coins, Globe, Mail } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -303,16 +303,16 @@ export default function DashboardPage() {
 
             {/* 🎁 D3: unread gifts from siblings */}
             {receivedGifts?.some((g) => !g.read) && (
-              <div className="w-full bg-purple-50 border-2 border-purple-200 p-3 rounded-2xl space-y-1.5">
-                <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">{t("game.tasks.giftsTitle")}</span>
+              <div className="w-full accent-soft-bg border-2 accent-border p-3 rounded-2xl space-y-1.5">
+                <span className="text-[10px] font-black accent-text uppercase tracking-wider">{t("game.tasks.giftsTitle")}</span>
                 {receivedGifts.filter((g) => !g.read).slice(0, 3).map((g) => (
-                  <p key={g.id} className="text-[11px] font-bold text-purple-800">
+                  <p key={g.id} className="text-[11px] font-bold text-forest-dark">
                     {t("game.tasks.gaveYou", { emoji: g.emoji, name: g.fromName, label: g.label })}
                   </p>
                 ))}
                 <button
                   onClick={markReceivedGiftsRead}
-                  className="min-h-tap bg-white border border-purple-200 text-purple-700 text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
+                  className="min-h-tap bg-white accent-border border accent-text text-[10px] font-black px-3 rounded-xl active:scale-95 transition-transform"
                 >
                   {t("game.tasks.thanks")}
                 </button>
@@ -385,8 +385,17 @@ export default function DashboardPage() {
           {/* Tasks — Kanban-grouped view */}
           <div className="space-y-3.5">
             {filteredTasks.length === 0 ? (
-              <div className="bg-white border-2 border-sand border-dashed p-8 rounded-2xl text-center text-xs text-gray-400 font-bold">
-                {t("game.tasks.empty")}
+              <div className="bg-white border-2 border-sand border-dashed p-8 rounded-2xl text-center space-y-3">
+                <p className="text-xs text-gray-400 font-bold">{t("game.tasks.empty")}</p>
+                {taskFilter !== "all" && (
+                  <button
+                    type="button"
+                    onClick={() => setTaskFilter("all")}
+                    className="min-h-tap accent-text text-xs font-black underline underline-offset-2"
+                  >
+                    {t("game.filter.all")}
+                  </button>
+                )}
               </div>
             ) : (
               TASK_LANES.map(({ key, labelKey, filter }) => {
@@ -424,7 +433,7 @@ export default function DashboardPage() {
              region + hierarchy). ===== */}
         <div className="pt-1 space-y-4">
           <div className="flex items-center gap-2">
-            <span className="text-scale-2xs font-black text-gray-400 uppercase tracking-wider">🌍 {t("game.world.title")}</span>
+            <span className="text-scale-2xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><Globe size={13} />{t("game.world.title")}</span>
             <span className="flex-grow h-px bg-sand" />
           </div>
           {activeCompanion && <CompanionCard companion={activeCompanion} />}
@@ -446,11 +455,11 @@ export default function DashboardPage() {
       {unreadLetters.length > 0 && (
         <button
           onClick={() => handleOpenLetter(unreadLetters[0])}
-          className="fixed bottom-24 right-6 w-12 h-12 bg-white border-2 border-amber rounded-full shadow-game-amber flex items-center justify-center text-2xl z-40 animate-bounce active:scale-95 transition-transform"
+          className="fixed bottom-24 right-6 w-12 h-12 bg-white border-2 border-amber rounded-full shadow-game-amber flex items-center justify-center z-40 animate-bounce active:scale-95 transition-transform"
           type="button"
           title="Bồ câu đưa thư từ bố mẹ đang đợi con!"
         >
-          🕊️
+          <Mail size={22} className="text-amber-dark" />
           <span className="absolute -top-1 -right-1 bg-terracotta text-white font-extrabold text-[10px] h-4 w-4 rounded-full flex items-center justify-center border border-white animate-pulse">
             !
           </span>

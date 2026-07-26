@@ -97,9 +97,9 @@ export default function HeroCard({ charName, charClass, level, exp, expToNextLev
 
       {/* Hero Name, Title & Level Bar */}
       <div className="flex-grow space-y-1.5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-black text-forest-dark truncate max-w-[130px]">{charName}</h2>
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-base font-black text-forest-dark min-w-0 break-words leading-tight" title={charName}>{charName}</h2>
+          <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => router.push("/me")}
               className="min-h-tap text-[10px] font-black px-2 rounded-full bg-clay-light text-clay border border-clay/30 active:scale-95 transition-transform"

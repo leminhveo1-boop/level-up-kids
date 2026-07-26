@@ -116,7 +116,7 @@ function ActiveJourneyCard({ status, charName, cancelJourney, showFlash }) {
         }}
         className="w-full min-h-tap bg-white border border-sand text-gray-400 text-scale-2xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
       >
-        <Square size={12} /> DỪNG LỘ TRÌNH
+        <Square size={12} /> Dừng lộ trình
       </button>
     </div>
   );
@@ -187,7 +187,7 @@ function JourneyPicker({ startJourney, showFlash, intake, saveIntake }) {
             }}
             className="min-h-tap flex-shrink-0 bg-forest text-white text-scale-2xs font-black px-3 rounded-xl active:scale-95 transition-transform"
           >
-            BẮT ĐẦU
+            Bắt đầu
           </button>
         </div>
       ))}

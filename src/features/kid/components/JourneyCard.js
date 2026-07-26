@@ -32,7 +32,7 @@ export default function JourneyCard({ journey, tasks }) {
         <span className="text-4xl flex-shrink-0">{def.icon}</span>
         <div className="flex-grow min-w-0">
           <p className="text-scale-sm font-black text-forest-dark leading-tight">{def.title}</p>
-          <p className="text-scale-2xs text-forest-medium font-bold italic truncate">“{def.identity}”</p>
+          <p className="text-scale-2xs text-forest-medium font-bold italic leading-snug line-clamp-2">“{def.identity}”</p>
         </div>
       </div>
 

@@ -143,7 +143,7 @@ export default function FamilyPage() {
               {CLASS_EMOJI[child.char_class] || "🛡️"}
             </div>
             <div className="flex-grow min-w-0">
-              <h3 className="text-sm font-black text-forest-dark truncate">{child.name}</h3>
+              <h3 className="text-sm font-black text-forest-dark leading-tight break-words" title={child.name}>{child.name}</h3>
               <p className="text-[11px] text-gray-400 font-bold uppercase">{child.char_class}</p>
             </div>
             <button

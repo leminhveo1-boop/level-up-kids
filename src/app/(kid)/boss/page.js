@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
 import confetti from "canvas-confetti";
 import BottomNav from "@/ui/BottomNav";
+import { ChevronLeft } from "lucide-react";
 
 export default function BossPage() {
   const router = useRouter();
@@ -90,7 +91,7 @@ export default function BossPage() {
             onClick={() => router.push("/dashboard")}
             className="text-xs font-bold text-gray-500 hover:text-forest-dark uppercase tracking-wider flex items-center gap-1"
           >
-            🌳 Dashboard
+            <ChevronLeft size={14} /><span>Trang chính</span>
           </button>
           <span className="text-xs font-black text-terracotta">{t(`game.boss.headerTitle.${m}`)}</span>
         </div>

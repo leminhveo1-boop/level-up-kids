@@ -158,7 +158,7 @@ export default function SystemTab() {
             type="submit"
             className="flex-1 min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <Save size={16} /> LƯU THIẾT LẬP
+            <Save size={16} /> Lưu thiết lập
           </button>
           <button
             type="button"
@@ -238,7 +238,7 @@ export default function SystemTab() {
           }}
           className="w-full min-h-tap bg-amber text-white text-scale-xs font-black rounded-xl active:scale-[0.98] transition-transform"
         >
-          GIẢ LẬP NGÀY MỚI 🔄
+          Giả lập ngày mới
         </button>
       </div>
     </div>
@@ -275,7 +275,7 @@ function BusyModeCard({ showFlash }) {
         <Plane size={16} /> Tuần Bận (tự lái trọn gói)
         {isActive && (
           <span className="text-[11px] font-black text-white bg-amber rounded-full px-2 py-0.5">
-            CÒN {daysLeft} NGÀY
+            Còn {daysLeft} ngày
           </span>
         )}
       </h3>
@@ -289,7 +289,7 @@ function BusyModeCard({ showFlash }) {
           isActive ? "bg-sand text-gray-500" : "bg-amber text-white"
         }`}
       >
-        {isActive ? "TẮT TUẦN BẬN — DUYỆT TAY LẠI" : "BẬT TUẦN BẬN 7 NGÀY ✈️"}
+        {isActive ? "Tắt tuần bận — duyệt tay lại" : "Bật tuần bận 7 ngày"}
       </button>
     </div>
   );
@@ -345,7 +345,7 @@ function PushCard({ showFlash }) {
           enabled ? "bg-sand text-gray-500" : "bg-forest text-white"
         }`}
       >
-        {busy ? "Đang xử lý..." : enabled ? "TẮT THÔNG BÁO 🔕" : "BẬT THÔNG BÁO 🔔"}
+        {busy ? "Đang xử lý..." : enabled ? "Tắt thông báo" : "Bật thông báo"}
       </button>
     </div>
   );

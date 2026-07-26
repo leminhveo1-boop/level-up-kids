@@ -46,7 +46,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
               {!isMe && (
                 <button
                   onClick={() => setGiftPickerFor(giftPickerFor === sib.id ? null : sib.id)}
-                  className="min-h-tap min-w-tap flex items-center justify-center rounded-xl border-2 border-purple-200 bg-purple-50 text-base active:scale-95 transition-transform"
+                  className="min-h-tap min-w-tap flex items-center justify-center rounded-xl border-2 accent-border accent-soft-bg text-base active:scale-95 transition-transform"
                   title={t("game.family.giftFor", { name: sib.name })}
                 >
                   🎁
@@ -59,7 +59,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
 
       {giftPickerFor && (
         <div className="border-t border-sand pt-2 space-y-1.5">
-          <span className="text-[10px] font-black text-purple-700 uppercase tracking-wider">
+          <span className="text-[10px] font-black accent-text uppercase tracking-wider">
             {t("game.family.giftTitle", { name: childProfiles.find((c) => c.id === giftPickerFor)?.name })}
           </span>
           <div className="grid grid-cols-2 gap-1.5">
@@ -71,7 +71,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
                 className={`min-h-tap text-left px-2.5 py-2 rounded-xl border-2 text-[10px] font-bold flex items-center justify-between gap-1 transition-transform active:scale-95 ${
                   heroCoins < g.cost
                     ? "border-sand bg-sand-light text-gray-300"
-                    : "border-purple-200 bg-purple-50 text-purple-800"
+                    : "accent-border accent-soft-bg"
                 }`}
               >
                 <span>{g.emoji} {g.label}</span>
@@ -83,7 +83,7 @@ export default function FamilyStrip({ childProfiles, activeChildId, heroCoins, o
       )}
 
       {giftFlash && (
-        <p className="text-[10px] font-bold text-purple-700 text-center">{giftFlash}</p>
+        <p className="text-[10px] font-bold accent-text text-center">{giftFlash}</p>
       )}
     </div>
   );
