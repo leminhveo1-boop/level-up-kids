@@ -1,0 +1,11 @@
+-- P0 fix: /admin treo + premium client-side hỏng cho MỌI user.
+--
+-- profiles dùng column-level SELECT grant (cố tình giấu parent_pin_hash/pin_fail_count/
+-- pin_locked_until khỏi client). Cột is_admin thêm ở 20260725000001_admin_ops KHÔNG được
+-- cấp SELECT → PostgREST `select=*` chạm cột chưa cấp → 42501 permission denied → app đọc
+-- profile ra null → gate `!profile` của /admin xoay vô hạn, và isPremium luôn = false.
+--
+-- Cấp SELECT trên đúng cột is_admin cho authenticated (RLS profiles_select_own vẫn chỉ cho
+-- đọc row của chính mình). KHÔNG cấp cho anon: chỉ user đã đăng nhập mới cần biết mình có
+-- phải admin không. App cũng đã đổi sang select cột tường minh (không còn select *).
+grant select (is_admin) on public.profiles to authenticated;

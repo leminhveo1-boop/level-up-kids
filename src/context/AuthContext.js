@@ -121,8 +121,12 @@ export function AuthProvider({ children }) {
       const userId = uid || user?.id;
       if (!userId) return;
 
+      // KHÔNG select("*"): profiles giấu parent_pin_hash/pin_* bằng column-level grant,
+      // nên "*" chạm cột chưa cấp → 42501 → profile null. Chọn đúng các cột an toàn.
+      const PROFILE_COLS =
+        "id, email, display_name, plan, premium_until, premium_since, payment_code, locale, referral_code, referred_by, created_at, is_admin";
       const [{ data: prof }, { data: kids }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).single(),
+        supabase.from("profiles").select(PROFILE_COLS).eq("id", userId).single(),
         supabase.from("children").select("id, name, char_class, ui_mode").eq("parent_id", userId).order("created_at"),
       ]);
 
