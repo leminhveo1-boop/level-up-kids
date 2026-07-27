@@ -119,11 +119,11 @@ export default function MiningCavePage() {
       const clickX = e.clientX - rect.left || 150;
       const clickY = e.clientY - rect.top || 150;
 
-      let styleColor = "text-amber font-black";
+      let styleColor = "text-coin font-black";
       let prefix = "+";
-      if (result.lootType === "legendary") styleColor = "text-red-500 font-extrabold text-lg animate-bounce";
-      else if (result.lootType === "epic") styleColor = "text-amber-dark font-black text-base";
-      else if (result.lootType === "rare") styleColor = "text-sky-dark font-black";
+      if (result.lootType === "legendary") styleColor = "text-coin font-extrabold text-lg animate-bounce";
+      else if (result.lootType === "epic") styleColor = "text-coin font-black text-base";
+      else if (result.lootType === "rare") styleColor = "text-coin font-black";
 
       const newFloatingText = {
         id: Date.now() + Math.random(),
@@ -430,7 +430,7 @@ export default function MiningCavePage() {
                           <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border uppercase ${badgeStyle}`}>
                             {item.rarityText}
                           </span>
-                          <span className="text-xs font-black text-amber-dark">
+                          <span className="text-xs font-black text-coin">
                             {item.isMaterial ? "" : `+${item.coins} 🪙`}
                           </span>
                         </div>
