@@ -7,7 +7,8 @@ import { getAtRiskTasks } from "@/lib/game/habits";
 import { COIN_RATE_VND } from "@/lib/game/constants";
 import JourneySection from "@/features/parent/components/JourneySection";
 import TimetableSection from "@/features/parent/components/TimetableSection";
-import { Trash2, Plus } from "lucide-react";
+import Collapsible from "@/ui/Collapsible";
+import { Trash2, Plus, Gift, PackageOpen } from "lucide-react";
 
 const TASK_TEMPLATES = [
   { title: "🧹 Rửa bát chén sạch sẽ", category: "help", exp: 15, energy: 15, verifyType: "trust" },
@@ -183,6 +184,7 @@ export default function ManageTab() {
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark">🎯 Nhiệm vụ ngày</h3>
 
+        <Collapsible summary="Thêm nhiệm vụ mới" icon={Plus}>
         <form onSubmit={handleAddTask} className="space-y-2.5 bg-sand-light border border-sand rounded-xl p-3">
           <select
             onChange={(e) => {
@@ -280,9 +282,10 @@ export default function ManageTab() {
             type="submit"
             className="w-full min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <Plus size={16} /> Thêm nhiệm vụ
+            <Plus size={16} /> Lưu nhiệm vụ
           </button>
         </form>
+        </Collapsible>
 
         <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
           {tasks.map((t) => (
@@ -306,6 +309,7 @@ export default function ManageTab() {
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark">🎁 Cửa hàng quà</h3>
 
+        <Collapsible summary="Thêm phần thưởng mới" icon={Gift}>
         <form onSubmit={handleAddReward} className="space-y-2.5 bg-sand-light border border-sand rounded-xl p-3">
           <input
             type="text"
@@ -380,9 +384,10 @@ export default function ManageTab() {
             type="submit"
             className="w-full min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <Plus size={16} /> Thêm phần thưởng
+            <Plus size={16} /> Lưu phần thưởng
           </button>
         </form>
+        </Collapsible>
 
         <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
           {rewards.map((r) => (
@@ -406,6 +411,7 @@ export default function ManageTab() {
       {/* ============ INVENTORY GIFT ============ */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark">🎒 Tặng vật phẩm thú cưng</h3>
+        <Collapsible summary="Tặng vật phẩm" icon={PackageOpen} tone="quiet">
         <div className="flex items-center gap-2">
           <select
             value={itemType}
@@ -435,6 +441,7 @@ export default function ManageTab() {
             🎁 Tặng
           </button>
         </div>
+        </Collapsible>
       </div>
     </div>
   );

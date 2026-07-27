@@ -8,7 +8,8 @@ import {
   generateTimetableTasks,
   TIMETABLE_TASK_DEFAULTS,
 } from "@/lib/game/timetable";
-import { CalendarDays, Plus, Trash2, BookOpen, Backpack } from "lucide-react";
+import Collapsible from "@/ui/Collapsible";
+import { CalendarDays, Plus, Trash2, BookOpen, Backpack, SlidersHorizontal } from "lucide-react";
 
 /** Nhãn thứ tiếng Việt cho từng ô lịch. */
 const WEEKDAY_LABELS = {
@@ -104,6 +105,8 @@ export default function TimetableSection({ showFlash }) {
 
       {enabled && (
         <>
+          <Collapsible summary="Chỉnh môn & lịch học" icon={SlidersHorizontal} defaultOpen={subjectList.length === 0}>
+          <div className="space-y-3">
           {/* ---- Danh mục môn ---- */}
           <div className="bg-sand-light border border-sand rounded-xl p-3 space-y-2">
             <p className="text-scale-2xs font-black text-gray-500 uppercase tracking-wider">Môn học & quy tắc</p>
@@ -223,6 +226,8 @@ export default function TimetableSection({ showFlash }) {
               </label>
             ))}
           </div>
+          </div>
+          </Collapsible>
 
           {/* ---- Xem trước hôm nay ---- */}
           <div className="bg-forest-light/20 border border-forest/20 rounded-xl p-3 space-y-1">
