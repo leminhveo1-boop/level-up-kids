@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import MomentCard from "./MomentCard";
 import InsightCard from "./InsightCard";
+import CaregiverShareButton from "./CaregiverShareButton";
 import { REJECT_REASONS } from "@/lib/game/economy";
 import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap } from "lucide-react";
 
@@ -301,6 +302,9 @@ export default function ApprovalTab() {
         </div>
         )}
       </div>
+
+      {/* C2.4 — Chia sẻ lịch hôm nay cho ông bà (Zalo/SMS, không cần app) */}
+      <CaregiverShareButton />
 
       {/* Thẻ Khoảnh khắc — tri thức đúng-lúc sau 1 phút duyệt (SPEC_APP_LA_CHUYEN_GIA) */}
       <MomentCard />
