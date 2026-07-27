@@ -22,6 +22,7 @@ import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
 import { buildTinyTask } from "@/lib/game/habits";
 import * as journeySystem from "@/lib/game/journeys";
+import { generateTimetableTasks } from "@/lib/game/timetable";
 import { deliverGiftToSibling } from "@/lib/siblingGift";
 import { playSound } from "@/lib/sound";
 
@@ -207,7 +208,8 @@ export function GameProvider({ children }) {
     const todayStr = new Date().toLocaleDateString("vi-VN");
     if (state.lastResetDate && state.lastResetDate !== todayStr) {
       setState((prev) => ({
-        ...economy.resetDailyTasks(prev, Math.random, prev.lastResetDate),
+        // newDate = new Date() (ngày mới) → nguồn "thứ hôm nay" cho nhiệm vụ Thời khóa biểu
+        ...economy.resetDailyTasks(prev, Math.random, prev.lastResetDate, new Date()),
         lastResetDate: todayStr,
       }));
     } else if (!state.lastResetDate) {
@@ -675,6 +677,21 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  // ---------------- 📅 Thời khóa biểu (thời khóa biểu → tự sinh nhiệm vụ học) ----------------
+  /** Đặt/sửa TKB + làm mới NGAY nhiệm vụ học của hôm nay (không đợi sang ngày). */
+  const setTimetable = useCallback((timetable) => {
+    setState((prev) => {
+      if (!prev) return prev;
+      const others = (prev.tasks || []).filter((t) => t.source !== "timetable");
+      return {
+        ...prev,
+        timetable,
+        tasks: [...others, ...generateTimetableTasks(timetable, new Date())],
+      };
+    });
+    return { success: true };
+  }, []);
+
   // ---------------- B-lite: Lộ Trình (hành trình thói quen 3 tuần) ----------------
   const startJourney = useCallback((journeyId) => {
     let outcome = { success: false };
@@ -866,6 +883,8 @@ export function GameProvider({ children }) {
         deleteTask,
         splitTask,
         dismissAtRisk,
+        timetable: s.timetable || null,
+        setTimetable,
         journey: s.journey || null,
         journeysCompleted: s.journeysCompleted || [],
         lastJourneyCompleted: s.lastJourneyCompleted || null,
@@ -937,6 +956,7 @@ export function GameProvider({ children }) {
       deleteTask,
       splitTask,
       dismissAtRisk,
+      setTimetable,
       startJourney,
       cancelJourney,
       clearJourneyCelebration,

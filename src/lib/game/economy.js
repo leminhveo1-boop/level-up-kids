@@ -34,6 +34,7 @@ import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
 import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 import { advanceJourneyDaily } from "./journeys";
+import { generateTimetableTasks } from "./timetable";
 
 /**
  * PROD-1 — reward dose factor: việc đã thành nếp (habitStreak cao) rút DẦN liều điểm.
@@ -591,8 +592,10 @@ export function claimReward(state, rewardId, rng = Math.random) {
  * energy bonus, screen limits reset, nudges cleared.
  * @param {object} state
  * @param {() => number} [rng] injected for deterministic spot-check tests
+ * @param {string} [closingDate] ngày ĐÓNG (cũ) — cho snapshot lịch sử
+ * @param {Date} [newDate] ngày MỚI — nguồn "thứ hôm nay" để sinh nhiệm vụ Thời khóa biểu
  */
-export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
+export function resetDailyTasks(state, rng = Math.random, closingDate = "", newDate = new Date()) {
   // Day is over — any still-pending approvals default to TRUST before reset
   const settled = approveAllPending(state, { auto: true }).state;
 
@@ -642,6 +645,9 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     missStreak: t.completed ? 0 : (t.missStreak || 0) + 1,
   }));
   const remainingTasks = tasksWithHabits.filter((t) => {
+    // 📅 Thời khóa biểu: task theo ngày, không tồn dư — sinh lại ở dưới cho ngày mới.
+    // (loại trước vòng graduation: task lịch không phải "thói quen" nên không tốt nghiệp)
+    if (t.source === "timetable") return false;
     if ((t.habitStreak || 0) >= GRADUATION_DAYS) {
       graduatedNow.push({
         title: t.title,
@@ -668,17 +674,21 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "") {
     history,
     graduatedHabits: [...(journeyed.graduatedHabits || []), ...graduatedNow],
     lastGraduation: graduatedNow.length > 0 ? { ...graduatedNow[0], timestamp: Date.now() } : journeyed.lastGraduation,
-    tasks: remainingTasks.map((t) => ({
-      ...t,
-      completed: false,
-      approval: undefined,
-      pendingPoints: 0,
-      earnedPoints: 0,
-      earnedEnergy: 0,
-      wasRejected: false,
-      wasApprovedToday: undefined, // grace window is same-day only
-      focusEarnedToday: false, // reset the optional focus-session flag
-    })),
+    tasks: [
+      ...remainingTasks.map((t) => ({
+        ...t,
+        completed: false,
+        approval: undefined,
+        pendingPoints: 0,
+        earnedPoints: 0,
+        earnedEnergy: 0,
+        wasRejected: false,
+        wasApprovedToday: undefined, // grace window is same-day only
+        focusEarnedToday: false, // reset the optional focus-session flag
+      })),
+      // 📅 sinh nhiệm vụ Thời khóa biểu cho NGÀY MỚI (bài tập hôm nay + soạn bài cho mai)
+      ...generateTimetableTasks(settled.timetable, newDate),
+    ],
     energy: Math.min(ENERGY_CAP, journeyed.energy + DAILY_ENERGY_BONUS),
     rewards: journeyed.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,

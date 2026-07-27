@@ -6,6 +6,7 @@ import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
 import { COIN_RATE_VND } from "@/lib/game/constants";
 import JourneySection from "@/features/parent/components/JourneySection";
+import TimetableSection from "@/features/parent/components/TimetableSection";
 import { Trash2, Plus } from "lucide-react";
 
 const TASK_TEMPLATES = [
@@ -146,6 +147,9 @@ export default function ManageTab() {
 
       {/* 🛤️ B-lite: Lộ Trình — the guided path sits on top of everything */}
       <JourneySection showFlash={showFlash} />
+
+      {/* 📅 Đợt 3: Thời khóa biểu — TKB lớp tự sinh nhiệm vụ học mỗi ngày (nối #2 sửa gợi ý) */}
+      <TimetableSection showFlash={showFlash} />
 
       {/* D4: at-risk tasks — gentle "make it tiny" nudge (Fogg) */}
       {atRiskTasks.length > 0 && (

@@ -4,6 +4,29 @@
  */
 
 import { createInitialState } from "./constants";
+import { generateTimetableTasks } from "./timetable";
+
+/** TKB demo: lịch lớp mẫu để khách xem tính năng Thời khóa biểu tự sinh nhiệm vụ. */
+const DEMO_TIMETABLE = {
+  version: 1,
+  enabled: true,
+  subjects: {
+    toan: { id: "toan", name: "Toán", hasHomework: true, needsPrep: true },
+    van: { id: "van", name: "Tiếng Việt", hasHomework: true, needsPrep: false },
+    anh: { id: "anh", name: "Tiếng Anh", hasHomework: true, needsPrep: true },
+    the: { id: "the", name: "Thể dục", hasHomework: false, needsPrep: false },
+    khtn: { id: "khtn", name: "Khoa học", hasHomework: false, needsPrep: true },
+  },
+  week: {
+    mon: ["toan", "van", "the"],
+    tue: ["anh", "khtn"],
+    wed: ["toan", "van"],
+    thu: ["anh", "the"],
+    fri: ["toan", "khtn"],
+    sat: [],
+    sun: [],
+  },
+};
 
 export const DEMO_CHILD_ID = "__demo__";
 
@@ -115,7 +138,10 @@ export function createDemoState() {
         journeyId: "reading_79",
         journeyStage: 1,
       },
+      // 📅 nhiệm vụ học tự sinh từ Thời khóa biểu (hôm nay + soạn cho mai)
+      ...generateTimetableTasks(DEMO_TIMETABLE, new Date()),
     ],
+    timetable: DEMO_TIMETABLE,
     inventory: {
       eggs: { base: 1, dragon: 0, wolf: 1 },
       potions: { fire: 1, ice: 2, magic: 0 },
