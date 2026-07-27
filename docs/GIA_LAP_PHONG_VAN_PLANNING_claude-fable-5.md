@@ -1,12 +1,12 @@
-# 🎭 GIẢ LẬP PHỎNG VẤN — Kế hoạch & Trách nhiệm (10 gia đình)
+# 🎭 GIẢ LẬP PHỎNG VẤN — Kế hoạch & Trách nhiệm (15 gia đình)
 
-> **Người thực hiện:** Giả lập Phần A–F · GĐ A–E (Fable 5) + GĐ F–J & tổng hợp (Grok 4.5) — 27/07/2026  
+> **Người thực hiện:** Giả lập Phần A–F · GĐ A–E + K–O (Claude **Fable 5**, `claude-fable-5`) + GĐ F–J & tổng hợp (Grok 4.5) — 27/07/2026. Audit chéo 2 lần bởi Fable 5.  
 > **Mục đích:** Dry-run kịch bản phỏng vấn để (1) tìm chỗ trẻ/PH không hiểu, (2) sinh giả thuyết cần kiểm chứng với người thật.  
 > ⚠️ **CẢNH BÁO:** Toàn bộ là **AI đóng vai**, neo JTBD (`docs/JTBD_PERSONAS.md`) + hiểu biết gia đình Việt. **Không phải dữ liệu thị trường.**
 
 ---
 
-## TỔNG QUAN 10 GIA ĐÌNH
+## TỔNG QUAN 15 GIA ĐÌNH
 
 | GĐ | Trẻ | Tuổi | Nơi ở | Bố mẹ | Dùng app | Nét chính |
 |----|------|:---:|-------|--------|:---:|-----------|
@@ -20,8 +20,14 @@
 | H | Chi (nữ) | 11 | Cần Thơ | Mẹ bán tạp hóa | 1 tháng | Trẻ tự lập, chê app "hơi trẻ con" |
 | I | Minh (nam) | 10 | Hà Nội | Mẹ bác sĩ trực đêm, bố công tác xa | 8 tháng | Trẻ kế hoạch miệng giỏi, không viết |
 | J | Tí (nam) | 11 | Biên Hòa | Bố mẹ buôn bán chợ, có em gái 8t | 3 tháng | Trẻ coi việc mình thích là quan trọng nhất |
+| K | Đạt (nam) | 12 | Hà Nội | Mẹ công chức, bố lái xe công nghệ | 6 tháng | Vừa chuyển cấp, 12 môn 12 kiểu deadline; đang "lớn khỏi" app |
+| L | Hân (nữ) | 13 | TP.HCM | Bố mẹ chủ shop thời trang | 5 tháng | Dùng Teen Mode như sổ tiền tiêu vặt; deadline sống trên group chat |
+| M | Phong (nam) | 14 | Đà Nẵng | Mẹ giáo viên Văn | 2 tháng | Ôn thi vào 10; bị mẹ ép cài, kháng cự bị giám sát |
+| N | Vy (nữ) | 12 | Cần Thơ | Mẹ nội trợ, bố kỹ sư điện, 2 em (9t, 6t) | 7 tháng | Chị cả kiêm "phó phụ huynh", plan giỏi vì phải quản em |
+| O | Huy (nam) | 15 | Hải Phòng | Ở với bố sau ly hôn, bố kỹ sư nhà máy | 1 tháng | Thức khuya game; app là cầu nối vụng về của hai bố con |
 
 Quy ước ghi: `PH#` = phụ huynh trả lời câu # Phần A · `T#` = trẻ trả lời Phần B (6–8) hoặc C (9–11) · `[...]` = biểu hiện quan sát được (ngập ngừng, hỏi lại, đổi ý…). Câu PH22 chỉ hỏi gia đình dùng app ≥ 2 tháng.
+**Nhóm 12+ (K–O):** kịch bản gốc không có bộ câu riêng cho 12+, nên dùng bộ câu **Phần C** với ngôn ngữ điều chỉnh cho teen (bỏ giọng "con/cô", tôn trọng tự chủ), thời lượng trẻ 15–20 phút; bài D/E giữ nguyên cấu trúc, thẻ "bạn gọi chơi game" đổi ngữ cảnh theo đời sống thật của từng em.
 
 ---
 
@@ -1222,6 +1228,635 @@ F6: Chữ; chỉ cần việc + giờ.
 
 ---
 
+## Gia đình K — Đạt, 12 tuổi (Hà Nội)
+Nhóm tuổi: 12+ · Mẹ Oanh 39t công chức quận, bố lái xe công nghệ giờ giấc thất thường · Đạt lớp 6, vừa chuyển cấp · Dùng app 6 tháng (cài từ hồi lớp 5) · Có điện thoại cũ của mẹ, chưa có SIM.
+Thời lượng: PH 23 phút · Trẻ 17 phút.
+
+**Phần A — Mẹ Oanh**
+
+PH1: Tối thứ Năm. Nhắc nó chép thời khóa biểu tuần mới và làm đề Anh. 7 rưỡi nhắc, nó bảo "vâng, con đang nghỉ tí". 8 rưỡi vào phòng thấy đang xem YouTube "bài giảng" mà tab bên cạnh là highlight bóng đá. Cãi nhau một trận nhỏ về chuyện "con đang học mà mẹ không tin", cuối cùng 9 giờ mới thật sự học. Từ hồi lên cấp 2 kịch bản đổi từ "quên làm" sang "cãi xem thế nào là đang làm".
+
+PH2: Đề tiếng Anh cô giao trên nhóm. Nhắc hai lần miệng, một lần đứng ở cửa phòng — cấp một em còn ngồi kèm được, giờ nó đóng cửa phòng, mình nhắc qua cửa như đòi nợ [cười mệt].
+
+PH3: Sạc điện thoại và soạn giày đá bóng hôm có tiết thể chất. Việc dính đến bóng đá với thiết bị của nó thì không bao giờ quên.
+
+PH4: Đây đúng cái đang loạn. Cấp 1 chỉ có 1 cô, giờ 12 môn 12 thầy cô, deadline rơi vào 3 chỗ: nhóm Zalo phụ huynh, nhóm Zalo học sinh, và vở ghi của nó. Em nắm nhóm phụ huynh, nó nắm nhóm học sinh, hai bên thông tin lệch nhau suốt. App nhà mình thì chỉ có việc nhà với thói quen, phần bài vở em chưa đưa vào vì nhập tay không xuể.
+
+PH5: Không còn giờ cố định như hồi cấp 1. Giờ chủ yếu là em hỏi vọng vào "mai có gì không", nó trả lời "bình thường ạ" — câu trả lời vô giá trị nhất quả đất [cười].
+
+PH6: Nhiều. Gần nhất tối thứ Hai, bố nó chạy xe về 11 giờ, em họp chi bộ về muộn, chả ai hỏi han gì. Hôm sau nó bỏ quên bộ cờ vua CLB — mà nó tự đăng ký CLB đấy chứ.
+
+PH7: Vệ sinh, học bài, đổ rác tầng, tự giặt đồ thể thao của nó. Lên cấp 2 em thêm vụ tự giặt — nó choáng mất một tuần [cười].
+
+PH8: Rửa bát tối, phơi quần áo cả nhà, kèm gì đó thì có điểm trong app, quy ra tiền tiêu vặt cuối tuần — từ hồi Teen Mode hiện thẳng ra tiền thì nó quan tâm hẳn. Vì sao thưởng? Vì em muốn nó học khái niệm lao động - thu nhập trước khi nó xin em tiền nạp game.
+
+PH9: Tháng trước nó deal: "mẹ tăng giá rửa bát đi, lạm phát rồi" [cười to]. Học ở đâu không biết. Em đồng ý tăng nhưng kèm điều kiện chất lượng — bát còn dầu mỡ là không tính.
+
+PH10: Việc đọc sách. Hồi lớp 5 có điểm thì đọc, giờ điểm vẫn treo đấy mà nó bảo thẳng "con hết hứng đọc mấy quyển mẹ chọn". Vấn đề không phải hết thưởng, mà là hết QUYỀN CHỌN — em rút ra thế.
+
+PH11: Trừ giờ điện thoại. Có hiệu lực nhưng mỗi lần trừ là một trận chiến pháp lý — nó cãi từng phút như luật sư.
+
+PH12: Với đứa 12 tuổi: tự nắm deadline CỦA NÓ. Em không cần nó tự giặt tự nấu, em cần không phải nghe cô chủ nhiệm gọi "chị ơi em Đạt chưa nộp".
+
+PH13: Bài dự án Khoa học tự nhiên làm mô hình tế bào, biết trước ba tuần. Nó làm đêm cuối bằng... xốp hộp cơm. Điểm 6. Nó tỉnh bơ "6 điểm là qua mà mẹ".
+
+PH14: Biết, deadline nằm trong nhóm lớp của nó. Người phát hiện là em — đi hỏi ngược từ mẹ khác trong nhóm phụ huynh.
+
+PH15: Có, và làm em vừa buồn cười vừa buồn: nó lập bảng tính giờ chơi 3 game sao cho tối ưu event, kẻ Excel hẳn hoi trên máy bố. Kế hoạch học thì chưa từng.
+
+PH16: Em từng ngồi sửa kế hoạch với nó hồi cấp 1. Giờ động vào là nó xù lên "mẹ để con tự", xong "tự" nghĩa là không làm gì. Em đang kẹt giữa buông và bám đây.
+
+PH17: Một: deadline của nó nằm trong MỘT chỗ nó tự ghi, không phải trong Zalo của em. Hai: việc ba tuần thì tuần đầu phải thấy nó động thủ. Ba: bị trễ thì tự nhắn xin cô, tự chịu, không lôi mẹ ra đỡ đạn.
+
+PH18: Tối qua, duyệt việc rửa bát với phơi đồ, liếc số dư điểm của nó. 40 giây.
+
+PH19: Toàn bộ phần game hóa — pet, đào mỏ gì đó em không hiểu và không xem. Với thằng Đạt hình như giờ nó cũng chỉ mở phần tiền.
+
+PH20: Nghĩ việc gì đáng đưa vào app ở tuổi này. Việc nhà thì ổn rồi, nhưng bài vở 12 môn mà nhập tay từng deadline thì em thua — em thử một tuần rồi bỏ.
+
+PH21: Có, vụ kinh điển: nó rửa bát xong tick, bố nó đêm về khát nước lấy cốc thấy còn nhờn, sáng sau không duyệt. Nó cãi "lúc con rửa sạch mà, chắc bố lấy cốc khác". Không có bằng chứng, hòa cả làng, và từ đấy bố nó thành "thanh tra bát đĩa" [cười].
+
+PH22: Cái sổ tiền tiêu vặt minh bạch. Trước đây xin tiền là xin-cho, giờ là nó có thu nhập, có số dư, biết để dành mua tai nghe. Mất app là mất cái "ngân hàng đầu đời" đấy, quay lại cảnh mặc cả từng lần.
+
+PH23: Nhắc việc nhà thì bảng phân công dán tủ lạnh cũng làm được. Cái em cần mà app CHƯA làm là gom deadline 12 môn về một chỗ — hiện em vẫn phải làm thư ký bất đắc dĩ cho nó.
+
+**Phần C — Đạt (12 tuổi, 17 phút, phỏng vấn trong phòng, cửa mở theo thỏa thuận)**
+
+T1: Biết chứ. Mai có kiểm tra 15 phút Sử, nộp đề Anh, với đến lượt em trực nhật. À trực nhật là hôm nay biết, thằng cùng bàn nhắn.
+
+T2: Lịch đá bóng, lịch CLB cờ, sạc điện thoại — tự nhớ tuyệt đối [cười]. Bài vở thì… nhóm lớp nhắc là chính, mẹ em là nguồn nhắc dự phòng, mà mẹ hay nhắc sai môn lắm, thông tin nhóm phụ huynh chậm hơn nhóm bọn em một nhịp.
+
+T3: Mô hình tế bào môn KHTN. Biết trước ba tuần, làm đêm cuối.
+
+T4: Ba tuần nghe dài nên em xếp nó vào loại "còn lâu". Xong tuần nào cũng có kiểm tra môn khác chen vào, nó cứ lùi dần. Với cả nói thật là làm mô hình em thấy chán, biết điểm không cao cũng chả sao — em tính rồi, môn đấy em đủ điểm trung bình [nói giọng rất tỉnh].
+
+T5: Cái nào sắp cháy làm trước. Kiểu bài mai nộp thì tối nay làm, bài tuần sau coi như không tồn tại. Chơi thì không cần xếp lịch, nó tự len vào [cười]. Em biết là dở, nhưng chạy deadline kiểu này vẫn đang sống ổn.
+
+T6: Có, mà không phải cho học. Em lập bảng giờ chơi 3 game để không trượt event — cái đấy em tính kỹ lắm, có cả cột dự phòng. [hỏi "sao học không làm bảng như thế?"] …Vì game nó có event rõ ràng, trượt là mất thật. Bài thì trượt vẫn xin nộp muộn được [im 2 giây] nghe hơi tệ nhỉ [cười gượng].
+
+T7: Bảng game theo đúng 100%. Kế hoạch học thì em chưa từng viết nên chưa có gì để sai [nhún vai].
+
+T8: Lùi sang hôm sau. Lùi mãi thì dồn, dồn thì thức khuya cày. Nhờ thì có — nhờ thằng Kiên gửi bài nó làm để "tham khảo" [tự đánh ngoặc kép, cười].
+
+T9: [trả lời trôi chảy, không nghĩ lâu] "Phải làm ngay" là deadline nó chọn mình. "Quan trọng" là mình phải tự chọn nó — mà tự chọn thì dễ quên lắm, vì chả ai đòi. Kiểu ôn Sử từ sớm là quan trọng, nhưng có ai réo đâu.
+
+T10: Uống nước với ngủ trước 11 giờ [cười]. Nghiêm túc thì: ôn dần các môn thuộc lòng. Không ai nhắc theo ngày nên toàn cày trước kiểm tra một đêm.
+
+T11: Trực nhật, đổ rác, giặt đồ thể thao. Điểm hay không kệ, đến lượt là phải làm, không làm thì bọn cùng tổ nó réo.
+
+T12: Rửa bát với phơi đồ — vì đấy là em làm THAY người khác, phải có công. Em còn thương lượng tăng giá được đấy [tự hào]. Còn học là việc của em, đòi tiền cho việc học thì hơi cùi.
+
+T13: [nghĩ 4 giây] Trong app mà việc biến mất thì em coi như xong nghĩa vụ. Nhưng bài vở thì khác — nó không nằm trong app, nó nằm trong nhóm lớp, mà nhóm lớp thì chả bao giờ xóa gì cả, chỉ có trôi lên trên [mô tả chính xác cơ chế "deadline trôi" trên chat].
+
+T14: Khi cái lịch là do em bấm ra chứ không phải mẹ giao xuống. Kiểu bảng game ấy — của em 100% nên em theo. Còn list mẹ tạo trong app, em làm thì làm nhưng cảm giác là làm thuê [chữ "làm thuê" — đáng ghi].
+
+**Phần D — Bài phân loại (Đạt — làm nhanh, 4 phút, vừa xếp vừa bình luận như bình luận viên)**
+
+- "Đánh răng trước khi ngủ" → **Để sau cũng được** rồi cười "à nhầm, nó là auto, khỏi cần xếp" → hỏi đặt đâu → tự chế vùng thứ 5: đặt thẻ RA NGOÀI bốn vùng: "mấy việc auto để riêng" [teen đầu tiên chủ động phá khung 4 vùng — trùng câu hỏi của My nhà F].
+- "Thứ Sáu kiểm tra Toán, nay thứ Hai" → **Làm sớm để khỏi bị gấp**, kèm bình luận: "xếp thì xếp thế cho đẹp, chứ đời thật là tối thứ Năm [cười]". Hỏi "khi nào chuyển nhóm?": "Thứ Tư nếu tuần này ít bài, thứ Năm nếu nhiều." [deadline động theo TẢI — tinh vi hơn mọi trẻ 9–11]
+- "Mai tiết Mỹ thuật chưa chuẩn bị" → **Cần xử lý ngay**. "Cấp 2 quên dụng cụ là bị ghi sổ đầu bài, ảnh hưởng thi đua cả lớp, bọn nó chửi cho."
+- "Bạn gọi chơi game ngay" (giữ nguyên ngữ cảnh) → **Cần xử lý ngay** không do dự: "rank là phải combat đúng giờ, thiếu người là thua". Hỏi "thế nếu trùng bài mai nộp?": "…thì chơi 1 trận rồi làm. Một trận thôi. Lý thuyết là thế" [cười].
+- "Em làm đổ cốc nước" → **Có thể nhờ người khác**: "ai đổ người ấy lau chứ, em nào của em… à trong đề là em mình đổ á? Thế kệ nó, nó tự lau, nó lớp mấy rồi?" [đọc kỹ đề hơn trẻ nhỏ, và phân định trách nhiệm theo NGƯỜI GÂY RA]
+- "Bàn học hơi bừa" → **Để sau cũng được**. "Bừa có tổ chức."
+- "Bài phải nộp sau 15 phút" → **Cần xử lý ngay**, búng thẻ vào ô. "Khỏi bàn."
+- "Chuẩn bị quà sinh nhật mẹ tuần sau" → **Làm sớm để khỏi bị gấp** [đặt nhẹ nhàng hẳn, không bình luận — thái độ đổi rõ so với các thẻ khác]. Hỏi vì sao: "…tại năm ngoái em quên. Ừ thì quên hẳn luôn ấy. Năm nay không được quên." [giọng nhỏ hẳn]
+- "Đọc sách để đạt mục tiêu tháng" → **Để sau cũng được**: "mục tiêu của mẹ chứ có phải của em đâu" [khớp PH10 — vấn đề quyền sở hữu mục tiêu].
+- "Xem thêm một video đang thích" → cầm thẻ, xoay xoay: "cái này không phải việc, nó là cái HỐ. Xếp vào 'để sau' nhưng thật ra nó luôn xảy ra 'ngay'" [tự mô tả chính xác hành vi — cho vào Để sau].
+
+**Phần E — Kế hoạch ngày mai (Đạt)**
+
+Quan sát: từ chối dùng thẻ giấy lúc đầu ("em gõ vào note điện thoại nhanh hơn") — thỏa hiệp: gõ note rồi đọc cho người phỏng vấn xem. Gõ trong 4 phút được: "Sử 15p ôn lúc ra chơi / nộp Anh tiết 2 / trực nhật - đi sớm 15p / tối: 1 trận + rửa bát + đề Toán nếu kịp". Có giờ tương đối gắn với NHỊP TRƯỜNG HỌC (tiết, ra chơi) thay vì giờ đồng hồ. Tự thêm "đi sớm 15p" cho trực nhật — có tính di chuyển/đệm. "Đề Toán nếu kịp" = tự đánh dấu việc sẽ rớt. Không hỏi deadline (tự nắm hết). Mẹ không can thiệp (không được vào phòng theo thỏa thuận).
+
+E1: "Nộp đề Anh — vì nó là cái duy nhất cô điểm danh từng đứa."
+E2: "Tiết 2. Nộp xong là xong nợ."
+E3: "Tối nay combat lố giờ, mai dậy muộn, đi trực nhật trễ — hiệu ứng domino đấy, em bị suốt."
+E4: "Đặt báo thức 2 lớp, với dặn thằng Kiên gọi. Bạn gọi là dậy thật, mẹ gọi thì… nó khác [cười]."
+E5: "80%. Cái 'đề Toán nếu kịp' là em ghi cho đẹp đội hình thôi, khả năng cao là không kịp."
+
+Hỏi lại sau 5 phút: đọc lại vanh vách cả 4 mục kể cả "nếu kịp" — trí nhớ hoàn toàn không phải vấn đề; tự bình luận thêm "note còn trong máy em mà, cần gì nhớ" [công cụ ngoài đầu = bộ nhớ thật của teen].
+
+**Phần F — Mẹ Oanh xem kế hoạch mẫu**
+
+F1: Hiểu ngay. Nhưng phản xạ đầu tiên của em là "thật không đấy?" — với thằng Đạt em bị hội chứng nghi ngờ rồi.
+F2: Nó viết cái này LÚC NÀO — tự viết buổi tối hay bị app ép viết. Tự viết thì em tin 8 phần, bị ép thì tin 2 phần.
+F3: Không sửa. Sửa là nó xù lông. Tuổi này góp ý trực diện là phản tác dụng, em học được bằng xương máu rồi.
+F4: Không duyệt! Nó 12 tuổi rồi, duyệt kế hoạch của nó khác gì đọc trộm nhật ký có giấy phép. Cho em thấy TIÊU ĐỀ thôi cũng được — kiểu "con có kế hoạch tối nay: 3 việc" — chi tiết để nó giữ.
+F5: "Mẹ thấy con tự xếp lịch tối nay rồi, mẹ không hỏi nữa nhé" — câu đấy với nó đắt hơn mọi lời khen, vì phần thưởng nó cần là ĐƯỢC YÊN.
+F6: Toàn bộ, nếu nó hiện hằng ngày kiểu bắt em đọc. Em chỉ cần một tín hiệu xanh/đỏ: hôm nay nó có kế hoạch hay không. Hết.
+
+**Quan sát chung Gia đình K:**
+- Đạt phá khung 4 vùng: tự tạo vùng "việc auto" cho thói quen lặp — trùng đúng lỗ hổng My (nhà F) chỉ ra; 2/6 trẻ lớn độc lập tìm ra cùng một thiếu sót của bài D.
+- Deadline động theo TẢI tuần ("thứ Tư nếu ít bài, thứ Năm nếu nhiều") — mức tư duy chưa gặp ở nhóm dưới.
+- Năng lực lập kế hoạch CÓ THẬT (bảng Excel event game, note nhịp-tiết-học, tự thêm giờ đệm) nhưng chỉ kích hoạt với mục tiêu NÓ SỞ HỮU; chữ "làm thuê" cho list mẹ tạo là chìa khóa.
+- Nguồn deadline thật của teen là NHÓM CHAT LỚP (trôi, không xóa) — app muốn hữu ích ở 12+ phải giải bài "gom deadline", đúng pain PH23.
+- Cả mẹ (F4 "đọc trộm nhật ký có giấy phép") và con (T14) hội tụ về một điểm: quyền riêng tư kế hoạch; teen chỉ cần phát TÍN HIỆU có-kế-hoạch, không nộp nội dung.
+- Thẻ duy nhất làm Đạt đổi giọng: quà sinh nhật mẹ (năm ngoái quên hẳn) — cảm xúc gia đình vẫn là đòn bẩy, chỉ là giấu kỹ.
+
+---
+
+## Gia đình L — Hân, 13 tuổi (TP.HCM)
+Nhóm tuổi: 12+ · Bố mẹ chủ shop thời trang online (livestream tối) · Hân lớp 8, có điện thoại riêng từ lớp 6 · Dùng app 5 tháng, bật Teen Mode từ đầu.
+Thời lượng: PH 22 phút (hỏi mẹ Quyên giữa hai ca live) · Trẻ 19 phút.
+
+**Phần A — Mẹ Quyên**
+
+PH1: Tối thứ Sáu. Kêu nó xuống phụ đóng hàng 30 phút như đã giao kèo. Nhắn Zalo lần một: "seen". Lần hai gọi với lên lầu. Lần ba nó xuống, mặt như bánh bao chiều, vừa đóng hàng vừa cắm tai nghe. Xong việc thì êm, nhưng cái đoạn từ "seen" đến "xuống" là 40 phút đó chị.
+
+PH2: Phụ đóng hàng. Ba lần: Zalo, gọi miệng, và chiêu cuối là "mẹ trừ vô sổ đó nha" — nhắc tới sổ trong app là xuống. Tiền bạc sòng phẳng nó mới nghe.
+
+PH3: Skincare tối [cười]. Đều như vắt chanh, không ai nhắc. Với đặt chuông làm bài tập trên trường online — cái đó trường quản, có điểm danh, nó tự lo.
+
+PH4: Nó tự quản bằng điện thoại: nhóm lớp, app trường, ghi chú. Em không nắm nổi và nói thật là em cũng không muốn nắm — lớp 8 rồi. Em chỉ giữ mảng việc nhà trong Level Up.
+
+PH5: Nhà em ngược đời: 11 giờ đêm sau ca live, cả nhà ăn khuya nói chuyện. "Chuẩn bị cho ngày mai" của nhà này diễn ra lúc nửa đêm, có hôm không diễn ra.
+
+PH6: Mùa sale là mất nếp nguyên tuần. Gần nhất là đợt 7/7 — live ba tối liền, con bé tự bơi, mà nói thiệt nó tự bơi được, chỉ có việc nhà là đọng lại thành núi.
+
+PH7: Học hành, vệ sinh, tự dọn phòng (mức "không bốc mùi" thôi, em hạ tiêu chuẩn rồi), giữ lời hứa. Không thưởng.
+
+PH8: Phụ đóng hàng, chụp ảnh sản phẩm, viết caption — có giá hết, tính vô sổ trong app, cuối tháng quy ra tiền. Nó làm caption hay hơn em luôn á. Vì sao thưởng? Vì đó là nó làm CÔNG cho shop, trả công là đúng, không trả nó làm cho shop khác thật đó [cười].
+
+PH9: Tuần nào cũng thương lượng giá. "Caption 10 cái mà nhiêu đây hả mẹ, thuê ngoài mắc gấp ba." Nó nói đúng nên em tăng [cười]. Em coi đó là dạy nghề luôn.
+
+PH10: Việc chụp ảnh sản phẩm. Hồi đầu ham tiền làm nhiều, sau nó chê "chụp hoài chán", giờ chỉ nhận khi kẹt tiền mua gì đó. Với teen em thấy thưởng tiền không giữ được việc, chỉ giữ được GIAO DỊCH.
+
+PH11: Trừ sổ + tạm giữ quyền lợi (mạng, đi chơi với bạn). Nhưng phải báo trước luật, phạt bất ngờ là nó lý sự "luật đâu, mẹ đưa luật ra coi".
+
+PH12: Tự thấy việc mà làm — khỏi cần ai kêu. Ví dụ thấy thùng hàng chất đống thì tự xuống phụ. Cái đó mới là trách nhiệm, còn làm-khi-được-gọi chỉ là… nhân viên part-time [cười].
+
+PH13: Đề cương Văn học kỳ. Biết ba tuần, tối chót ngồi khóc lúc 1 giờ sáng vì "dài quá học không kịp". Mà sáng hôm sau vẫn 7 điểm mới ghê.
+
+PH14: Nó biết chớ. Người phát hiện là nó luôn — nhưng phát hiện lúc 11 giờ đêm hôm trước [cười khổ].
+
+PH15: Có. Nó có cái ghi chú "tuần thi" trong điện thoại, màu mè, chia ô theo môn. Em thấy được có hai lần trong năm — trước thi học kỳ. Tức là nó BIẾT làm, chỉ làm khi nước tới cổ.
+
+PH16: Em không rớ vô kế hoạch của nó nữa. Hồi lớp 7 em góp ý cái ghi chú, nó khóa màn hình cái rụp, từ đó em rút. Giờ chỉ hỏi "cần mẹ phụ gì không" — chấm hết.
+
+PH17: Một: cái ghi chú "tuần thi" xuất hiện SỚM hơn — trước thi hai tuần chứ đừng hai ngày. Hai: việc nhà tự thấy tự làm ít nhất tuần một lần không cần gọi. Ba: hứa mấy giờ xuống phụ thì đúng giờ đó, đừng "seen" rồi âm 40 phút.
+
+PH18: Hồi chiều — chốt công ca đóng hàng tuần này cho nó, coi nó tick gì, cộng sổ.
+
+PH19: Mấy màn có con thú con gà gì đó — Teen Mode rồi mà thỉnh thoảng vẫn lòi ra, nó chụp màn hình gửi em kèm chữ "hết cứu" [cười]. Em thì bỏ qua phần biểu đồ.
+
+PH20: Định giá việc. Shop em định giá sản phẩm quen rồi mà định giá việc cho con vẫn khó — cao thì hư, thấp thì nó so với "thị trường" là tiền các bạn nó được cho không.
+
+PH21: Cãi về chất lượng: caption nó viết 10 cái thì 3 cái xài được, nó đòi tính đủ 10. Em bảo "khách chê là hoàn tiền nha con" — nó im [cười]. Giờ trong app em duyệt từng cái một.
+
+PH22: Cái sổ công minh bạch. Nó với em hết cãi nhau vụ "mẹ hứa rồi quên" — sổ ghi rành rành. Quan hệ mẹ con đỡ căng hẳn từ hồi có sổ đó, nói thiệt.
+
+PH23: Việc nhắc deadline học — trường nó có app riêng, điểm danh tự động, mạnh hơn mình nhiều. Level Up nên né mảng đó ra, giữ đúng mảng việc-nhà-ra-tiền là nhà em xài dài dài.
+
+**Phần C — Hân (13 tuổi, 19 phút, quán trà sữa dưới nhà theo yêu cầu của em)**
+
+T1: Biết. Mai kiểm tra Lý, có ca trực ADC lớp (trang trí bảng), tối phụ mẹ đóng đơn sale.
+
+T2: Việc CÓ HẠN CHÓT RÕ thì em tự nhớ — kiểm tra, hạn nộp, ca trực. Mẹ chỉ phải nhắc việc nhà, tại việc nhà nó… không có deadline, nó chỉ có mẹ [cười]. Chị hiểu ý em không? Bài kiểm tra nó tự tới, còn cái sàn nhà thì nằm đó hoài, dơ thêm chút cũng đâu có sao.
+
+T3: Đề cương Văn. Biết ba tuần trước, học đêm chót.
+
+T4: Vì ba tuần đó tuần nào cũng có cái deadline gần hơn chen lên đầu hàng. Đề cương giống bà già xếp hàng bị chen mãi á [cười]. Với Văn là môn em ngán nhất, mà cái gì ngán là não em tự giấu nó đi.
+
+T5: Em xếp theo hạng: có-điểm-danh > có-người-đợi > có-tiền > thích. Nghe thực dụng ha, mà thiệt. Ca trực lớp là "có người đợi" nên em không bao giờ bỏ — bỏ là tụi bạn nói cho nguyên tuần.
+
+T6: Rồi. Ghi chú "tuần thi" trong máy — chia môn, tô màu, có ô tick. Làm cái ghi chú đó xong em thấy mình giỏi ghê [cười] xong hai ngày sau mới bắt đầu học thiệt.
+
+T7: Đúng được 60-70%. Môn ngán (Văn, Sử) luôn là môn bị dời. Em toàn lấy giờ của môn ngán bù cho môn dễ — biết là ngược đời mà tay nó tự làm vậy à.
+
+T8: Dời và nén. Tức là ba buổi Văn thành một buổi Văn siêu to đêm cuối [cười]. Nhờ thì ít, tại tuần thi đứa nào cũng lo thân nó.
+
+T9: "Quan trọng" là cái quyết định điểm tổng kết hay chuyện lớn — kiểu chọn ban lớp 10 nè. "Phải làm ngay" là cái có chuông reo. Vấn đề của em là cái có chuông luôn thắng cái quan trọng, tại chuông nó reo còn cái quan trọng nó im re.
+
+T10: Chuyện chọn khối lớp 10. Ba mẹ chưa giục vì mới lớp 8, cô chưa nhắc, mà em biết nó quan trọng — thỉnh thoảng nghĩ tới thấy lo lo xong lại thôi vì… chả biết bắt đầu từ đâu.
+
+T11: Học, dọn phòng, giữ lời. Không ai trả tiền cho em dọn phòng hết á, em hỏi rồi [cười].
+
+T12: Việc cho shop — đóng hàng, caption, chụp hình. Đáng đồng tiền, em còn deal giá được. Việc CỦA MÌNH mà đòi tiền thì kỳ, em phân biệt được mà.
+
+T13: Trong app hả? Việc nhà biến mất = mẹ quên tạo, chứ sàn nhà có tự sạch đâu [cười]. Em học được là: cái list là của mẹ, còn cái NHÀ là của chung — hai cái khác nhau. Nhưng mà nói thiệt, list không hiện thì em cũng... vui vẻ không hỏi lại.
+
+T14: Khi em tự đặt hạn cho mình SỚM HƠN hạn thật. Kiểu cô cho tới thứ Sáu mà em tự chốt thứ Tư — lần nào làm được vậy là em thấy mình ngầu dữ lắm. Được đâu... hai lần rồi [cười].
+
+**Phần D — Bài phân loại (Hân — 5 phút, xếp gọn gàng, có chiến lược rõ)**
+
+- "Đánh răng trước khi ngủ" → **Để sau cũng được** kèm giải thích: "nó auto rồi, xếp ô nào cũng vô nghĩa" [trẻ lớn thứ 3 chỉ ra lỗ hổng routine của bài D].
+- "Thứ Sáu kiểm tra Toán, nay thứ Hai" → **Làm sớm để khỏi bị gấp**. "Chia 3 buổi, mỗi buổi 30 phút — nói theo sách vở là vậy. Còn phiên bản đời thực chị biết rồi đó" [cười]. Hỏi khi nào chuyển: "Tối thứ Tư. Em có mốc 'trước 2 ngày' — qua mốc đó là em bật chế độ sợ."
+- "Mai tiết Mỹ thuật chưa chuẩn bị" → **Cần xử lý ngay**: "order Shopee thì trễ rồi, tối nay lục nhà hoặc mai mượn — mượn cũng phải nhắn TỐI NAY, sáng mai nhắn là tụi nó ngủ dậy không kịp mang." [kế hoạch dự phòng CÓ deadline riêng — tinh vi]
+- "Bạn gọi chơi game ngay" (đổi thành "bạn gọi vô group call ngay" theo đời sống thật) → **Để sau cũng được**: "call thì lúc nào vô chả được, FOMO chút xíu thôi." 
+- "Em làm đổ cốc nước" → **Có thể nhờ người khác** [đặt nhanh]: "em không có em, nhưng ở shop có thùng hàng đổ thì kêu người gần nhất xử — nguyên tắc của mẹ: ai GẦN người đó làm, không phải ai GÂY người đó làm, vì hàng hư là tính bằng giây." [mang nguyên tắc vận hành shop vào bài — khác hẳn Đạt]
+- "Bàn học hơi bừa" → **Để sau cũng được**.
+- "Bài phải nộp sau 15 phút" → **Cần xử lý ngay**. " 15 phút làm được nhiều lắm á, đủ chép— à không, đủ LÀM một bài ngắn" [tự sửa lời, cười].
+- "Quà sinh nhật mẹ tuần sau" → **Làm sớm để khỏi bị gấp**: "quà cho mẹ em phải order sớm, mẹ em bán hàng, mẹ nhìn cái biết đồ gấp hay đồ chọn kỹ."
+- "Đọc sách mục tiêu tháng" → **Làm sớm** → chuyển **Để sau**: "em để nó vô 'làm sớm' là do sĩ diện với chị thôi, thực tế nó nằm ở 'để sau' ba tháng rồi" [tự thú trung thực nhất nhóm].
+- "Xem thêm một video đang thích" → **Để sau cũng được**: "nó không cần ô, nó là NỀN của mọi ô" [cách mô tả chính xác thứ hai sau "cái hố" của Đạt].
+
+**Phần E — Kế hoạch ngày mai (Hân)**
+
+Quan sát: xin làm trên điện thoại, tạo ghi chú mới trong 5 phút, có emoji và màu: "sáng: Lý (ôn 20p ra chơi với nhỏ Vy) / chiều: trực ADC 16h30 / tối: đóng đơn 20h-20h30 (chốt công với mẹ) / 21h: coi đề Văn 15p CHỈ ĐỌC ĐỀ THÔI". Mục cuối tự chú thích "chỉ đọc đề thôi" — kỹ thuật tự hạ ngưỡng để bắt đầu (không ai dạy). Có giờ cụ thể 3/4 mục. Có tính người khác (ôn với bạn, chốt công với mẹ). Không hỏi deadline. Không can thiệp.
+
+E1: "Kiểm tra Lý."
+E2: "Ôn ra chơi với nhỏ Vy — học với bạn em vô hơn học một mình."
+E3: "Ca live của mẹ lố giờ, kéo em đóng đơn trễ, sập chuỗi phía sau." [rủi ro đến từ LỊCH NGƯỜI LỚN — chưa gia đình nào ở nhóm dưới nói ra được]
+E4: "Deal trước với mẹ: đơn phát sinh sau 20h30 là để sáng mai. Deal từ bây giờ luôn nè" [rút điện thoại nhắn mẹ thật].
+E5: "Được 90%, trừ cái 'coi đề Văn'. Mà em ghi 'chỉ đọc đề' rồi đó — đọc 5 phút cũng tính là xong mục" [thiết kế mục tiêu kiểu không-thể-thua].
+
+Hỏi lại sau 5 phút: đọc lại đủ 4 mục đúng giờ từng mục (note trong máy, nhưng em đọc không cần mở máy — nhớ thật).
+
+**Phần F — Mẹ Quyên xem kế hoạch mẫu**
+
+F1: Hiểu liền. Còn thấy thương nữa — con người ta tự biết mình mải chơi là quý rồi.
+F2: Em cần biết chỗ nào kế hoạch của nó ĐỤNG lịch của em — kiểu nó định đóng đơn 20h mà em live 19h30-21h là toang. Nhà làm ăn thì lịch con phải khớp lịch shop.
+F3: Không sửa nội dung. Chỉ báo chỗ đụng lịch — còn dời cái nào là chuyện của nó.
+F4: Khỏi duyệt. Nó 13 rồi. Cho em một cái thông báo "con có kế hoạch tối nay, có 1 chỗ đụng lịch mẹ" — nhiêu đó là đủ vàng rồi á.
+F5: "Con tự hẹn thêm 5 phút rồi bắt đầu hả — chiêu đó mẹ áp dụng trước mỗi ca live được không, chỉ mẹ với" — hỏi ngược nó, coi nó như chuyên gia. Tuổi này khen xuôi nó ngượng, hỏi ngược nó nở mũi.
+F6: Phần "trở ngại" nếu lặp mỗi ngày. Mà nghĩ lại, chỗ em cần coi mỗi ngày chỉ là CÁI GIỜ — giờ nào nó kẹt, giờ nào nó rảnh phụ được shop. Còn lại của nó, nó giữ.
+
+**Quan sát chung Gia đình L:**
+- Hân có nguyên tắc xếp hạng tường minh: điểm-danh > người-đợi > tiền > thích — và tự nhận "cái có chuông luôn thắng cái quan trọng vì cái quan trọng im re" (mô tả trúng tim vấn đề important-vs-urgent hơn mọi định nghĩa).
+- Hai kỹ thuật tự chế không ai dạy: mốc "trước 2 ngày bật chế độ sợ" và "chỉ đọc đề thôi" (hạ ngưỡng bắt đầu) — chất liệu tốt cho tính năng planning teen.
+- T10 lộ một loại việc chưa có chỗ chứa: việc-quan-trọng-dài-hạn-không-ai-giục (chọn khối lớp 10) — teen biết lo nhưng "không biết bắt đầu từ đâu".
+- Rủi ro kế hoạch của teen nhà kinh doanh đến từ LỊCH NGƯỜI LỚN (ca live) — kế hoạch trẻ muốn chạy được phải nhìn thấy lịch của bố mẹ.
+- Gia đình duy nhất mà app đóng vai "sổ công minh bạch" cứu quan hệ mẹ-con (PH22) — giá trị không nằm ở game hóa.
+
+---
+
+## Gia đình M — Phong, 14 tuổi (Đà Nẵng)
+Nhóm tuổi: 12+ · Mẹ Dung 42t giáo viên Văn cấp 3, bố kỹ sư cầu đường hay theo công trình · Phong lớp 9, đang ôn thi vào 10 · Dùng app 2 tháng — mẹ cài, con miễn cưỡng.
+Thời lượng: PH 25 phút · Trẻ 15 phút (em đồng ý phỏng vấn với điều kiện "không kể lại nguyên văn cho mẹ" — đã cam kết, bản ghi này ẩn 1 câu theo yêu cầu của em).
+
+**Phần A — Mẹ Dung**
+
+PH1: Tối hôm kia. Nhắc nó làm đề Toán ôn thi. Lần một nó "dạ". Lần hai nó "con biết rồi mà mẹ". Lần ba nó gắt "mẹ có thôi đi không, con tự biết sắp xếp" — rồi đóng cửa. Em đứng ngoài cửa mà ứa nước mắt chị ạ. Cuối cùng nó có làm, 10 giờ đêm, nhưng cái giá là hai mẹ con không nói chuyện hết hôm sau.
+
+PH2: Đề Toán. Ba lần, và em nhận ra càng nhắc càng phản tác dụng — nhưng không nhắc thì em không chịu nổi. Nghịch lý của mẹ có con thi chuyển cấp đấy.
+
+PH3: Đàn guitar. Tự tập đều mỗi tối 30 phút, tự tra hợp âm, tự quay video theo dõi tiến bộ. Em nhìn mà tự hỏi sao Toán không được một phần mười như thế.
+
+PH4: Nó tự quản bằng điện thoại và cái bảng con treo tường nó tự viết — lịch học thêm 3 chỗ, lịch thi thử. Phần đó nó làm tốt, em phải công nhận. Cái em không thấy được là NỘI DUNG học có thật không hay chỉ là ngồi vào bàn cho đủ giờ.
+
+PH5: Cơm tối 7 giờ là điểm chạm duy nhất trong ngày. Em tranh thủ hỏi han thì nó trả lời nhát gừng. Hỏi quá ba câu là nó "mẹ hỏi cung à".
+
+PH6: Nhà em thì ngược lại — không có tối nào DÁM bỏ qua, vì thi vào 10 nó ám cả nhà. Kể cả hôm em ốm vẫn gượng dậy hỏi nó ôn đến đâu. Chắc đấy cũng là bệnh, chị nhỉ [cười buồn].
+
+PH7: Học, vệ sinh, ăn cơm cùng nhà tối thiểu 4 bữa/tuần, không khóa cửa khi bố mẹ gọi. Cái cuối là luật mới sau vụ đóng cửa.
+
+PH8: Em cài app cho mấy việc: đề Toán mỗi ngày, từ vựng Anh, phụ rửa bát. Có điểm, quy ra được thêm giờ đá bóng chủ nhật với tiền nạp mua gói đàn online. Vì sao thưởng? Nói thật là em HỐI LỘ đấy. Giai đoạn này em không đủ sức làm căng, cái gì khiến nó học được thì em làm.
+
+PH9: Nó không hỏi "được gì" — nó hỏi câu khó hơn: "mẹ cần con được bao nhiêu điểm thì mẹ vừa lòng?". Em nghẹn không trả lời được. Hôm sau em bảo "mẹ cần con vào được trường con muốn" — nó bảo "trường con muốn với trường mẹ muốn khác nhau đấy". Câu chuyện đấy chưa xong đâu chị.
+
+PH10: Từ vựng tiếng Anh. Tuần đầu có điểm làm đều, tuần ba phát hiện nó tick mà không học — nó bảo thẳng "app của mẹ thì em tick cho mẹ vui". Em tắt luôn việc đấy khỏi app. Đau nhưng phải công nhận nó thắng logic.
+
+PH11: Trừ quyền lợi thì nó nhận, không cãi, kiểu "ok, luật là luật" — nhưng nó cũng không thay đổi. Phạt với nó giờ chỉ là phí giao dịch thôi chị ạ.
+
+PH12: Ở tuổi này và năm nay: tự học đúng lộ trình ôn thi mà không cần em đóng vai cai ngục. Em chỉ mong hết tháng 6 sang năm là xong vai này.
+
+PH13: Bài thi thử ở lớp học thêm — biết lịch cả tháng, tối trước đó vẫn ngồi tập đàn. Em nhắc thì nó bảo "thi thử mà mẹ, thử thì cần gì ôn, để đo mình đang ở đâu chứ". Nghe thì... cũng có lý của nó, mà em vẫn tức [cười].
+
+PH14: Nó luôn biết. Vấn đề nhà em không phải phát hiện trễ — mà là hai mẹ con ĐỊNH NGHĨA trễ khác nhau.
+
+PH15: Cái bảng treo tường là nó tự làm — chia ca sáng chiều tối cho cả tuần, có cả ô "nghỉ". Làm sau lần cãi nhau to hồi tháng 4, kiểu tuyên ngôn độc lập: "đây, con có kế hoạch, mẹ đừng hỏi nữa".
+
+PH16: Giờ em không dám sửa. Kế hoạch của nó như lãnh thổ có chủ quyền, em lượn qua biên giới là có còi báo động [cười]. Em chỉ dám hỏi kết quả thi thử.
+
+PH17: Một: điểm thi thử ba môn nhích dần theo tháng — đấy là bằng chứng kế hoạch chạy thật. Hai: nó CHỦ ĐỘNG khoe em một điều gì đó mỗi tuần, gì cũng được. Ba: đến ngày nộp nguyện vọng, hai mẹ con thống nhất được một danh sách mà không ai phải khóc. Chị thấy đấy, tiêu chí của em giờ không còn là hành vi nữa, là quan hệ.
+
+PH18: Sáng nay — duyệt việc rửa bát tối qua. Phần học em không dám cài lại nữa nên app với em giờ là app việc nhà.
+
+PH19: Em bỏ qua gần hết trừ màn duyệt. À, Sổ Vàng em có đọc — gợi ý lời khen cho tuổi này em thấy hơi "văn mẫu", em toàn phải sửa lại giọng cho đỡ sến, nó mà nghe câu sến là nó nhại lại luôn.
+
+PH20: Câu này với nhà em bây giờ là: đưa việc gì vào thì nó không cảm thấy bị giám sát. Em nghĩ mãi. Hai tháng rồi em vẫn chỉ dám để 3 việc trung tính.
+
+PH21: Vụ từ vựng em kể rồi đấy — cãi lớn nhất từ hồi cài app. Kết luận của nó: "app không sai, mẹ dùng app sai mục đích". 14 tuổi mà nói câu như chuyên gia tâm lý sản phẩm [cười buồn].
+
+PH22: [im lặng lâu] Khó trả lời thật... Chắc là cái nếp rửa bát — nghe buồn cười nhỉ, cài bao nhiêu thứ, đọng lại mỗi việc nó rửa bát đều hơn. Nhưng mà việc rửa bát ấy lại là 10 phút duy nhất nó đứng cạnh em trong bếp mỗi tối. Nên tiếc thì em tiếc CÁI ĐÓ.
+
+PH23: Toàn bộ phần thúc học. Trường nó, lớp ôn, bạn cùng lớp — hệ sinh thái ôn thi nó dày đặc lắm rồi, thêm app nữa là thừa và nó biết ngay app là "tay trong" của mẹ. App chỉ nên đứng ở chỗ trung lập: việc nhà, tiền công, và cái gì đó cho NÓ chứ không phải cho em.
+
+**Phần C — Phong (14 tuổi, 15 phút, trả lời ngắn, ấm dần về cuối)**
+
+T1: Biết. Học thêm Toán 5 giờ, đề Anh online hạn 11 giờ đêm, thi thử Văn sáng thứ Bảy.
+
+T2: Lịch ôn thi em tự nhớ hết — nó là mạng sống năm nay mà [giọng hơi mỉa]. Mẹ vẫn nhắc. Mẹ nhắc cái em ĐÃ nhớ, đấy mới là vấn đề.
+
+T3: [nghĩ 5 giây] Nộp phiếu đăng ký nguyện vọng thi thử đợt 2. Biết trước hai tuần, nộp trễ một ngày, phải xin cô.
+
+T4: Không phải quên. Là em chưa quyết được đăng ký trường nào để thi thử. Cái phiếu nó bắt em quyết một chuyện to hơn cái phiếu. Em cứ mở ra nhìn rồi cất đi [im 3 giây]. Chuyện này nhờ chị đừng kể chi tiết với mẹ em. [đã ẩn 1 câu theo yêu cầu — nội dung liên quan lựa chọn nguyện vọng khác ý mẹ]
+
+T5: Giờ học thêm là xương sống, cố định, khỏi nghĩ. Còn lại em xếp quanh nó: đề nào sắp hạn làm trước, đàn là phần thưởng cuối ngày. Em xếp kiểu: việc bắt buộc là khung, việc mình thích là keo dán — không có keo là khung sập [định nghĩa riêng, đáng ghi nguyên văn].
+
+T6: Rồi. Cái bảng trên tường phòng em. Chia ca cả tuần, có ô Nghỉ hẳn hoi — người ta ôn thi cũng phải có ngày xả chứ.
+
+T7: Được khoảng 70%. Ca sáng chủ nhật là hay chết nhất — thức khuya thứ Bảy thì sáng chủ nhật ngủ bù. Em biết trước là nó sẽ chết mà vẫn kẻ vào, cho lịch nó đẹp [cười lần đầu tiên trong buổi].
+
+T8: Dồn sang ô Nghỉ. Ô Nghỉ của em là quỹ dự phòng — tuần nào lịch vỡ nhiều thì mất Nghỉ. Cũng công bằng, mình làm mình chịu.
+
+T9: Quan trọng là cái đổi được tương lai — thi vào 10 này. Phải làm ngay là cái có hạn hôm nay. Năm nay đặc biệt: cái quan trọng nhất đồng thời là cái gấp nhất, nên đời em đang dễ xếp hạng hơn mọi năm [nhếch mép]. Sang năm đỗ rồi mới loạn lại.
+
+T10: Chuyện chọn trường, chọn nguyện vọng. Ai cũng giục HỌC nhưng không ai giục NGHĨ XEM HỌC ĐỂ VÀO ĐÂU. Em toàn nghĩ nó lúc 12 giờ đêm, mà nghĩ một mình thì nó cứ xoay vòng.
+
+T11: Rửa bát, ăn cơm với nhà. Với tự giặt đồ của mình. Mấy cái đó khỏi điểm, làm cho nhà nó là nhà.
+
+T12: Thật ra ở tuổi em, cái xứng đáng nhất không phải xu — là ĐỔI LẤY QUYỀN. Em làm đủ đề một tuần thì cuối tuần đừng hỏi em đi đâu với ai. Deal kiểu đấy em ký liền hai tay.
+
+T13: App của mẹ thì việc biến mất nghĩa là mẹ đổi chiến thuật [cười]. Việc thật thì nó nằm trong đầu em với cái bảng, không phụ thuộc app. Em nói thật app này là của mẹ em chứ có phải của em đâu.
+
+T14: Cái bảng trên tường — vì từng ô là em quyết. Kể cả ô sai, ô "sáng chủ nhật" ảo tưởng ấy, nó cũng là ảo tưởng CỦA EM. Mẹ mà kẻ hộ cái bảng đấy thì em... chắc em tháo xuống luôn quá.
+
+**Phần D — Bài phân loại (Phong — 3 phút, nhanh nhất toàn bộ giả lập, vừa xếp vừa gọi tên khung)**
+
+- Nhìn 4 vùng xong nói luôn: "à, ma trận Eisenhower phiên bản trẻ em" [biết khung từ video study-tips] — cảnh báo: với teen đã biết khung, bài này đo kiến thức chứ không đo trực giác nữa.
+- "Đánh răng" → đặt ngoài rìa: "routine, khỏi xếp" [trẻ lớn thứ 4 loại routine khỏi khung].
+- "Thứ Sáu kiểm tra Toán" → **Làm sớm để khỏi bị gấp**: "chia 4 ngày, mỗi ngày một dạng đề." Hỏi khi nào chuyển nhóm: "không chuyển — nếu làm đúng từ hôm nay thì thứ Năm nó vẫn là việc thường. Nó chỉ thành 'gấp' nếu mình bỏ bê nó. Gấp là hậu quả, không phải tính chất." [câu đắt nhất toàn bộ giả lập — nguyên văn]
+- "Mai tiết Mỹ thuật" → **Cần xử lý ngay** "lớp 9 không có Mỹ thuật, nhưng logic là tối nay xử."
+- "Bạn gọi chơi game ngay" → **Để sau cũng được**: "mùa này em treo game rồi. Tháng 7 sang năm gọi lại" [nói như hẹn lịch kinh doanh].
+- "Em làm đổ cốc nước" → **Cần xử lý ngay** nếu gần laptop, **Để sau** nếu chỉ là sàn: "phụ thuộc cái gì đang ở cạnh cốc nước" [phân loại theo RỦI RO HẬU QUẢ — mức trưởng thành nhất].
+- "Bàn học hơi bừa" → **Để sau**, "dọn bàn là trò não em bày ra để trốn học, em bắt bài nó rồi" [nhận diện procrastination-bằng-việc-có-ích].
+- "Bài nộp sau 15 phút" → **Cần xử lý ngay**.
+- "Quà sinh nhật mẹ tuần sau" → **Làm sớm** [đặt im lặng, không bình luận — giống Đạt, thẻ mẹ làm teen đổi thái độ].
+- "Đọc sách mục tiêu tháng" → **Để sau cũng được**: "mục tiêu tháng nào cũng chết vì nó không có ngày thi. Cái gì không có ngày thi là não em cho nó về hưu."
+- "Xem video" → **Để sau**: "kẻ thù quen mặt. Em cài chặn app từ 9 giờ tối, tự cài đấy, không phải mẹ."
+
+**Phần E — Kế hoạch ngày mai (Phong)**
+
+Quan sát: không dùng thẻ — chỉ tay lên cái bảng tường: "mai là cột thứ Tư kia kìa". Cột thứ Tư có sẵn: học thêm Toán 17h, đề Anh 21h, đàn 22h. Được đề nghị vẫn làm bài tập với 4 thẻ, em làm chiếu lệ trong 90 giây, xếp đúng nhưng không đầu tư: "chị hỏi cái bảng ấy, nó trả lời tốt hơn em" [với teen đã CÓ hệ thống, bài tập áp hệ thống lạ bị coi là bước lùi]. Điểm lộ ra: thẻ "việc quan trọng dài hạn" (chọn nguyện vọng) em cầm rồi đặt xuống ngoài bảng — "cái này không nhét vào ô giờ được, nó cần… một cuộc hẹn khác" [việc-cần-suy-nghĩ không sống được trong lịch-việc-làm].
+
+E1: "Đề Anh — hạn 23h, có điểm danh online."
+E2: "21h, sau cơm và trước đàn."
+E3: "Học thêm về muộn nếu thầy chữa lố giờ — thứ Tư nào thầy cũng lố."
+E4: "Thì đàn lùi xuống hoặc bỏ. Đàn là keo dán mà, keo thì co giãn được [cười]. Đề thì không."
+E5: "95%. Cột thứ Tư là cột dễ nhất tuần, em kẻ thế mà."
+
+Hỏi lại sau 5 phút: đọc lại chính xác 100% kể cả "thầy hay lố giờ" — hệ thống nằm trong đầu, bảng chỉ là bản chiếu.
+
+**Phần F — Mẹ Dung xem kế hoạch mẫu**
+
+F1: Em đọc bằng mắt giáo viên chấm bài quen rồi: đủ ý — việc, giờ, tự dự báo rủi ro, có phương án. Học sinh em mà viết được thế là em cho điểm cộng.
+F2: Em thèm biết cái mà không app nào cho được: nó có ỔN không. Kế hoạch chạy mà người rệu rã thì em không đổi. Giá app hỏi nó thêm một câu "hôm nay con thấy thế nào" và cho em xem cái đó — với sự đồng ý của nó.
+F3: Không. Em học được rồi: sửa kế hoạch của nó là xé bản tuyên ngôn của nó.
+F4: Không duyệt, và em xin nói mạnh hơn: NÚT DUYỆT KHÔNG ĐƯỢC PHÉP TỒN TẠI ở tuổi này. Nó mà biết mẹ có quyền duyệt kế hoạch là nó không bao giờ viết thật nữa — nó sẽ viết bản để-được-duyệt. Em là giáo viên, em biết học sinh viết văn mẫu trông thế nào.
+F5: Đừng gợi ý câu nói với nó — gợi ý cho em câu ĐỪNG nói. Kiểu "tối nay đừng hỏi tiến độ". App nhắc mẹ im đúng lúc còn quý hơn nhắc mẹ nói gì.
+F6: Nếu hằng ngày em chỉ nhìn một thứ: hôm nay nó có tự đặt kế hoạch không — có/không thôi. Nội dung là chủ quyền của nó. À và cái câu F5 em vừa nói, nếu app làm được thì em trả thêm tiền cũng mua.
+
+**Quan sát chung Gia đình M:**
+- Câu định nghĩa hay nhất giả lập: "Gấp là hậu quả, không phải tính chất" (Phong, khi được hỏi thẻ kiểm tra Toán khi nào chuyển vùng).
+- Teen đã biết khung Eisenhower từ YouTube → bài D với 14t đo kiến thức, không đo trực giác; cần đổi cách khai thác (hỏi hành vi thật thay vì xếp thẻ).
+- Phát hiện loại việc thứ hai không có chỗ chứa: việc-cần-suy-nghĩ (chọn nguyện vọng) — Phong nói thẳng "nó cần một cuộc hẹn khác, không nhét vào ô giờ được"; trùng T10 của Hân nhà L. 2/3 teen lớn cùng chỉ ra.
+- Nhà M là ranh giới đỏ của planning feature: mẹ (giáo viên!) tuyên bố "nút duyệt không được phép tồn tại" vì sẽ sinh ra kế-hoạch-văn-mẫu; con tuyên bố bảng do mẹ kẻ hộ là "tháo xuống luôn".
+- Yêu cầu tính năng ngược đời mà rất người: app nhắc PHỤ HUYNH IM đúng lúc (F5) — "trả thêm tiền cũng mua".
+- Đạo đức phỏng vấn với teen: Phong ra điều kiện ẩn 1 câu — kịch bản thật cần quy ước bảo mật riêng cho 12+ ngay từ đầu buổi.
+
+---
+
+## Gia đình N — Vy, 12 tuổi (Cần Thơ)
+Nhóm tuổi: 12+ · Mẹ Hằng 40t nội trợ, bố kỹ sư điện đi tuyến · Vy lớp 7, chị cả; em trai 9t, em gái 6t — cả 3 chị em cùng dùng app · Dùng 7 tháng.
+Thời lượng: PH 24 phút · Trẻ 18 phút.
+
+**Phần A — Mẹ Hằng**
+
+PH1: Tối qua luôn nè. Mà ngộ lắm: em không nhắc con Vy — em nhắc thằng Tin (9t), nhắc hoài không xong, rốt cuộc con Vy nó đứng ra "Tin, 8 giờ rồi, vô bàn, chị đếm tới ba". Thằng nhỏ nghe chị hơn nghe mẹ. Thành ra chuyện "nhắc con" ở nhà này có hai tầng: em nhắc Vy ít lắm, mà Vy nhắc em nó giùm em mỗi ngày.
+
+PH2: Với riêng Vy: việc học em gần như khỏi nhắc. Chỉ nhắc nó... đi ngủ. Nó ôm việc tới khuya — vừa bài nó, vừa dò bài em nó.
+
+PH3: Tuần rồi nó tự đi photo tài liệu ôn, tự đặt lịch nhóm học qua Meet cho tổ nó. Tự hết. Nó là kiểu người sinh ra đã có cuốn sổ trong đầu á chị.
+
+PH4: Vy thì sổ tay + điện thoại + app. Hai đứa nhỏ thì: mẹ nói + chị nhắc + app hiện. App nhà em là công cụ của BA MẸ CON vận hành hai đứa nhỏ — Vy có quyền "tick giùm em" mà tụi em hay giành tick [cười].
+
+PH5: 8 rưỡi tối, cả bốn mẹ con. Mà thú thật buổi đó Vy chạy chương trình chứ không phải em: nó hỏi từng em "mai con có gì", em ngồi... phụ họa.
+
+PH6: Có. Bữa em về ngoại ba ngày chăm bà bệnh. Tối đầu tiên gọi về, con Vy đã tự chạy cái nếp 8 rưỡi — nó còn chụp màn hình app gửi em "mẹ yên tâm". Vừa mừng vừa xót chị ơi. 12 tuổi mà gánh vai của em.
+
+PH7: Ba đứa đều: vệ sinh, học, xếp mùng gối. Riêng Vy: KHÔNG bắt buộc trông em — em tuyên bố vậy — nhưng nó cứ tự ôm.
+
+PH8: Việc có điểm: rửa chén, phơi đồ, tưới rau. Riêng Vy em cộng thêm điểm "dò bài cho Tin" — em tính là VIỆC có công, không phải bổn phận chị em. Em sợ nhất là nó thấy chuyện gánh em là đương nhiên.
+
+PH9: Vy hầu như không hỏi. Có lần duy nhất nó hỏi làm em nhớ hoài: "mẹ, việc con nhắc thằng Tin học có được tính là việc không?" — không phải đòi công, mà nghe như nó muốn được NHÌN THẤY. Em cộng điểm liền và từ đó có mục "dò bài" trong app.
+
+PH10: Với Vy chưa thấy. Với thằng Tin thì rồi — hết đợt điểm đôi là bỏ tưới rau. Hai chị em hai hệ điều hành khác hẳn.
+
+PH11: Với hai đứa nhỏ: trừ điểm, cắt hoạt hình. Với Vy gần như không có gì để phạt — hình phạt lớn nhất với nó là thấy mẹ thất vọng, mà cái đó em đâu dám xài, xài là nó tổn thương cả tuần.
+
+PH12: Câu này với Vy em trả lời ngược đời lắm nha: có trách nhiệm là biết BỎ BỚT trách nhiệm. Nó ôm dư rồi. Em mong nó vô trách nhiệm lại một chút, giành phần chơi về mình một chút.
+
+PH13: Nó thì hiếm. Có một lần: bài dự thi viết thư UPU, hạn cả tháng, nó dồn tới tuần chót — mà lý do là cả tháng đó nó bận... chạy deadline phụ em nó làm lồng đèn, dò bài, việc nhà. Việc của NGƯỜI KHÁC đè chết việc của NÓ. Đó, vấn đề của con em nó nằm chỗ đó đó chị.
+
+PH14: Nó tự biết, tự phát hiện, tự thức khuya tự xử. Em chỉ biết khi thấy đèn phòng nó sáng lúc 12 giờ.
+
+PH15: Sổ tay của nó là huyền thoại nhà này: lịch tuần, việc từng em, cả ô "mẹ nhờ đột xuất". Chị nghe kỹ nha: nó chừa sẵn Ô CHO VIỆC MẸ NHỜ ĐỘT XUẤT. 12 tuổi đó.
+
+PH16: Kế hoạch nó tự sửa ngon lành. Cái em phải can thiệp là chuyện khác: gạch bớt. Em cầm viết gạch giùm nó hai dòng thì nó cự "để đó con làm được mà mẹ".
+
+PH17: Với Vy, ba hành vi em muốn thấy là: một — trong kế hoạch tuần có ÍT NHẤT một mục cho riêng nó (đi chơi với bạn, đọc truyện nó thích); hai — biết từ chối khi em nó nhờ lúc nó đang học; ba — đem bài UPU kiểu đó ra làm TRƯỚC việc của em nó một lần cho em coi.
+
+PH18: Hồi trưa, duyệt một loạt cho ba đứa. Của Vy em duyệt nhanh không cần coi — Uy Tín nó kịch trần, app tự duyệt phân nửa rồi.
+
+PH19: Của Vy em chẳng cần xem gì — đó, chính cái đó mới là vấn đề: app đang cho em rất nhiều thông tin về hai đứa nhỏ mà chẳng nói gì với em về đứa đang GỒNG.
+
+PH20: Chia điểm sao cho công bằng ba đứa ba tuổi — việc của con 6 tuổi dễ mà điểm ngang việc con 12 tuổi là con lớn thiệt thòi. Em phải tự chế "hệ số tuổi" trong đầu.
+
+PH21: Ba chị em cãi nhau vụ giành tick giùm với so điểm — chuyện thường ngày. Vy với em thì chưa từng cãi vì app. À có một lần nó buồn: đợt app trao huy hiệu "ngôi sao tuần" cho thằng Tin vì tiến bộ vượt bậc, nó lặng lặng hỏi em "app không thấy con làm gì hả mẹ" — vì điểm nó ĐỀU quá nên không bao giờ "vượt bậc". App thưởng cho tiến bộ mà quên người gánh cả hệ [em nói xong tự ghi ra giấy câu đó, bảo phải nhớ].
+
+PH22: Cái nếp 8 rưỡi tối bốn mẹ con. Với cái mục "dò bài cho Tin" — nhờ nó mà công sức của Vy có chỗ được nhìn thấy. Mất app, Vy lại thành người gánh vô hình.
+
+PH23: Quản việc hai đứa nhỏ thì bảng giấy cũng tạm được — cực hơn nhưng được. Cái app đang làm mà không gì thay được là cho con Vy BẰNG CHỨNG rằng nó có công. Tờ giấy không làm được chuyện đó đâu.
+
+**Phần C — Vy (12 tuổi, 18 phút, nói nhỏ nhưng rất mạch lạc)**
+
+T1: Dạ biết. Mai con có kiểm tra Sinh, chiều họp nhóm làm poster Sử, tối dò bài cho Tin vì mốt nó thi.
+
+T2: Việc của con và việc của tụi nhỏ con đều tự nhớ. Mẹ không phải nhắc con... [ngập ngừng] à có một việc mẹ nhắc: mẹ hay nhắc con đi ngủ, với nhắc "con đừng ôm nữa". Nhưng mà nói thiệt cô đừng cười — con thấy nhắc vậy cũng là thương con, con biết.
+
+T3: Bài thi viết thư UPU. Con biết trước một tháng mà tuần cuối mới viết, thức hai đêm.
+
+T4: Tại tháng đó nhiều chuyện: Tin thi giữa kỳ, bé Na tập văn nghệ cần người đưa đón phụ mẹ, việc nhà nữa. Việc của tụi nó có NGÀY CỤ THỂ, việc của con thì "cả tháng lận mà". Con cứ nghĩ mình còn thời gian, tới lúc nhìn lại thì mình là đứa duy nhất chưa xong việc của chính mình [nói bình thản, không tủi — như đã quen].
+
+T5: Con xếp: việc có giờ chết (kiểm tra, họp nhóm) rồi tới việc của tụi nhỏ, rồi việc nhà, cuối cùng là việc riêng của con. [hỏi: "sao việc riêng của con xếp cuối?"] …Tại nó là của con, con thương lượng với nó được. Em con với cô giáo thì đâu có thương lượng được [cười nhẹ — logic sắc, đáng suy nghĩ].
+
+T6: Dạ có, sổ tay. Tuần nào cũng kẻ tối chủ nhật: cột con, cột Tin, cột Na, ô "mẹ nhờ đột xuất" — phải chừa ô đó, tuần nào cũng xài tới nó [cười].
+
+T7: Cột của Tin với Na thì gần như đúng hết. Cột của con là cột hay bể nhất — mà bể là do con lấy giờ cột mình đắp qua cột tụi nó.
+
+T8: Con dời việc mình qua khuya. [hỏi: "có bao giờ bỏ luôn không?"] Có, mấy cái cho vui của con — đọc truyện, tập vẽ — bỏ hoài. Việc của tụi nhỏ thì chưa bỏ bao giờ.
+
+T9: Quan trọng là việc mà mình bỏ thì có người bị ảnh hưởng. Phải làm ngay là việc có giờ. [hỏi: "vậy việc quan trọng với CON, chỉ ảnh hưởng mỗi con thôi thì sao?"] [im lặng 6 giây] …thì chắc nó xếp sau cùng á cô. Tại có ai bị sao đâu, trừ con. [câu trả lời nặng nhất toàn bộ giả lập — ghi nguyên văn cả khoảng lặng]
+
+T10: Bài UPU đó, với vụ tập vẽ. Không ai nhắc vì không ai bị trễ theo — chỉ mình con thiệt thôi.
+
+T11: Hết trơn á cô: học, việc nhà, phụ mẹ. Con không làm vì điểm đâu. Điểm là mẹ thương nên cộng thêm thôi.
+
+T12: Cái mục "dò bài cho Tin" — hồi mẹ thêm mục đó vô app con vui lắm [cười thiệt]. Không phải vì điểm — vì trước đó con làm hoài mà nó vô hình, thêm vô app tự nhiên nó thành... có thiệt.
+
+T13: Việc trong app biến mất thì con vẫn tự nhớ — sổ con là gốc, app là bản phụ. Với việc tụi nhỏ thì con càng phải nhớ, app đâu biết thằng Tin mốt thi.
+
+T14: [nghĩ 5 giây] Câu này khó à nghen... Con lập kế hoạch cho cả nhà quen rồi, nó là của con mà cũng không phải của con. Chắc là... khi nào trong kế hoạch có mục mà CHỈ CÓ CON hưởng — kiểu "chiều thứ Bảy: đi nhà sách một mình" — mà con dám giữ nó tới cùng không nhường cho ai, thì lúc đó là kế hoạch của con thiệt. Con chưa làm được lần nào [cười, hơi ngượng].
+
+**Phần D — Bài phân loại (Vy — 4 phút, xếp cẩn thận, thẳng hàng từng thẻ)**
+
+- "Đánh răng" → **Cần xử lý ngay** "tới giờ là làm, khỏi nghĩ" [không phá khung như 3 teen kia — Vy tôn trọng mọi luật chơi được giao].
+- "Thứ Sáu kiểm tra Toán" → **Làm sớm để khỏi bị gấp**: "chia ra từ nay, mỗi tối một ít — con làm vậy thiệt, cô coi sổ con nè" [mở sổ thật — hành vi khớp lời nói, hiếm nhất giả lập].
+- "Mai tiết Mỹ thuật" → **Cần xử lý ngay**, "tiện soạn cho bé Na luôn, nó cũng có Mỹ thuật" [tự động mở rộng việc mình thành việc cả nhà — đúng hồ sơ].
+- "Bạn gọi chơi game ngay" → **Để sau cũng được**: "con ít chơi. Bạn con giờ rủ qua chat, con hay trả lời 'để coi' — 'để coi' của con nghĩa là 'không' mà nói cho đỡ mất lòng" [cười].
+- "Em làm đổ cốc nước" → **Cần xử lý ngay** — không do dự một giây: "lau, rồi coi em có sao không". [hỏi: "sao con không xếp 'nhờ người khác'?"] "Nhờ ai? Mình là người-khác của tụi nó mà" [câu tự định vị chính xác nhất].
+- "Bàn học hơi bừa" → **Để sau**, "bàn con bừa là do đồ tụi nhỏ tràn qua, dọn rồi nó tràn lại à" [cười].
+- "Bài nộp sau 15 phút" → **Cần xử lý ngay**.
+- "Quà sinh nhật mẹ tuần sau" → **Làm sớm** + đã có kế hoạch thật: "con với Tin với Na hùn, con giữ quỹ, đặt bánh kem bên cô Sáu, thứ Năm đặt là vừa" [kế hoạch chi tiết nhất cho thẻ này toàn giả lập].
+- "Đọc sách mục tiêu tháng" → cầm thẻ lâu [8 giây] → **Để sau cũng được**: "…nó giống bài UPU của con. Mấy cái chỉ-của-mình toàn nằm ô này" [tự nhận ra pattern của chính mình NGAY TRONG bài xếp thẻ].
+- "Xem video" → **Để sau**.
+
+**Phần E — Kế hoạch ngày mai (Vy)**
+
+Quan sát: làm nhanh, thành thạo — kẻ 3 cột theo thói quen (con / Tin / Na) rồi khựng lại: "à, bữa nay cô kêu làm cho MÌNH con thôi hả?" [phản xạ mặc định là lập kế hoạch CHO CẢ NHÀ]. Làm lại cột đơn: ôn Sinh 6h sáng 15p → họp poster 16h30 → dò bài Tin 19h30 → "nếu xong sớm: vẽ tiếp bức đang dở" đặt cuối kèm dấu chấm hỏi tự ghi. Có giờ 3/4 mục, có tính giờ đưa đón phát sinh ("nếu mẹ kẹt thì con đón Na, dời họp nhóm online"). Chừa trống có chủ đích. 5 phút, mẹ 0 can thiệp.
+
+E1: "Kiểm tra Sinh." [hỏi: "còn việc quan trọng nhất CHO CON ngoài điểm số?"] [im 4 giây] "…bức vẽ. Mà nó xếp chót rồi đó cô [cười]."
+E2: "Sinh thì 6h sáng — sáng nhà yên, tụi nhỏ chưa dậy, giờ đó mới là giờ của con."
+E3: "Tự nhiên có việc phát sinh của tụi nhỏ. Mà không phải 'nếu' đâu cô, là 'chắc chắn có', chỉ chưa biết là việc gì thôi" [định nghĩa lại rủi ro thành hằng số — tư duy của người vận hành thực thụ].
+E4: "Thì bức vẽ ra đi trước. Nó là hàng dự bị chuyên nghiệp rồi [cười]. Trừ khi... thôi kệ, ra đi trước."
+E5: "Phần cho người khác thì 100%. Phần cho con thì 50-50. Tính trung bình chắc là... vẫn gọi là làm được hết ha cô?" [chua mà tỉnh]
+
+Hỏi lại sau 5 phút: nhớ đủ 4 mục + giờ + cả phương án đón Na. Bức vẽ nhắc tới CUỐI CÙNG, sau một nhịp: "…với bức vẽ nữa. Nếu kịp."
+
+**Phần F — Mẹ Hằng xem kế hoạch mẫu**
+
+F1: Hiểu liền. Mà em nhìn phát là nghĩ tới con Vy: nếu là nó viết, cái mẫu này THIẾU — không thấy chỗ nào ghi việc nó làm cho em nó. Kế hoạch của con em mà chỉ có việc của nó thì em... mừng rớt nước mắt á chị.
+F2: Với Vy em cần thấy đúng một thứ: trong kế hoạch CÓ MỤC NÀO CHO RIÊNG NÓ không. App mà tô đậm giùm em cái mục "của riêng con" là em cảm ơn lắm.
+F3: Có, mà sửa kiểu ngược: không thêm — chỉ đề nghị BỎ BỚT. Mà phải app đề nghị, chứ em đề nghị là nó "dạ" xong vẫn làm đủ [cười].
+F4: Không cần duyệt. Vy hả? Duyệt cái gì, nó lập kế hoạch giỏi hơn em. Em chỉ cần được NHẮC khi nó ôm quá tay — kiểu "tuần này Vy có 12 việc, 9 việc là cho người khác" — con số đó em cần, nút duyệt em không cần.
+F5: "Mẹ đặt lịch chiều thứ Bảy hai mẹ con đi nhà sách, việc nhà bữa đó mẹ lo" — không phải câu khen, là câu TRẢ LẠI thời gian. Với Vy khen nó là nó lại gồng thêm cho xứng lời khen, em rành nó quá rồi.
+F6: Với con này em không bỏ qua phần nào hết — em thèm thông tin về nó lắm, vì nó chẳng bao giờ kêu ca gì. Đứa kêu nhiều thì mình biết nhiều, đứa im re như nó mới là đứa mẹ mù thông tin nhất, nghịch lý vậy đó.
+
+**Quan sát chung Gia đình N:**
+- Vy là ca "over-functioning" — vấn đề planning KHÔNG phải kỹ năng (kỹ năng thượng thừa: ô dự phòng "mẹ nhờ đột xuất", rủi ro = hằng số, giờ vàng 6h sáng) mà là PHÂN BỔ: việc-chỉ-của-mình luôn xếp chót và bị hy sinh đầu tiên.
+- Khoảnh khắc T9 ("thì chắc nó xếp sau cùng á cô. Tại có ai bị sao đâu, trừ con") + tự nhận ra pattern ngay trong bài D ("mấy cái chỉ-của-mình toàn nằm ô này") — trẻ tự chẩn đoán chính xác, không cần ai phân tích.
+- App hiện thưởng "tiến bộ vượt bậc" → người ổn-định-gánh-team vô hình (vụ huy hiệu của Tin) — lỗ hổng cơ chế ghi nhận, mẹ tự ghi ra giấy câu "app thưởng cho tiến bộ mà quên người gánh cả hệ".
+- Yêu cầu tính năng từ mẹ: đếm-hộ tỷ lệ việc-cho-mình/việc-cho-người-khác và đề nghị BỎ BỚT (ngược 180° với mọi nhà khác — nhà khác cần con thêm việc, nhà này cần con bớt việc).
+- Phần E lộ phản xạ gốc: kẻ 3 cột cho cả nhà trước khi nhớ ra chỉ cần lập cho mình.
+
+---
+
+## Gia đình O — Huy, 15 tuổi (Hải Phòng)
+Nhóm tuổi: 12+ · Bố Thắng 45t kỹ sư ca ở nhà máy, bố mẹ ly hôn 2 năm, Huy ở với bố, cuối tuần về mẹ · Huy lớp 10, mới vào cấp 3 · Dùng app 1 tháng — bố cài sau buổi họp phụ huynh đầu năm (KHÔNG hỏi PH22).
+Thời lượng: PH 23 phút · Trẻ 15 phút (Huy đồng ý "15 phút thôi đấy", trả lời nhát gừng nửa đầu, cởi hơn ở phần D–E).
+
+**Phần A — Bố Thắng**
+
+PH1: Tối thứ Sáu tuần trước. Tôi ca chiều về đến nhà 10 rưỡi đêm, đèn phòng nó còn sáng, tiếng bàn phím lạch cạch. Gõ cửa bảo "ngủ đi con, mai học". Nó "vâng". Nửa tiếng sau vẫn lạch cạch. Tôi mở cửa thì nó tắt màn hình, hai bố con nhìn nhau, chả ai nói gì. Tôi đóng cửa đi ra. Đấy, "nhắc" ở nhà này giờ nó thế đấy chú ạ — không phải nhắc làm, mà là nhắc dừng, và nhắc xong thì thôi, chả biết làm gì tiếp.
+
+PH2: Đi ngủ. Hai lần. Bằng mồm qua cánh cửa. Còn cách nào nữa — chả lẽ cắt mạng, nó 15 tuổi rồi, làm căng thì nó về bà nội hoặc đòi về ở hẳn với mẹ nó, tôi lại thành người xấu.
+
+PH3: [nghĩ lâu, 8-9 giây] Nó tự giặt phơi đồ, tự nấu mì, tự dậy đi học không cần gọi — từ hồi bố mẹ nó chia tay là tự lập hẳn. Nghe thì mừng đấy, nhưng nó "tự" theo kiểu không muốn dính đến ai, kể cả tôi. Khác với thằng bé nhà người ta tự giác vì ngoan.
+
+PH4: Chịu. Nói thật là tôi không biết nó quản bài vở bằng cái gì. Điện thoại nó, máy tính nó, thế giới của nó. Tôi chỉ nhìn được cái vỏ: sáng nó đi học đúng giờ, tối nó ở trong phòng. Trong app tôi cài thì có 4 việc, toàn việc nhà.
+
+PH5: Không có. Hai bố con lệch ca — tôi ca chiều thì nó ăn tối một mình, tôi ca sáng thì đi từ 5 giờ. Bữa cơm chung được độ ba bữa một tuần, "trao đổi về ngày mai" là thứ xa xỉ. Hồi trước việc đấy là mẹ nó làm.
+
+PH6: Câu này phải hỏi ngược: có tối nào mà KHÔNG bỏ qua không [cười gượng]. Cả cái nếp chuẩn bị ấy nó đi theo mẹ nó rồi. Tôi đang cố dựng lại từ đầu bằng cái app này đấy chứ.
+
+PH7: Đi học, không hút thuốc không la cà, về nhà trước 9 giờ tối, cuối tuần về thăm mẹ đúng hẹn. Mấy cái đấy nó giữ, phải công nhận. Không thưởng — mà tôi cũng chẳng biết nó coi đấy là nghĩa vụ với tôi hay với mẹ nó.
+
+PH8: Bốn việc trong app: nấu cơm hôm tôi ca chiều, đổ rác, phơi đồ, và "ăn tối cùng bố" hôm tôi ca sáng — ừ thì tôi cho cả việc ăn cơm chung vào app, chú cười cũng được [gượng]. Điểm quy ra tiền nạp game với tiền xăng xe máy điện. Vì sao thưởng? Vì tôi chẳng còn kênh nào khác để... để có cớ tương tác với nó. App là cái cớ. Tiền là mồi. Nghe thảm nhỉ.
+
+PH9: Hỏi thẳng luôn: "bố quy ra tiền cho nhanh, con không cần điểm số ảo". Tôi ok luôn — nó nói đúng chứ sai đâu. Giờ mỗi việc có giá tiền, cuối tuần thanh toán. Sòng phẳng như chủ với thợ [cười buồn].
+
+PH10: Mới một tháng chưa thấy. Nhưng tôi đoán trước được: cái việc "ăn tối cùng bố" ấy, nó làm vì 20 nghìn thì trước sau cũng chán. Tôi chỉ mong trước lúc nó chán thì hai bố con... quen mồm nói chuyện lại đã.
+
+PH11: Chả xử lý gì. Nó không nấu thì hai bố con ăn mì. Không đổ rác thì tôi đổ. Tôi tránh va chạm — nhà còn hai người, va nữa thì tan nốt. Tôi biết thế là nhu nhược, chú khỏi nói.
+
+PH12: [im lặng dài] Với thằng Huy bây giờ hả... Nó nhắn cho tôi "bố ơi mai con thi, bố đi làm về mua đồ ăn khuya cho con" — thế thôi. Nó mà còn NHỜ tôi cái gì đấy tức là nó còn tính tôi trong kế hoạch của nó. Trách nhiệm gì thì tính sau.
+
+PH13: Họp phụ huynh đầu năm cô bảo nó nợ hai bài kiểm tra 15 phút không nộp. Tôi hỏi, nó bảo "à quên, để con xin nộp bù" — xong nộp bù thật, điểm cũng ổn. Nó không phải không làm được, nó là kiểu... chả buồn làm đúng hạn vì chả ai ở đấy mà nhìn.
+
+PH14: Tôi biết SAU CÙNG, qua cô giáo. Đấy là cái nhục của ông bố ca kíp: cả thành phố biết trước mình.
+
+PH15: Không biết. Có khi nó có kế hoạch riêng trong máy nó đấy — game với tập gym nó đều đặn lắm, đều đặn thế phải có lịch chứ. Nhưng nó không cho tôi xem thì coi như không có.
+
+PH16: Chưa từng có cái kế hoạch chung nào để mà sửa.
+
+PH17: Ba cái à... Một: nó tự nhắn cho tôi lịch thi của nó — tự nhắn, không phải tôi hỏi. Hai: cái giờ lạch cạch bàn phím lùi về trước 12 giờ. Ba: một tháng nó rủ tôi một câu gì đấy, gì cũng được — "bố, cuối tuần xem đá bóng không" là tôi mãn nguyện. Chú thấy tiêu chuẩn của tôi thấp chưa [cười].
+
+PH18: Sáng nay trước ca, duyệt việc nấu cơm với đổ rác hôm qua, chuyển 40 nghìn tiền công tuần vào "ví" của nó trong app.
+
+PH19: Tất, trừ màn duyệt và cái ví. Hai bố con dùng app này như dùng cái máy chấm công thôi, mấy cái vườn thú vườn hoa trong đấy tôi lạc đường [cười]. Thằng Huy nó bật cái chế độ gì tối om ấy, bảo là đỡ trẻ con.
+
+PH20: Nghĩ xem cho việc gì vào app mà nó không thấy nhục. 15 tuổi rồi, cho việc "đánh răng" vào thì nó ném điện thoại vào mặt tôi. Bốn việc hiện tại là tôi nghĩ nát óc đấy.
+
+PH21: Chưa cãi nhau — vì có nói chuyện đâu mà cãi [cười buồn]. À có một lần nó nhắn "bố duyệt việc đi, con cần tiền mai đi sinh nhật bạn" — tôi duyệt xong tự nhiên thấy vui cả buổi ca. Chú bảo có khổ không, con nó đòi tiền mà bố thấy vui, vì ít ra nó cần đến mình.
+
+PH22: — (mới 1 tháng, bỏ theo kịch bản)
+
+PH23: Trả công việc nhà thì phong bì tiền mặt cũng làm được. Nhưng phong bì thì không có... không có cái thông báo hiện lên máy tôi lúc 9 giờ tối là "Huy đã hoàn thành: nấu cơm". Ca chiều đứng máy, nhìn cái thông báo đấy biết là nó có ăn cơm nhà, thế là đủ. Cái app này với tôi nó là cái đấy thôi — biết là thằng con còn sống còn ăn cơm ở cái nhà này.
+
+**Phần C — Huy (15 tuổi, 15 phút, quán nước gần nhà, trả lời cụt nửa đầu)**
+
+T1: Biết. [chờ 3 giây, hỏi thêm "gồm những gì?"] Thi thử Anh, trả sách thư viện, tối nấu cơm vì bố ca chiều.
+
+T2: Tự nhớ hết. [hỏi "bố có phải nhắc gì không?"] Nhắc ngủ. Mà đấy không phải việc, đấy là ý kiến [câu trả lời 15t đúng chất].
+
+T3: Hai bài kiểm tra 15 phút môn Địa với GDCD, nợ từ đầu năm, cô nói với bố mới nộp.
+
+T4: [nhún vai] Không có lý do hay ho đâu. Môn phụ, không ai giục, thế thôi. Cần nộp lúc nào thì xin nộp bù lúc đấy, các cô cho mà. [hỏi "nếu cô không cho thì sao?"] Thì mất điểm. Cũng không chết [nửa đầu buổi toàn giọng này].
+
+T5: Đơn giản lắm: việc có GIỜ CỐ ĐỊNH thì theo giờ — đi học, gym thứ ba năm bảy, rank tối. Việc không có giờ thì khi nào chạm nó thì làm — kiểu rác đầy thì đổ. Em không xếp hạng, em sống theo thời khóa biểu tự đặt. Đỡ phải nghĩ.
+
+T6: [im 4 giây] …Có. Lịch gym em theo giáo án 12 tuần, tự tải về, có bảng theo dõi mức tạ từng buổi trong Notes. Đang tuần 7. Chưa vỡ buổi nào. [lần đầu tiên trong buổi nói liền ba câu — chủ đề nó sở hữu]
+
+T7: Gym theo đúng 100% — giáo án là giáo án. Trường lớp thì em không lập kế hoạch, nên khỏi có gì để vỡ [cùng logic với Đạt nhà K: "chưa từng viết nên chưa có gì để sai"].
+
+T8: Nếu là gym mà lỡ buổi — chưa xảy ra, nhưng giáo án có ghi sẵn cách bù, dồn nhóm cơ vào buổi sau. Bài vở lỡ thì nộp bù. Hệ thống nào cũng có cửa bù hết, quan trọng là biết cửa nó ở đâu [nói xong tự thấy hay, cười lần đầu].
+
+T9: Quan trọng là cái mình sẽ tiếc nếu bỏ. Phải làm ngay là cái người khác cần mình làm đúng lúc. Hai cái khác nhau chứ. [hỏi "việc học của em nằm ô nào?"] [im 5 giây] Câu này xoáy đấy. Chắc là... "người khác cần" — bố cần, cô cần, mẹ hỏi điểm. Em chưa thấy tiếc cái gì trong đấy cả. Gym thì em tiếc từng buổi. [tự nghe thấy câu mình nói, im thêm 2 giây] Nghe cũng hơi sai sai nhỉ.
+
+T10: [nghĩ] Gọi cho mẹ. Cuối tuần nào về thì thôi, tuần nào bận không về là quên luôn, xong mẹ nhắn "dạo này con bận à" là biết mình quên [gãi đầu]. Không ai nhắc được việc đấy — bố không tiện nhắc, chị hiểu mà.
+
+T11: Về thăm mẹ đúng hẹn. Đấy là việc em làm dù chả có điểm nào, và có cho điểm em cũng không nhận — có những việc cho tiền vào là nó hỏng.  [nguyên văn — 15 tuổi tự vẽ được ranh giới mà lý thuyết động lực học cả chương]
+
+T12: Việc nhà — nấu cơm, đổ rác, phơi đồ. Bố trả công là đúng, em làm phần của bố mà (bố ca chiều thì ai nấu?). Sòng phẳng, đỡ nợ nần tình cảm. [hỏi "còn việc 'ăn tối cùng bố' trong app?"] [im 4 giây, xoay xoay cốc] …Cái đấy đáng lẽ đừng cho vào app. Em vẫn tick, vẫn lấy 20 nghìn, nhưng mà... đáng lẽ đừng quy ra tiền cái đấy. [không nói thêm — không ép]
+
+T13: App của bố thì việc biến mất chắc là bố... thôi không cần nữa. Việc thật của em nằm trong Notes với giáo án gym, em tự quản. À mà em để ý: bố hay quên tạo lại việc "nấu cơm" khi đổi ca — em biết thừa hôm đấy vẫn phải nấu, em cứ nấu thôi, xong bố lại lúi húi tạo việc bù để trả tiền [cười]. Buồn cười phết, hai bố con giao tiếp qua cái app như hai người chơi cờ qua thư.
+
+T14: Khi không ai biết mà mình vẫn theo. Gym đấy — không ai kiểm tra, không ai trả xu, tuần 7 rồi. Kế hoạch của mình là cái mình theo được lúc không có khán giả. [định nghĩa gọn nhất toàn giả lập]
+
+**Phần D — Bài phân loại (Huy — 3 phút, ban đầu định làm chiếu lệ, tự nghiêm túc dần)**
+
+- "Đánh răng" → gạt sang bên: "routine" [teen thứ 4/5 loại routine — giờ là pattern chắc chắn của nhóm 12+].
+- "Thứ Sáu kiểm tra Toán" → **Làm sớm để khỏi bị gấp** → tự sửa: "à mà của em thì em sẽ để 'để sau' rồi học tối thứ Năm một lèo — não em nó chỉ chạy khi sát hạn. Xếp hộ 'người bình thường' thì để 'làm sớm'" [xếp thẻ theo HAI HỆ QUY CHIẾU: đáp án đúng vs. vận hành thật của bản thân — mức meta cao nhất].
+- "Mai tiết Mỹ thuật" → **Cần xử lý ngay** "tối nay, 2 phút, xong".
+- "Bạn gọi chơi game ngay" → **Cần xử lý ngay** nếu là rank đã hẹn giờ ("đã hẹn team là deadline với 4 người khác đấy, bùng là toang uy tín"), **Để sau** nếu rủ vu vơ. [phân đôi theo CAM KẾT VỚI NGƯỜI KHÁC, không theo món giải trí]
+- "Em làm đổ cốc nước" → **Cần xử lý ngay** "gần bàn phím thì 3 giây, xa thì cũng lau luôn cho xong, đứng dậy rồi mà".
+- "Bàn học hơi bừa" → **Để sau cũng được**.
+- "Bài nộp sau 15 phút" → **Cần xử lý ngay** "cái này ai xếp khác được nhỉ" [đúng — 15/15 trẻ toàn giả lập xếp giống nhau thẻ này: thẻ này không phân loại được ai, cân nhắc bỏ].
+- "Quà sinh nhật mẹ tuần sau" → [cầm thẻ, im lặng 10 giây — lâu nhất buổi] → **Cần xử lý ngay**. [hỏi vì sao không phải "làm sớm"?] "Tuần sau em có chắc về được không đâu mà 'làm sớm'. Đặt hàng online NGAY hôm nay, ship về nhà mẹ, là chắc chắn nhất." [logic của đứa con sống hai nhà — thẻ này chạm đúng hoàn cảnh]
+- "Đọc sách mục tiêu tháng" → **Để sau**: "mục tiêu ai đặt? Em không có mục tiêu tháng kiểu này. Gym là mục tiêu 12 tuần, khác — nó có giáo án, có số đo. 'Đọc sách cho được' không phải mục tiêu, nó là điều ước" [phân biệt goal có cấu trúc vs. nguyện vọng mơ hồ].
+- "Xem video" → **Để sau** "nó tự tìm được đường vào đời em, khỏi cần xếp lịch giùm nó".
+
+**Phần E — Kế hoạch ngày mai (Huy)**
+
+Quan sát: nghe yêu cầu, hỏi lại "kế hoạch kiểu gì, cả ngày á? Ngày em cố định 80% rồi." Đồng ý làm phần 20%: gõ vào Notes trong 2 phút: "trả sách - ra chơi tiết 3 (thư viện gần lớp) / thi thử Anh - có sẵn / tối: cơm 18h30, rank 20h, tắt máy 23h30 (thử)". Chữ "(thử)" tự thêm. Không hỏi deadline (tự nắm). Có địa lý ("thư viện gần lớp") — tối ưu di chuyển không ai dạy. Bố không có mặt (đang ca). 2 phút — nhanh nhất toàn giả lập.
+
+E1: "Thi thử Anh. Vì nó có giờ cố định và có điểm vào sổ." [hỏi "còn cái '(thử)' kia?"] "…ừ thì cái tắt máy 23h30. Nó mới là cái khó nhất trong list đấy. Nói nhỏ thôi." 
+E2: "Nói rồi đấy — giờ nào việc nấy."
+E3: "Rank kéo dài — thắng thì muốn thêm, thua thì muốn gỡ. Cửa nào cũng dẫn đến 1 giờ sáng [cười]."
+E4: "Em set điện thoại tự chuyển grayscale lúc 23h15 — màu nó nhạt đi là tự nhiên chán. Mẹo này em học trên mạng, mới cài hôm kia. Hôm qua fail. Hôm nay thử tiếp."
+E5: "Mấy cái kia 100%. Cái 23h30... 40%. Mà kệ, 40% còn hơn 0%, giáo án gym tuần 1 em cũng chỉ theo được cỡ đấy, giờ tuần 7 rồi đấy thôi." [tự áp progression model của gym vào thay đổi thói quen — chín nhất toàn giả lập]
+
+Hỏi lại sau 5 phút: nhớ đủ, kể cả "(thử)". Còn bổ sung: "à với mai phải nhắn con Linh lớp phó là em nộp bù GDCD rồi, không nó lại réo" — kế hoạch tiếp tục CHẠY NGẦM trong đầu sau khi buổi phỏng vấn đã chuyển chủ đề.
+
+**Phần F — Bố Thắng xem kế hoạch mẫu**
+
+F1: Hiểu: tối nó học Toán 20 phút sau ăn, nó biết nó hay mải chơi. 5 giây là hiểu, chữ nghĩa thế là vừa.
+F2: Tôi chỉ cần thêm đúng một dòng: MẤY GIỜ. Ca chiều đứng máy, tôi chỉ nhìn được điện thoại lúc giải lao 21 giờ — nếu kế hoạch nó ghi "20 giờ học" thì 21 giờ tôi nhìn cái thông báo "đã bắt đầu / chưa bắt đầu" là tôi biết tối nay nhà tôi thế nào rồi.
+F3: Không bao giờ. Nó cho tôi XEM đã là nhân nhượng lắm rồi, tôi mà sửa nữa thì lần sau khỏi xem.
+F4: Duyệt cái gì hả chú. Con tôi 15 tuổi, kế hoạch của nó tôi được nhìn thấy đã là quà. App mà bắt nó nộp kế hoạch cho bố duyệt thì nó xóa app trong 5 giây, tôi cá cái xe máy điện.
+F5: Câu để nói với nó á... [im lâu] Tôi không cần app dạy tôi câu nói. Tôi cần app cho tôi CỚ để nói. Kiểu nó hoàn thành cái gì đấy thì app gợi ý tôi: "hỏi Huy về trận rank tối qua" — cớ vớ vẩn thế thôi, miễn là đúng chủ đề CỦA NÓ chứ đừng gợi tôi hỏi chuyện học, hỏi chuyện học là tắt đài ngay.
+F6: Phần "trở ngại - phương án" tôi sẽ đọc mãi không chán — vì qua đấy tôi biết trong đầu nó có gì, nó SỢ cái gì. Còn phần danh sách việc thì lướt. Ngược với mọi người nhỉ? Kệ, nhà tôi nó thế.
+
+**Quan sát chung Gia đình O:**
+- Huy có executive function TỐT (giáo án gym 12 tuần đang tuần 7, grayscale 23h15, tối ưu địa lý, cửa-bù-của-mọi-hệ-thống) — hoàn toàn không chuyển sang trường lớp vì "không tiếc cái gì trong đấy" (T9); vấn đề là Ý NGHĨA, không phải kỹ năng. Trùng pattern Đạt (Excel game) và Phong (guitar): cả 3 teen nam đều có hệ thống riêng xuất sắc cho thứ mình sở hữu.
+- T11 nguyên văn "có những việc cho tiền vào là nó hỏng" + T12 "đáng lẽ đừng quy ra tiền cái 'ăn tối cùng bố'" — trẻ 15t tự phát biểu được ranh giới nội tại/ngoại lai của phần thưởng; cảnh báo trực tiếp cho thiết kế "mọi thứ đều ra điểm" ở lứa 12+.
+- Bài D bộc lộ kỹ thuật mới: Huy xếp theo 2 hệ quy chiếu (chuẩn vs. bản thân) và Phong/Đạt/Hân/Huy 4/5 teen loại thẻ routine khỏi khung → với 12+, bài D nên thay bằng phỏng vấn hành-vi-thật.
+- Thẻ "bài nộp sau 15 phút" 15/15 trẻ xếp y hệt — thẻ không có giá trị phân loại, cân nhắc thay.
+- PH23 của bố Thắng định nghĩa lại giá trị app cho hộ ly hôn/ca kíp: không phải quản việc — là "biết thằng con còn ăn cơm ở cái nhà này"; F5 đảo ngược yêu cầu Sổ Vàng: không cần câu khen mẫu, cần CỚ bắt chuyện đúng chủ đề của con.
+- Phỏng vấn 12+ nên hẹn ở lãnh thổ trung lập (quán nước — Hân, Huy đều chọn) và chấp nhận nửa đầu nhát gừng; chủ đề mở khóa luôn là thứ trẻ SỞ HỮU (gym, game, shop).
+
+---
+
 ## TỔNG HỢP SAU GIẢ LẬP (giả thuyết đem hỏi người thật)
 
 > Không phải insight thị trường. Chỉ là pattern lặp giữa 10 persona để soi kịch bản + product.
@@ -1250,6 +1885,7 @@ F6: Chữ; chỉ cần việc + giờ.
 | 6–7 | Yếu; thích/gấp trộn; nhờ mẹ | Cần mẫu + can thiệp 2–4 lần | 1–3 việc (Xu 1/4, Bin 2/4, Na 3/5) |
 | 8 | Mầm "làm sớm"; vẫn routine=urgent | Ít can thiệp hơn | 2–4 việc (Bo 2/4, Tôm 4/5) |
 | 9–11 | My/Chi khá; Khoai=sao; Tí=thích; Minh=miệng | Viết ít, nói nhiều | 2–4/4 tùy executive function |
+| 12+ | Hiểu khung tốt (Phong biết cả Eisenhower); vấn đề là ĐỘNG LỰC/SỞ HỮU, không phải nhận thức | Có hệ thống riêng xuất sắc cho thứ mình sở hữu (game/gym/shop/bảng tường); từ chối công cụ áp từ ngoài | 4/4, thường kèm chi tiết — trí nhớ không còn là biến đo |
 
 - **List biến mất:** Khoai/Minh dễ hiểu = hết việc; Chi hiểu = vẫn phải nhớ — product risk nếu chỉ sống trong checklist.
 - **Phần E tốt hơn hỏi UI:** nhớ lại 5' phân tầng rõ hơn câu "con có thích không".
@@ -1262,11 +1898,22 @@ F6: Chữ; chỉ cần việc + giờ.
 - [ ] F4: có muốn duyệt plan không (kỳ vọng: không)
 - [ ] Không thu tên, điểm, dữ liệu nhạy cảm; không ép quay hình
 
-### E. Mapping nhanh 10 GĐ × độ tuổi
+### E. Mapping nhanh 15 GĐ × độ tuổi
 **6–8 (5):** A Bin 7 · B Xu 6 · C Tôm 8 · D Na 7 · E Bo 8  
 **9–11 (5):** F My 10 · G Khoai 9 · H Chi 11 · I Minh 10 · J Tí 11  
+**12+ (5):** K Đạt 12 · L Hân 13 · M Phong 14 · N Vy 12 · O Huy 15  
+
+### F. Bổ sung riêng nhóm 12+ (viết bởi Fable 5 sau khi chạy K–O)
+1. **Bài D mất giá trị đo ở 12+:** 4/5 teen tự loại thẻ routine khỏi khung ("nó auto, khỏi xếp"), Phong nhận diện luôn Eisenhower, Huy xếp theo 2 hệ quy chiếu (chuẩn vs. bản thân) — với 12+ nên thay bài xếp thẻ bằng phỏng vấn hành-vi-thật quanh hệ thống trẻ ĐANG có (bảng tường, Notes, giáo án gym).
+2. **Thẻ "bài nộp sau 15 phút" vô dụng toàn lứa:** 15/15 trẻ xếp y hệt — thay bằng thẻ phân loại được (vd "cô dặn nộp 'trong tuần'").
+3. **Năng lực có sẵn, sở hữu quyết định:** cả 5 teen đều có hệ thống lập kế hoạch tốt-đến-xuất-sắc cho thứ mình sở hữu (Excel event game, note "tuần thi", bảng ôn thi, sổ 3 cột, giáo án gym 12 tuần) và gần như 0 cho thứ bị giao. Chữ khóa từ chính miệng trẻ: "làm thuê" (Đạt), "app của mẹ" (Phong), "kế hoạch là cái mình theo được lúc không có khán giả" (Huy).
+4. **Nút duyệt = thuốc độc ở 12+:** mẹ Dung (giáo viên) "nút duyệt không được phép tồn tại — sẽ sinh kế-hoạch-văn-mẫu"; bố Thắng "nó xóa app trong 5 giây"; mẹ Oanh "đọc trộm nhật ký có giấy phép". Phụ huynh 12+ chỉ cần TÍN HIỆU (có/không có kế hoạch, giờ bắt đầu, chỗ đụng lịch nhà) — không cần nội dung.
+5. **Hai loại việc chưa có chỗ chứa trong mọi công cụ:** (a) việc-quan-trọng-không-ai-giục (chọn khối/nguyện vọng — Hân T10, Phong T4/T10) "cần một cuộc hẹn khác, không nhét vào ô giờ được"; (b) việc-cho-chính-mình của trẻ over-functioning (Vy — luôn xếp chót, "có ai bị sao đâu, trừ con").
+6. **Phần thưởng tiền có ranh giới đạo đức mà teen TỰ vẽ:** Huy "có những việc cho tiền vào là nó hỏng" (ăn tối cùng bố); Đạt/Hân phân biệt rõ việc-của-mình (không lấy tiền) vs. làm-thay-người-khác (lấy tiền, còn deal giá). Thiết kế reward 12+ phải chừa vùng "không định giá".
+7. **Yêu cầu tính năng ngược đời từ phụ huynh 12+:** nhắc-mẹ-IM-đúng-lúc (Dung, "trả thêm tiền cũng mua"), CỚ bắt chuyện đúng chủ đề của con thay vì câu khen mẫu (Thắng), đếm tỷ lệ việc-cho-mình/cho-người và đề nghị BỎ BỚT (Hằng), tín hiệu "con còn ăn cơm ở nhà" (Thắng PH23). Sổ Vàng hiện tại bị chê "văn mẫu/sến" với lứa này.
+8. **Đạo đức phỏng vấn 12+:** cần quy ước bảo mật riêng đầu buổi (Phong ra điều kiện ẩn câu trả lời với mẹ), hẹn lãnh thổ trung lập (quán nước), chấp nhận nửa đầu nhát gừng — chìa mở khóa là chủ đề trẻ sở hữu.
 
 ---
 
-*File đủ 10 GĐ (A–J) + tổng hợp giả thuyết. Dry-run only — không thay phỏng vấn người thật.*
+*File đủ 15 GĐ (A–J: 6–11 · K–O: 12+) + tổng hợp giả thuyết. Dry-run only — không thay phỏng vấn người thật. GĐ A–E, K–O: Claude Fable 5 (`claude-fable-5`) · GĐ F–J: Grok 4.5 · Audit chéo: Fable 5.*
 
