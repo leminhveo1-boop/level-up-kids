@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
+import { assessDailyWorkload } from "@/lib/game/workload";
 import { COIN_RATE_VND } from "@/lib/game/constants";
 import JourneySection from "@/features/parent/components/JourneySection";
 import TimetableSection from "@/features/parent/components/TimetableSection";
 import Collapsible from "@/ui/Collapsible";
-import { Trash2, Plus, Gift, PackageOpen, Pencil, Check, X } from "lucide-react";
+import { Trash2, Plus, Gift, PackageOpen, Pencil, Check, X, Coffee } from "lucide-react";
 
 const TASK_TEMPLATES = [
   { title: "🧹 Rửa bát chén sạch sẽ", category: "help", exp: 15, energy: 15, verifyType: "trust" },
@@ -65,6 +66,7 @@ export default function ManageTab() {
   } = useGame();
   const { t } = useLang();
   const atRiskTasks = getAtRiskTasks(tasks);
+  const workload = assessDailyWorkload(tasks); // D3.5 — cảnh báo mềm khi ngày quá đầy
 
   const [flash, setFlash] = useState("");
   const showFlash = (text) => {
@@ -242,6 +244,14 @@ export default function ManageTab() {
       {/* ============ TASKS ============ */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
         <h3 className="text-scale-sm font-black text-forest-dark">🎯 Nhiệm vụ ngày</h3>
+
+        {/* D3.5 — bảo vệ giờ nghỉ: cảnh báo MỀM (không chặn) khi ngày quá đầy */}
+        {workload.overloaded && (
+          <div className="bg-amber-light/40 border border-amber/40 rounded-xl p-3 flex items-start gap-2.5">
+            <Coffee size={18} className="text-amber-dark flex-shrink-0 mt-0.5" />
+            <p className="text-scale-2xs font-semibold text-gray-600 leading-relaxed">{workload.message}</p>
+          </div>
+        )}
 
         <Collapsible summary="Thêm nhiệm vụ mới" icon={Plus}>
         <form onSubmit={handleAddTask} className="space-y-2.5 bg-sand-light border border-sand rounded-xl p-3">
