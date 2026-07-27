@@ -730,3 +730,53 @@ describe("GĐ0: North Star trong daily snapshot (đo tầng máy, không phô s�
     expect(snap.remindersNeeded).toBe(0);
   });
 });
+
+describe("GĐ0 A0.5: Scaffolding level tự đánh giá trong resetDailyTasks", () => {
+  const goodDay = {
+    date: "2026-07-01",
+    completed: 5,
+    total: 6,
+    mandatoryDone: 3,
+    mandatoryTotal: 3,
+    screenMinutes: 0,
+    trustScore: 80,
+    streak: 10,
+    remindersNeeded: 0,
+    importantDone: 3,
+    importantTotal: 3,
+    plannedLastNight: true,
+  };
+  const seed = (n, over) => Array.from({ length: n }, () => ({ ...goodDay, ...over }));
+
+  test("14 ngày tốt ở Level 1 → đặt pending=2 (đề xuất), level vẫn 1 (không tự nhảy)", () => {
+    const state = { ...freshState(), history: seed(14) };
+    const next = resetDailyTasks(state, rngQueue(0.99), "01/07/2026", new Date(2026, 6, 20));
+    expect(next.parentConfig.scaffoldLevel).toBe(1);
+    expect(next.parentConfig.scaffoldPendingLevel).toBe(2);
+  });
+
+  test("14 ngày kém ở Level 3 → GIÁNG xuống 2 (auto), ghi mốc cooldown, xoá pending", () => {
+    const state = {
+      ...freshState(),
+      history: seed(14, { mandatoryDone: 0, importantDone: 0 }),
+      parentConfig: { ...freshState().parentConfig, scaffoldLevel: 3, scaffoldPendingLevel: 3 },
+    };
+    const next = resetDailyTasks(state, rngQueue(0.99), "01/07/2026", new Date(2026, 6, 20));
+    expect(next.parentConfig.scaffoldLevel).toBe(2);
+    expect(next.parentConfig.scaffoldPendingLevel).toBeNull();
+    expect(next.parentConfig.scaffoldChangedAt).toBe("2026-07-20");
+  });
+
+  test("state cũ (parentConfig thiếu field scaffold) không crash, mặc định Level 1", () => {
+    const base = freshState();
+    const legacy = {
+      ...base,
+      history: [],
+      // parentConfig kiểu cũ: không có scaffold*
+      parentConfig: { screenMaxMinutesPerDay: 60, requireAllMandatory: true },
+    };
+    const next = resetDailyTasks(legacy, rngQueue(0.99), "01/07/2026", new Date(2026, 6, 20));
+    expect(next.parentConfig.scaffoldLevel).toBe(1);
+    expect(next.parentConfig.scaffoldPendingLevel).toBeNull();
+  });
+});

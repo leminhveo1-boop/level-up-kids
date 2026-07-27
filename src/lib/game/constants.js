@@ -78,6 +78,11 @@ export const DEFAULT_PARENT_CONFIG = {
   maxCoinBalance: 2000,
   smartAutoApprove: true, // Uy Tín ≥80: việc tự-ghi-nhận nhả điểm ngay (chế độ tự lái)
   busyUntil: 0, // Tuần Bận: trước mốc này MỌI việc nhả điểm ngay (0 = tắt)
+  // GĐ0 A0.5 — Scaffolding Level 1-2-3 (cơ chế luồng scale theo năng lực thực).
+  scaffoldLevel: 1, // 1|2|3 — level hiệu lực (con đang trải luồng này). Đọc qua getScaffoldLevel().
+  scaffoldMode: "auto", // "auto" | "manual" (manual = phụ huynh khoá tay, tắt auto)
+  scaffoldPendingLevel: null, // null|2|3 — khuyến nghị THĂNG đang chờ phụ huynh mở
+  scaffoldChangedAt: "", // YYYY-MM-DD lần đổi level gần nhất (cho cooldown)
 };
 
 export const DEFAULT_STATS = {

@@ -36,6 +36,8 @@ import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 import { advanceJourneyDaily } from "./journeys";
 import { generateTimetableTasks } from "./timetable";
 import { northStarSignals } from "./progress";
+import { evaluateScaffoldLevel } from "./scaffolding";
+import { dateKey } from "./planning";
 
 /**
  * PROD-1 — reward dose factor: việc đã thành nếp (habitStreak cao) rút DẦN liều điểm.
@@ -635,6 +637,24 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
   };
   const history = [...(settled.history || []), snapshot].slice(-HISTORY_LIMIT_DAYS);
 
+  // GĐ0 A0.5: đánh giá Scaffolding Level trên cửa sổ history (đã gồm ngày vừa đóng).
+  // GIÁNG áp ngay (im lặng, phục hồi hỗ trợ); THĂNG chỉ đặt pending (đề xuất phụ huynh mở).
+  const scaffoldToday = dateKey(newDate);
+  const scaffold = evaluateScaffoldLevel({
+    history,
+    config: settled.parentConfig,
+    today: scaffoldToday,
+  });
+  const nextParentConfig = {
+    ...(settled.parentConfig || {}),
+    scaffoldLevel: scaffold.level,
+    scaffoldPendingLevel: scaffold.pending,
+    // chỉ dời mốc cooldown khi level thực sự đổi (GIÁNG); THĂNG-pending không dời
+    scaffoldChangedAt: scaffold.changed
+      ? scaffoldToday
+      : settled.parentConfig?.scaffoldChangedAt || "",
+  };
+
   // 🛤️ B-lite Lộ Trình: close the journey day while today's completed flags
   // are still on the tasks (success counting), then maybe swap stage tasks.
   const journeyed = advanceJourneyDaily(settled);
@@ -698,5 +718,6 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     rewards: journeyed.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
     remindersToday: 0, // GĐ0: counter nhắc trong ngày reset theo ngày mới
+    parentConfig: nextParentConfig, // GĐ0 A0.5: level scaffolding sau đánh giá
   };
 }
