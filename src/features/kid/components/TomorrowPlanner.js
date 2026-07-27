@@ -16,6 +16,7 @@ import Card from "@/ui/Card";
 import {
   getPlanPhase,
   selectDefaultFocusTask,
+  selectMicroChoiceCandidates,
   shouldOfferTomorrowPlanning,
 } from "@/lib/game/planning";
 
@@ -37,11 +38,17 @@ export default function TomorrowPlanner({
   allTasksCompleted = false,
   uiMode = "kid",
 }) {
+  // ponytail: A0.4 sẽ thêm scaffoldLevel (1/2/3) để tự bung WOOP theo trình độ.
+  // Hiện Level 1 mặc định = micro-choice thuần; WOOP mở qua "Thêm chi tiết".
   const phase = getPlanPhase(plan);
   const isTeen = uiMode === "teen";
   const [editing, setEditing] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const fallbackFocus = useMemo(() => selectDefaultFocusTask(tasks)?.id || "", [tasks]);
+  const microCandidates = useMemo(
+    () => selectMicroChoiceCandidates(tasks, { focusId: fallbackFocus }),
+    [tasks, fallbackFocus]
+  );
   const [focusTaskId, setFocusTaskId] = useState(plan?.focusTaskId || fallbackFocus);
   const [firstStep, setFirstStep] = useState(plan?.firstStep || "");
   const [anchor, setAnchor] = useState(plan?.anchor || "");
@@ -63,6 +70,12 @@ export default function TomorrowPlanner({
       setEditing(false);
       setShowAll(false);
     }
+  };
+
+  // A0.3 — micro-choice 1 chạm: chọn việc bắt đầu là XONG (WOOP để trống, các
+  // việc còn lại vẫn được giữ trong plan). Đây là đường mặc định, ≤15s.
+  const handleMicroPick = (taskId) => {
+    onSave({ focusTaskId: taskId });
   };
 
   const resetDraft = () => {
@@ -182,24 +195,59 @@ export default function TomorrowPlanner({
   }
 
   if (!activePlan) {
+    // A0.3 — MICRO-CHOICE: 1 câu hỏi, chạm 1 việc là xong (≤15s). Chống nghịch
+    // lý màn hình (rủi ro #1): không giữ trẻ lại điền form 3 bước mỗi tối.
+    const heading = allTasksCompleted
+      ? isTeen
+        ? "Xong hôm nay rồi. Mai bạn bắt đầu từ việc nào?"
+        : "Hôm nay xong hết rồi! Mai con bắt đầu từ việc nào?"
+      : isTeen
+        ? "Mai bạn bắt đầu từ việc nào?"
+        : "Ngày mai, con bắt đầu từ việc nào?";
     return (
-      <Card className={`no-print ${allTasksCompleted ? "accent-border" : ""}`}>
-        <div className="flex items-center gap-3">
+      <Card className={`no-print ${allTasksCompleted ? "accent-border" : ""} space-y-3`}>
+        <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl accent-soft-bg flex items-center justify-center flex-shrink-0">
             <CalendarDays size={20} />
           </div>
           <div className="flex-grow min-w-0">
-            <h3 className="text-scale-sm font-bold text-forest-dark">
-              {allTasksCompleted ? "Hôm nay đã xong. Lên kế hoạch ngày mai nhé" : "Kế hoạch ngày mai · 2 phút"}
-            </h3>
+            <h3 className="text-scale-sm font-bold text-forest-dark leading-snug">{heading}</h3>
             <p className="text-scale-2xs text-gray-500 mt-1">
-              Chọn việc bắt đầu, lúc làm và bước đầu tiên. Sau đó in hoặc chép ra giấy.
+              Chạm 1 việc — xong. Các việc khác vẫn được giữ.
             </p>
           </div>
-          <Button type="button" onClick={startEditing} className="flex-shrink-0">
-            Lập kế hoạch
-          </Button>
         </div>
+
+        <div className="grid grid-cols-1 gap-2">
+          {microCandidates.map((task, index) => (
+            <button
+              key={task.id}
+              type="button"
+              onClick={() => handleMicroPick(task.id)}
+              className={`w-full min-h-tap text-left rounded-xl px-3 py-3 flex items-center gap-3 border transition-colors ${
+                index === 0 ? "accent-border accent-soft-bg" : "border-sand bg-white"
+              }`}
+            >
+              <span className="w-7 h-7 rounded-full accent-soft-bg flex items-center justify-center flex-shrink-0">
+                <ArrowRight size={15} />
+              </span>
+              <span className="text-scale-xs font-semibold text-forest-dark leading-snug flex-grow min-w-0">
+                {task.title}
+              </span>
+              {task.importance && (
+                <span className="text-scale-2xs font-bold accent-text flex-shrink-0">Quan trọng</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={startEditing}
+          className="w-full min-h-9 flex items-center justify-center gap-1 text-scale-2xs font-bold text-gray-500"
+        >
+          <NotebookPen size={14} /> Thêm chi tiết ngày mai (khi nào · bước đầu)
+        </button>
       </Card>
     );
   }

@@ -5,6 +5,7 @@ import {
   getPlanPhase,
   shouldOfferTomorrowPlanning,
   selectDefaultFocusTask,
+  selectMicroChoiceCandidates,
 } from "@/lib/game/planning";
 
 const tasks = [
@@ -102,5 +103,55 @@ describe("planning — kế hoạch ngày mai", () => {
         plan: { targetDate: "2026-07-27" },
       })
     ).toBe(true);
+  });
+});
+
+describe("selectMicroChoiceCandidates (A0.3 — micro-choice 1 chạm)", () => {
+  const rich = [
+    { id: "done", title: "Gấp chăn", completed: true, isMandatory: false },
+    { id: "must", title: "Soạn cặp", completed: false, isMandatory: true },
+    { id: "imp", title: "Đọc sách", completed: false, isMandatory: false, importance: true },
+    { id: "plain", title: "Tưới cây", completed: false, isMandatory: false },
+  ];
+
+  test("focus được chỉ định luôn đứng đầu để pre-select", () => {
+    const r = selectMicroChoiceCandidates(rich, { focusId: "plain" });
+    expect(r[0].id).toBe("plain");
+  });
+
+  test("mặc định: việc quan trọng chưa xong lên trước việc thường", () => {
+    const r = selectMicroChoiceCandidates(rich); // không focusId → default focus = 'must'
+    const ids = r.map((t) => t.id);
+    // 'imp' (quan trọng) đứng trước 'plain' (thường)
+    expect(ids.indexOf("imp")).toBeLessThan(ids.indexOf("plain"));
+  });
+
+  test("việc đã xong bị đẩy xuống cuối", () => {
+    const r = selectMicroChoiceCandidates(rich, { focusId: "must", limit: 4 });
+    expect(r[r.length - 1].id).toBe("done");
+  });
+
+  test("tôn trọng limit", () => {
+    expect(selectMicroChoiceCandidates(rich, { limit: 2 })).toHaveLength(2);
+  });
+
+  test("mặc định tối đa 4 ứng viên", () => {
+    const many = Array.from({ length: 8 }, (_, i) => ({ id: `x${i}`, title: `V${i}`, completed: false }));
+    expect(selectMicroChoiceCandidates(many)).toHaveLength(4);
+  });
+
+  test("bỏ item thiếu id/title; đầu vào lạ → []", () => {
+    expect(selectMicroChoiceCandidates(null)).toEqual([]);
+    const dirty = [{ id: "a" }, { title: "no id" }, { id: "ok", title: "OK", completed: false }];
+    const r = selectMicroChoiceCandidates(dirty);
+    expect(r).toHaveLength(1);
+    expect(r[0].id).toBe("ok");
+  });
+
+  test("trả bản sao gọn {id,title,isMandatory,importance}, không mutate", () => {
+    const snap = JSON.stringify(rich);
+    const r = selectMicroChoiceCandidates(rich, { focusId: "imp" });
+    expect(r[0]).toEqual({ id: "imp", title: "Đọc sách", isMandatory: false, importance: true });
+    expect(JSON.stringify(rich)).toBe(snap);
   });
 });

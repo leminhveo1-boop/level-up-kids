@@ -26,6 +26,42 @@ export function selectDefaultFocusTask(tasks = []) {
   );
 }
 
+const MICRO_CHOICE_LIMIT = 4;
+
+/**
+ * GĐ0 A0.3 — ứng viên cho MICRO-CHOICE 1 chạm (≤15s). Con chỉ chọn "ngày mai
+ * bắt đầu từ việc nào", KHÔNG bắt điền WOOP (anchor/bước đầu chỉ bung khi
+ * scaffolding cao). Ưu tiên: focus mặc định đầu tiên → việc chưa xong → QUAN
+ * TRỌNG (North Star: việc con nên tự khởi động) → bắt buộc → còn lại.
+ * @param {Array} tasks
+ * @param {{ focusId?: string, limit?: number }} [options]
+ * @returns {Array<{ id: string, title: string, isMandatory: boolean, importance: boolean }>}
+ */
+export function selectMicroChoiceCandidates(tasks, options = {}) {
+  const list = (Array.isArray(tasks) ? tasks : []).filter((t) => t?.id && t?.title);
+  const limit = options.limit || MICRO_CHOICE_LIMIT;
+  const focusId = options.focusId || selectDefaultFocusTask(list)?.id || null;
+
+  const rank = (t) => {
+    let r = 0;
+    if (t.id === focusId) r -= 100; // focus luôn đứng đầu (pre-select)
+    if (!t.completed) r -= 10; // việc chưa xong lên trước
+    if (t.importance) r -= 4; // quan trọng ưu tiên hơn
+    if (t.isMandatory) r -= 2;
+    return r;
+  };
+
+  return [...list]
+    .sort((a, b) => rank(a) - rank(b)) // Array.sort ổn định → giữ thứ tự gốc khi hoà
+    .slice(0, limit)
+    .map((t) => ({
+      id: t.id,
+      title: t.title,
+      isMandatory: Boolean(t.isMandatory),
+      importance: Boolean(t.importance),
+    }));
+}
+
 function cleanText(value, maxLength) {
   return String(value || "").trim().slice(0, maxLength);
 }
