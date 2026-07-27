@@ -21,7 +21,7 @@ import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
 import { buildTinyTask } from "@/lib/game/habits";
-import { applyTaskEdit } from "@/lib/game/taskEdit";
+import { applyTaskEdit, toInt } from "@/lib/game/taskEdit";
 import * as journeySystem from "@/lib/game/journeys";
 import { generateTimetableTasks } from "@/lib/game/timetable";
 import { deliverGiftToSibling } from "@/lib/siblingGift";
@@ -636,7 +636,7 @@ export function GameProvider({ children }) {
           custom: true,
           isMandatory,
           verifyType,
-          durationMin: verifyType === "timer" ? parseInt(durationMin) || 10 : undefined,
+          durationMin: verifyType === "focus" ? toInt(durationMin, 1, 10) : undefined,
         };
         return { ...prev, tasks: [...prev.tasks, newTask] };
       });

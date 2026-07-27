@@ -14,7 +14,7 @@ export const TASK_STAT_KEY_MAP = {
   connection: "help",
 };
 
-const toInt = (v, min, fallback) => {
+export const toInt = (v, min, fallback) => {
   const n = parseInt(v, 10);
   return Math.max(min, Number.isFinite(n) ? n : fallback);
 };

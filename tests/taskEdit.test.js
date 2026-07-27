@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { applyTaskEdit } from "@/lib/game/taskEdit";
+import { applyTaskEdit, toInt } from "@/lib/game/taskEdit";
 
 const baseTask = () => ({
   id: "custom_1",
@@ -113,5 +113,23 @@ describe("applyTaskEdit — sửa gợi ý nhiệm vụ (#2)", () => {
 
   test("task null → trả null (không vỡ)", () => {
     expect(applyTaskEdit(null, { title: "X" })).toBeNull();
+  });
+});
+
+// Clamp durationMin dùng chung với addCustomTask (GameState) — khoá contract min 1, mặc định 10.
+describe("toInt — clamp durationMin (dùng chung addCustomTask + applyTaskEdit)", () => {
+  test("số hợp lệ → giữ nguyên", () => {
+    expect(toInt(25, 1, 10)).toBe(25);
+  });
+
+  test("rỗng/NaN → mặc định 10", () => {
+    expect(toInt("", 1, 10)).toBe(10);
+    expect(toInt("abc", 1, 10)).toBe(10);
+    expect(toInt(undefined, 1, 10)).toBe(10);
+  });
+
+  test("dưới min → kẹp về min 1", () => {
+    expect(toInt(0, 1, 10)).toBe(1);
+    expect(toInt(-5, 1, 10)).toBe(1);
   });
 });
