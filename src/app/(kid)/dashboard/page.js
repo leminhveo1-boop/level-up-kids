@@ -19,13 +19,14 @@ import TaskCard from "@/features/kid/components/TaskCard";
 import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
+import TomorrowPlanner from "@/features/kid/components/TomorrowPlanner";
 import BottomNav from "@/ui/BottomNav";
 import { Target, SlidersHorizontal, Coins, Globe, Mail } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { t } = useLang();
-  const { childProfiles, activeChildId, selectChild, isDemo } = useAuth();
+  const { childProfiles, activeChildId, selectChild, isDemo, uiMode } = useAuth();
   const {
     isLoaded,
     charName,
@@ -63,6 +64,9 @@ export default function DashboardPage() {
     sendGift,
     coinRescaleNotice,
     clearCoinRescaleNotice,
+    tomorrowPlan,
+    saveTomorrowPlan,
+    clearTomorrowPlan,
   } = useGame();
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -259,6 +263,15 @@ export default function DashboardPage() {
 
         {/* 🛤️ B-lite: active journey — the child's guided path (sits with tasks) */}
         {journey && <JourneyCard journey={journey} tasks={tasks} />}
+
+        <TomorrowPlanner
+          tasks={tasks}
+          plan={tomorrowPlan}
+          onSave={saveTomorrowPlan}
+          onClear={clearTomorrowPlan}
+          allTasksCompleted={totalTasksCount > 0 && completedTasksCount === totalTasksCount}
+          uiMode={uiMode}
+        />
 
         {/* ===== FOCAL BLOCK: today's tasks — the one thing the child opens the
              app to do. Promoted above the ambient "world" cards so the primary

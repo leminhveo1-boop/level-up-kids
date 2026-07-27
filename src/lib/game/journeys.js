@@ -21,8 +21,9 @@ export const JOURNEY_ERRORS = {
 export const JOURNEY_AGE_BANDS = [
   { id: "4-6", label: "4–6 tuổi 🧸", desc: "Thói quen cơ bản, việc nhẹ" },
   { id: "7-9", label: "7–9 tuổi 🚴", desc: "Tự lập, học tập, việc nhà" },
-  { id: "10-12", label: "10–12 tuổi 🚀", desc: "Kỷ luật, trách nhiệm, kỹ năng" },
-  { id: "13-15", label: "13–15 tuổi 🎧", desc: "Tự chủ, tiền bạc, màn hình" },
+  // Giữ id cũ để không làm hỏng intake đã lưu; nhãn sản phẩm chốt theo ranh 12+.
+  { id: "10-12", label: "10–11 tuổi 🚀", desc: "Level Up Kids · trách nhiệm, kỹ năng" },
+  { id: "13-15", label: "12+ tuổi 🎧", desc: "Level Up Teens · tự định hướng" },
 ];
 
 /**

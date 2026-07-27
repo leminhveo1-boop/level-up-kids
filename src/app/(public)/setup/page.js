@@ -79,15 +79,16 @@ const REWARDS_BY_AGE = {
 export default function SetupWizardPage() {
   const router = useRouter();
   const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig, setParentConfig } = useGame();
-  const { authLoaded, activeChildId, isDemo, isCloudChild, changeParentPin } = useAuth();
+  const { authLoaded, activeChildId, isDemo, isCloudChild, changeParentPin, uiMode } = useAuth();
 
   const [step, setStep] = useState(1);
-  const [ageBand, setAgeBand] = useState("7-9");
+  const initialAgeBand = uiMode === "teen" ? "13-15" : "7-9";
+  const [ageBand, setAgeBand] = useState(initialAgeBand);
   const [painpoints, setPainpoints] = useState([]);
-  const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge("7-9")[0]?.id || null);
+  const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge(initialAgeBand)[0]?.id || null);
   const [showExtraTasks, setShowExtraTasks] = useState(false);
-  const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE["7-9"].map(() => false));
-  const [rewards, setRewards] = useState(REWARDS_BY_AGE["7-9"].map((r) => ({ ...r, enabled: true })));
+  const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE[initialAgeBand].map(() => false));
+  const [rewards, setRewards] = useState(REWARDS_BY_AGE[initialAgeBand].map((r) => ({ ...r, enabled: true })));
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
   const [pinError, setPinError] = useState("");

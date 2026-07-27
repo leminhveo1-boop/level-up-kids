@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
+import { getExperienceBrand } from "@/lib/experience";
 
 const CLASS_EMOJI = { Warrior: "🛡️", Mage: "🔮", Druid: "🌱" };
 
@@ -144,7 +145,9 @@ export default function FamilyPage() {
             </div>
             <div className="flex-grow min-w-0">
               <h3 className="text-sm font-black text-forest-dark leading-tight break-words" title={child.name}>{child.name}</h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase">{child.char_class}</p>
+              <p className="text-[11px] text-gray-400 font-bold">
+                {getExperienceBrand(child.ui_mode).name}
+              </p>
             </div>
             <button
               onClick={() => handlePlay(child.id)}

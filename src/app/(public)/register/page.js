@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { track } from "@/lib/analytics";
+import { getExperienceBrand } from "@/lib/experience";
 
 const CLASSES = [
   {
@@ -49,6 +50,7 @@ export default function RegisterPage() {
   const [ageGroup, setAgeGroup] = useState("kid"); // kid 6-11 | teen 12+
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const experienceBrand = getExperienceBrand(ageGroup);
 
   const handleStartAdventure = async () => {
     if (!nameInput.trim()) {
@@ -92,18 +94,22 @@ export default function RegisterPage() {
 
       {/* Header */}
       <div className="text-center space-y-1.5 mb-6">
-        <h2 className="text-2xl font-black text-forest uppercase tracking-tight">Tạo Anh Hùng Mùa Hè</h2>
-        <p className="text-xs font-medium text-gray-500">Khởi đầu hành trình rèn luyện bản thân của con</p>
+        <h2 className="text-2xl font-black text-forest tracking-tight">Tạo hồ sơ {experienceBrand.name}</h2>
+        <p className="text-xs font-medium text-gray-500">
+          {ageGroup === "teen"
+            ? "Không gian tự định hướng dành cho tuổi 12+"
+            : "Hành trình xây thói quen và trách nhiệm cho tuổi 6–11"}
+        </p>
       </div>
 
       {/* Name Input Card */}
       <div className="bg-white border-2 border-sand p-4 rounded-2xl shadow-game-flat space-y-3 mb-4">
-        <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Tên Anh Hùng Của Bé</label>
+        <label className="block text-xs font-black text-forest-dark">Tên của con</label>
         <input
           type="text"
           value={nameInput}
           onChange={(e) => setNameInput(e.target.value)}
-          placeholder="Nhập tên của bé..."
+          placeholder="Nhập tên của con..."
           className="w-full bg-sand-light border-2 border-sand rounded-xl px-4 py-3 text-base font-bold text-forest-dark focus:outline-none focus:border-forest transition-colors"
           maxLength={18}
         />
@@ -120,8 +126,8 @@ export default function RegisterPage() {
               ageGroup === "kid" ? "border-forest bg-forest-light/20" : "border-sand"
             }`}
           >
-            <p className="text-sm font-black text-forest-dark">🧒 6–11 tuổi</p>
-            <p className="text-[10px] text-gray-400 font-bold">Phiêu lưu rực rỡ, thú cưng, phép thuật</p>
+            <p className="text-sm font-black text-forest-dark">Level Up Kids</p>
+            <p className="text-[10px] text-gray-400 font-bold">6–11 tuổi · Xây thói quen qua trải nghiệm vui</p>
           </button>
           <button
             type="button"
@@ -130,15 +136,17 @@ export default function RegisterPage() {
               ageGroup === "teen" ? "border-forest bg-forest-light/20" : "border-sand"
             }`}
           >
-            <p className="text-sm font-black text-forest-dark">🎧 12+ tuổi</p>
-            <p className="text-[10px] text-gray-400 font-bold">Giao diện tối, gọn, kiểu app fitness</p>
+            <p className="text-sm font-black text-forest-dark">Level Up Teens</p>
+            <p className="text-[10px] text-gray-400 font-bold">12+ tuổi · Tự định hướng, bố mẹ hỗ trợ</p>
           </button>
         </div>
       </div>
 
       {/* Class Selection */}
       <div className="space-y-4 flex-grow">
-        <label className="block text-xs font-black text-forest-dark uppercase tracking-wider">Chọn Lớp Nhân Vật</label>
+        <label className="block text-xs font-black text-forest-dark">
+          {ageGroup === "teen" ? "Chọn phong cách phát triển" : "Chọn lớp nhân vật"}
+        </label>
         
         <div className="space-y-3">
           {CLASSES.map((c) => {
@@ -217,7 +225,7 @@ export default function RegisterPage() {
               : "bg-forest text-sand-light border-forest shadow-game-forest active:shadow-game-pressed"
           }`}
         >
-          {busy ? "ĐANG TẠO..." : "XUẤT PHÁT KIÊN CƯỜNG! 🚀"}
+          {busy ? "Đang tạo..." : ageGroup === "teen" ? "Bắt đầu Level Up Teens" : "Bắt đầu Level Up Kids"}
         </button>
       </div>
     </div>

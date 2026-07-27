@@ -13,6 +13,7 @@ import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
 import { createInitialState, reconcileRewardsForAge, BOSS_MAX_HP } from "@/lib/game/constants";
+import { createTomorrowPlan } from "@/lib/game/planning";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
@@ -688,6 +689,22 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  // ---------------- Kế hoạch ngày mai: một lần buổi tối, dùng ngoài màn hình ----------------
+  const saveTomorrowPlan = useCallback((options = {}) => {
+    let saved = null;
+    setState((prev) => {
+      if (!prev) return prev;
+      saved = createTomorrowPlan(prev.tasks, options);
+      return { ...prev, tomorrowPlan: saved };
+    });
+    return { success: Boolean(saved), plan: saved };
+  }, []);
+
+  const clearTomorrowPlan = useCallback(() => {
+    setState((prev) => (prev ? { ...prev, tomorrowPlan: null } : prev));
+    return { success: true };
+  }, []);
+
   // ---------------- 📅 Thời khóa biểu (thời khóa biểu → tự sinh nhiệm vụ học) ----------------
   /** Đặt/sửa TKB + làm mới NGAY nhiệm vụ học của hôm nay (không đợi sang ngày). */
   const setTimetable = useCallback((timetable) => {
@@ -895,6 +912,9 @@ export function GameProvider({ children }) {
         updateTask,
         splitTask,
         dismissAtRisk,
+        tomorrowPlan: s.tomorrowPlan || null,
+        saveTomorrowPlan,
+        clearTomorrowPlan,
         timetable: s.timetable || null,
         setTimetable,
         journey: s.journey || null,
@@ -969,6 +989,8 @@ export function GameProvider({ children }) {
       updateTask,
       splitTask,
       dismissAtRisk,
+      saveTomorrowPlan,
+      clearTomorrowPlan,
       setTimetable,
       startJourney,
       cancelJourney,

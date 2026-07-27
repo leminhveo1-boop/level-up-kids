@@ -262,5 +262,6 @@ export function createInitialState(opts = {}) {
     journey: null,
     journeysCompleted: [],
     lastJourneyCompleted: null,
+    tomorrowPlan: null,
   };
 }

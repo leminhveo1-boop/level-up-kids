@@ -142,6 +142,47 @@
 [data-ui-mode="teen"] .rounded-xl { border-radius: 14px; }
 [data-ui-mode="teen"] .rounded-2xl { border-radius: 16px; }
 
+/* Kế hoạch dùng ngoài màn hình: checkbox giấy và bản in tối giản. */
+.plan-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #tomorrow-plan-print,
+  #tomorrow-plan-print * {
+    visibility: visible !important;
+  }
+
+  #tomorrow-plan-print {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    max-width: none;
+    border: 0;
+    box-shadow: none;
+    color: #111827;
+    background: #fff;
+    padding: 24px;
+  }
+
+  #tomorrow-plan-print .no-print {
+    display: none !important;
+  }
+
+  #tomorrow-plan-print .print-plan-list {
+    display: block !important;
+  }
+}
+
 /* ===== PARENT MODE — Apple-clean / pro interface (UX Pro-Max) =====
    The parent room is its OWN interface, not the child's kid/teen skin. Deference
    over decoration: cool neutral canvas, white cards, hairline borders, one soft
