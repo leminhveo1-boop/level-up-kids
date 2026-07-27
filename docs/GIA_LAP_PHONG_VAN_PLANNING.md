@@ -116,7 +116,7 @@ T11: [đưa 3 thẻ việc thật: "học bơi", "trả sách thư viện", "là
 
 **Phần E — Kế hoạch ngày mai (Bin)**
 
-Quan sát: không biết bắt đầu từ đâu, cầm cả 4 thẻ hỏi "xếp vào đâu hả mẹ?" [nhờ mẹ ngay ở bước 1]. Mẹ gợi ý "con xếp việc nào làm trước để lên trên". Bé xếp: học bơi → chơi Lego → toán tia số → trả sách. Không hỏi deadline. Không đặt giờ cụ thể ("chiều" là mốc duy nhất). Không nhắc gì tới ăn/ngủ/di chuyển. Chọn 4/4 thẻ, không bỏ thẻ nào. Hoàn thành trong ~3 phút, mẹ can thiệp 2 lần (gợi ý cách xếp, nhắc thẻ trả sách bị bỏ quên dưới gầm bàn).
+Quan sát: bộ thẻ gồm học bơi (nghĩa vụ mai), toán tia số (chưa xong hôm nay), chơi Lego (muốn làm), trả sách (nghĩa vụ) và "đọc sách 15 phút" (dài hạn). Không biết bắt đầu từ đâu, cầm cả xấp hỏi "xếp vào đâu hả mẹ?" [nhờ mẹ ngay ở bước 1]. Mẹ gợi ý "con xếp việc nào làm trước để lên trên". Bé xếp: học bơi → chơi Lego → toán tia số → trả sách; thẻ đọc sách bé đẩy hẳn sang mép bàn: "cái này không phải mai" [gạt việc dài hạn ra khỏi khái niệm 'kế hoạch']. Không hỏi deadline. Không đặt giờ cụ thể ("chiều" là mốc duy nhất). Không nhắc gì tới ăn/ngủ/di chuyển. Chọn 4/4 thẻ, không bỏ thẻ nào. Hoàn thành trong ~3 phút, mẹ can thiệp 2 lần (gợi ý cách xếp, nhắc thẻ trả sách bị bỏ quên dưới gầm bàn).
 
 E1: "Đi học bơi!" (việc quan trọng nhất — chọn việc mình thích)
 E2: "Chiều ạ." (không có giờ)
@@ -234,7 +234,7 @@ T11: [đưa 3 thẻ có hình: "chai nước", "đọc 1 trang sách", "thay đ�
 
 **Phần E — Kế hoạch ngày mai (Xu)**
 
-Quan sát: bé không hiểu yêu cầu "chuẩn bị kế hoạch", ngồi im nhìn thẻ ~15 giây rồi hỏi "làm sao hả mẹ?". Mẹ xếp mẫu 1 thẻ, bé bắt chước xếp nốt theo thứ tự: chai nước → thay đồ → búp bê → đọc sách (đẩy xuống cuối). Không giờ giấc, không hỏi deadline, không nhớ giờ ăn ngủ. Mẹ can thiệp 3 lần. Hoàn thành ~4 phút (tính cả lúc mẹ làm mẫu).
+Quan sát: bé không hiểu yêu cầu "chuẩn bị kế hoạch", ngồi im nhìn thẻ ~15 giây rồi hỏi "làm sao hả mẹ?". Mẹ xếp mẫu 1 thẻ, bé bắt chước xếp nốt theo thứ tự: chai nước → thay đồ → búp bê → đọc sách (đẩy xuống cuối). Thẻ "tập tô dang dở" (việc hôm nay chưa xong) bé lắc đầu "con tô xong rồi mà" — mẹ ghé tai nói nhỏ là chưa xong, bé vẫn không nhận thẻ [trẻ 6t tự tin đã-xong dù chưa; đừng tranh luận tại chỗ, chỉ ghi nhận]. Không giờ giấc, không hỏi deadline, không nhớ giờ ăn ngủ. Mẹ can thiệp 3 lần. Hoàn thành ~4 phút (tính cả lúc mẹ làm mẫu).
 
 E1: "Đem chai nước!" [chọn đúng việc từng bị quên — ký ức sự cố mạnh hơn mọi thứ khác]
 E2: "Sáng, lúc đi học."
@@ -428,7 +428,7 @@ PH19: Nhiều chữ lắm chị ơi. Em chỉ vào đúng chỗ tick tick duyệ
 
 PH20: Lúc mới cài, may con em gái nó cài hộ. Giờ thêm việc mới em vẫn phải gọi dì nó.
 
-PH21: Có! Nó với em nó cãi nhau ai được cầm điện thoại tick trước [nhà dùng chung 1 máy cho 2 chị em]. Với một lần nó tick mà em quên duyệt mấy hôm, nó dỗi bảo "mẹ chả xem của con".
+PH21: Có! Một lần nó tick mà em quên duyệt mấy hôm liền, nó dỗi bảo "mẹ chả xem của con". Với cả nó hay tị với cái Mít hàng xóm — con bé kia khoe được nhiều sao hơn, nó về vòi em thêm việc để đuổi kịp [cười].
 
 PH22: Chắc là… nó đỡ phải chờ bố quát mới làm. Từ hồi có sao, việc quét sân với cất bát nó tự động. Mất app thì lại về nếp cũ, mệt người lớn.
 
@@ -758,7 +758,7 @@ PH4: Mẹ nói + app. Ít khi tự xem TKB nếu không mở app.
 
 PH5: 8h30–9h tối, nhanh 5–10 phút giữa hai con.
 
-PH6: Có — chốt sổ kế toán cuối tháng. Gần nhất 28 tháng trước.
+PH6: Có — đợt chốt sổ kế toán cuối tháng. Gần nhất là hôm 28 tháng trước, em ôm laptop tới khuya, hai anh em tự xoay.
 
 PH7: Không đánh em, đi học, vệ sinh, làm bài tối thiểu cô giao. Không thưởng.
 
@@ -827,7 +827,7 @@ T14: Khi con tự thêm việc để được sao — không chỉ làm list m�
 **Phần D — Khoai**
 
 - Đánh răng → ngay.
-- Kiểm tra T6 → **Để sau** ban đầu → hỏi gợi ý "còn 4 ngày" → **Làm sớm** [đổi sau gợi ý].
+- Kiểm tra T6 → **Để sau** ban đầu → hỏi gợi ý "còn 4 ngày" → **Làm sớm** [⚠️ lệch protocol: người hỏi mớm ý giữa bài — đáp án sau gợi ý KHÔNG tính là tự phân loại; kịch bản chỉ cho phép 3 câu hỏi trung tính].
 - Mai Mỹ thuật → **Có thể nhờ** "mẹ mua màu".
 - Game → **ngay** nếu còn lượt; không thì sau.
 - Em đổ nước → **ngay** / nhờ mẹ nếu ướt lớn — "có sao không?" [hỏi sao giữa bài!]
@@ -1067,7 +1067,7 @@ T14: Khi con tự viết và tự làm đêm mẹ vắng — chưa làm được
 **Phần D — Minh**
 
 - Đánh răng → ngay (lý thuyết) / thực tế hay trễ.
-- Kiểm tra T6 → **Để sau** nhanh → khi hỏi "nếu hôm nay Thứ Năm?" → chuyển **Làm sớm/gấp** [hiểu deadline biến thiên sau gợi ý].
+- Kiểm tra T6 → **Để sau** nhanh → khi hỏi "nếu hôm nay Thứ Năm?" → chuyển **Làm sớm/gấp** [hiểu deadline biến thiên sau gợi ý — ⚠️ lệch protocol: câu giả định này là mớm ý, không nằm trong 3 câu hỏi cho phép; lựa chọn tự nhiên của Minh vẫn là "Để sau"].
 - Mai Mỹ thuật → nhờ cô giúp việc soạn (**nhờ người khác**).
 - Game → **ngay** nếu mẹ không online.
 - Đổ nước → ngay hoặc gọi cô.
@@ -1112,9 +1112,7 @@ PH1: Tối hôm qua. Nhắc Tí dọn hàng giúp mẹ + làm bài. Nó đang đ
 
 PH2: Dọn hàng + bài. Gọi to + ra tận nơi. Không đánh.
 
-PH3: Tự chuẩn bị giày đá bóng ngày có trận — rất nhớ.
-
-Tự nhớ việc mình thích — bố nhấn mạnh.
+PH3: Tự chuẩn bị giày đá bóng ngày có trận — rất nhớ. Việc mình thích thì tự nhớ hết, bố nhấn mạnh vậy đó.
 
 PH4: Mẹ nói. App thỉnh thoảng tối. Ít TKB tường (nhà chật).
 
@@ -1237,6 +1235,7 @@ F6: Chữ; chỉ cần việc + giờ.
 | Mẫu phần F "Toán 20' sau ăn tối" | Nhà H, J, D lệch nhịp | Cho PH xem **đúng plan con vừa tạo** |
 | PH22 | B, H bỏ đúng rule | Giữ ngưỡng ≥2 tháng |
 | Trẻ 6–7 không hiểu "kế hoạch" | Xu, Na | Đổi lời: "Xếp việc mai của con theo thứ tự con muốn" |
+| Người hỏi lỡ mớm ý giữa bài D | Khoai ("còn 4 ngày"), Minh ("nếu hôm nay thứ Năm?") | Bài D chỉ dùng đúng 3 câu trung tính; đáp án sau gợi ý ghi tách riêng, không tính là tự phân loại |
 
 ### B. Pattern phụ huynh (giả thuyết)
 1. **Không muốn thêm nút duyệt kế hoạch** (A,B,C,E,F,H,I,J lặp) — chỉ muốn nhìn + 1 câu gợi ý nói với con.
@@ -1248,8 +1247,8 @@ F6: Chữ; chỉ cần việc + giờ.
 ### C. Pattern trẻ
 | Tuổi | "Important vs urgent" | Kế hoạch | Nhớ lại sau 5' |
 |------|----------------------|----------|----------------|
-| 6–7 | Yếu; thích/gấp trộn; nhờ mẹ | Cần mẫu + can thiệp 2–4 lần | 1–2/4 |
-| 8 | Mầm "làm sớm"; vẫn routine=urgent | Ít can thiệp hơn | 2–3/4 |
+| 6–7 | Yếu; thích/gấp trộn; nhờ mẹ | Cần mẫu + can thiệp 2–4 lần | 1–3 việc (Xu 1/4, Bin 2/4, Na 3/5) |
+| 8 | Mầm "làm sớm"; vẫn routine=urgent | Ít can thiệp hơn | 2–4 việc (Bo 2/4, Tôm 4/5) |
 | 9–11 | My/Chi khá; Khoai=sao; Tí=thích; Minh=miệng | Viết ít, nói nhiều | 2–4/4 tùy executive function |
 
 - **List biến mất:** Khoai/Minh dễ hiểu = hết việc; Chi hiểu = vẫn phải nhớ — product risk nếu chỉ sống trong checklist.
