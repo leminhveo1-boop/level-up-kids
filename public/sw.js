@@ -3,7 +3,7 @@
 // ponytail: BUMP chuỗi này MỖI lần deploy đổi asset được cache — activate sẽ xoá
 // cache phiên bản cũ (dòng dưới). Không bump = điện thoại giữ app-shell/chunk cũ →
 // mở trang mới (vd /admin) xoay vô hạn. Nâng cấp thật: inject BUILD_ID lúc build.
-const CACHE_VERSION = "luk-v13";
+const CACHE_VERSION = "luk-v14";
 const APP_SHELL = ["/", "/dashboard", "/mining", "/rewards", "/family", "/offline.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -26,6 +26,11 @@ self.addEventListener("activate", (event) => {
 
 /* ===== V1.2 Web Push ===== */
 self.addEventListener("push", (event) => {
+  // Lớp chặn cuối tại thiết bị: cron/server có gọi muộn cũng không làm phiền
+  // gia đình trong giờ ngủ. `getHours()` là giờ địa phương của thiết bị.
+  const localHour = new Date().getHours();
+  if (localHour >= 22 || localHour < 7) return;
+
   let data = {};
   try {
     data = event.data ? event.data.json() : {};
