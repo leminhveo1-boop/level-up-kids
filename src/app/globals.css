@@ -338,6 +338,10 @@ body {
 .text-forest-medium { color: #21701f; }  /* #4CAF50 2.69:1 -> ~4.8:1 */
 .text-amber { color: #b45309; }           /* #D97706 3.19:1 -> ~4.7:1 */
 .text-terracotta { color: #be1140; }      /* #E11D48 3.91:1 -> ~4.6:1 */
+/* 🪙 Coin — màu vàng-xu ấm (spec tiền tệ #E8A13A). Tách khỏi .text-amber
+   (nâu sẫm #b45309) vì số dư xu trên nền kem trông xỉn/xám; xu phải VÀNG. */
+.text-coin { color: #E8A13A; }
+[data-ui-mode="teen"] .text-coin { color: #FBBF24; }
 [data-ui-mode="teen"] .text-forest-medium { color: #4CAF50; }
 [data-ui-mode="teen"] .text-amber { color: #F59E0B; }
 [data-ui-mode="teen"] .text-terracotta { color: #FB7185; }

@@ -119,7 +119,7 @@ export default function RewardsPage() {
             {/* Hero Coins Wallet */}
             <div className="bg-amber-light border border-amber/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <span className="text-xs">🪙</span>
-              <span className="text-[11px] font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+              <span className="text-[11px] font-black text-coin">{heroCoins} {t("game.coin")}</span>
             </div>
           </div>
         </div>

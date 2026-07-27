@@ -103,7 +103,7 @@ export default function MyCornerPage() {
           </button>
           <div className="bg-amber-light border border-amber/30 px-3 py-1.5 rounded-full flex items-center gap-1">
             <span>🪙</span>
-            <span className="text-scale-2xs font-black text-amber-dark">{heroCoins} {t("game.coin")}</span>
+            <span className="text-scale-2xs font-black text-coin">{heroCoins} {t("game.coin")}</span>
           </div>
         </div>
 

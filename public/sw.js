@@ -3,7 +3,7 @@
 // ponytail: BUMP chuỗi này MỖI lần deploy đổi asset được cache — activate sẽ xoá
 // cache phiên bản cũ (dòng dưới). Không bump = điện thoại giữ app-shell/chunk cũ →
 // mở trang mới (vd /admin) xoay vô hạn. Nâng cấp thật: inject BUILD_ID lúc build.
-const CACHE_VERSION = "luk-v14";
+const CACHE_VERSION = "luk-v15";
 const APP_SHELL = ["/", "/dashboard", "/mining", "/rewards", "/family", "/offline.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {

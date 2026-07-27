@@ -40,7 +40,7 @@ export default function StatusBar({
 
       {/* Coins */}
       <button type="button" onClick={() => router.push("/rewards")} className={`${pill} active:scale-95 transition-transform`}>
-        <Coins size={14} className="text-amber" />
+        <Coins size={14} className="text-coin" fill="currentColor" />
         <span className={num}>{heroCoins}</span>
       </button>
 
