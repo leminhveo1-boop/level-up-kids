@@ -13,7 +13,8 @@ import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
 import { createInitialState, reconcileRewardsForAge, BOSS_MAX_HP } from "@/lib/game/constants";
-import { createTomorrowPlan } from "@/lib/game/planning";
+import { createTomorrowPlan, dateKey } from "@/lib/game/planning";
+import { getScaffoldLevel, confirmScaffoldPromotion } from "@/lib/game/scaffolding";
 import { updateRewardById } from "@/lib/game/rewards";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
@@ -706,6 +707,20 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  // ---------------- GĐ0 A0.5: Scaffolding — phụ huynh mở lớp năng lực đang chờ ----------------
+  const confirmScaffoldLevelUp = useCallback(() => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const pending = prev.parentConfig?.scaffoldPendingLevel;
+      if (pending !== 2 && pending !== 3) return prev; // không có gì để mở
+      const nextConfig = confirmScaffoldPromotion(prev.parentConfig, dateKey(new Date()));
+      outcome = { success: true, level: nextConfig.scaffoldLevel };
+      return { ...prev, parentConfig: nextConfig };
+    });
+    return outcome;
+  }, []);
+
   // ---------------- 📅 Thời khóa biểu (thời khóa biểu → tự sinh nhiệm vụ học) ----------------
   /** Đặt/sửa TKB + làm mới NGAY nhiệm vụ học của hôm nay (không đợi sang ngày). */
   const setTimetable = useCallback((timetable) => {
@@ -963,6 +978,10 @@ export function GameProvider({ children }) {
         markReceivedGiftsRead,
         parentConfig: s.parentConfig,
         setParentConfig: makeFieldSetter("parentConfig"),
+        // GĐ0 A0.5: Scaffolding level điều khiển cơ chế luồng (kid) + đề xuất mở lớp (parent)
+        scaffoldLevel: getScaffoldLevel(s),
+        scaffoldPendingLevel: s.parentConfig?.scaffoldPendingLevel ?? null,
+        confirmScaffoldLevelUp,
         screenMinutesUsedToday: s.screenMinutesUsedToday,
         setScreenMinutesUsedToday: makeFieldSetter("screenMinutesUsedToday"),
         screenRedeemsThisWeek: s.screenRedeemsThisWeek,
@@ -1000,6 +1019,7 @@ export function GameProvider({ children }) {
       dismissAtRisk,
       saveTomorrowPlan,
       clearTomorrowPlan,
+      confirmScaffoldLevelUp,
       setTimetable,
       startJourney,
       cancelJourney,

@@ -67,6 +67,7 @@ export default function DashboardPage() {
     tomorrowPlan,
     saveTomorrowPlan,
     clearTomorrowPlan,
+    scaffoldLevel,
   } = useGame();
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -271,6 +272,7 @@ export default function DashboardPage() {
           onClear={clearTomorrowPlan}
           allTasksCompleted={totalTasksCount > 0 && completedTasksCount === totalTasksCount}
           uiMode={uiMode}
+          scaffoldLevel={scaffoldLevel}
         />
 
         {/* ===== FOCAL BLOCK: today's tasks — the one thing the child opens the

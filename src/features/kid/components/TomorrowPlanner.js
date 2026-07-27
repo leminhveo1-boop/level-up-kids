@@ -37,9 +37,11 @@ export default function TomorrowPlanner({
   onClear,
   allTasksCompleted = false,
   uiMode = "kid",
+  scaffoldLevel = 1,
 }) {
-  // ponytail: A0.4 sẽ thêm scaffoldLevel (1/2/3) để tự bung WOOP theo trình độ.
-  // Hiện Level 1 mặc định = micro-choice thuần; WOOP mở qua "Thêm chi tiết".
+  // A0.5 — Scaffolding gate: Level 1 = micro-choice THUẦN (con chỉ chạm 1 việc).
+  // WOOP (khi nào · bước đầu) chỉ bung từ Level 2+ (hoặc rescue B1.2 sau này).
+  const showWoopEntry = scaffoldLevel >= 2;
   const phase = getPlanPhase(plan);
   const isTeen = uiMode === "teen";
   const [editing, setEditing] = useState(false);
@@ -241,13 +243,15 @@ export default function TomorrowPlanner({
           ))}
         </div>
 
-        <button
-          type="button"
-          onClick={startEditing}
-          className="w-full min-h-9 flex items-center justify-center gap-1 text-scale-2xs font-bold text-gray-500"
-        >
-          <NotebookPen size={14} /> Thêm chi tiết ngày mai (khi nào · bước đầu)
-        </button>
+        {showWoopEntry && (
+          <button
+            type="button"
+            onClick={startEditing}
+            className="w-full min-h-9 flex items-center justify-center gap-1 text-scale-2xs font-bold text-gray-500"
+          >
+            <NotebookPen size={14} /> Thêm chi tiết ngày mai (khi nào · bước đầu)
+          </button>
+        )}
       </Card>
     );
   }

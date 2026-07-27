@@ -8,6 +8,7 @@ import ApprovalTab from "@/features/parent/components/ApprovalTab";
 import WeekTab from "@/features/parent/components/WeekTab";
 import ManageTab from "@/features/parent/components/ManageTab";
 import SystemTab from "@/features/parent/components/SystemTab";
+import ScaffoldUnlockCard from "@/features/parent/components/ScaffoldUnlockCard";
 import BottomNav from "@/ui/BottomNav";
 import { KeyRound, CheckCircle2, BarChart3, Target, Settings } from "lucide-react";
 
@@ -268,6 +269,9 @@ export default function ParentDashboard() {
             </button>
           ))}
         </div>
+
+        {/* GĐ0 A0.5 — đề xuất mở lớp năng lực (chỉ hiện khi bé đã sẵn sàng) */}
+        <ScaffoldUnlockCard />
 
         {/* Active tab */}
         {activeTab === "approval" && <ApprovalTab />}
