@@ -187,7 +187,7 @@ export default function TomorrowPlanner({
                 Đặt lại
               </Button>
               <Button type="button" onClick={handleSave} className="flex-1">
-                Lưu kế hoạch ngày mai <ArrowRight size={16} />
+                Khoá kế hoạch <ArrowRight size={16} />
               </Button>
             </div>
           </Card>
@@ -264,10 +264,10 @@ export default function TomorrowPlanner({
         </div>
         <div className="flex-grow min-w-0">
           <p className="text-scale-2xs font-semibold text-gray-500">
-            {phase === "today" ? "Kế hoạch hôm nay" : "Kế hoạch ngày mai"} · {formatTargetDate(plan.targetDate)}
+            {phase === "today" ? "Hôm qua con đã chuẩn bị rồi" : "Kế hoạch ngày mai"} · {formatTargetDate(plan.targetDate)}
           </p>
           <h3 className="text-scale-base font-bold text-forest-dark mt-1">
-            {phase === "today" ? "Bắt đầu từ đây" : "Kế hoạch đã sẵn sàng"}
+            {phase === "today" ? "Bắt đầu từ đây" : "Đã khoá kế hoạch"}
           </h3>
         </div>
         <div className="flex items-center gap-1 no-print">
