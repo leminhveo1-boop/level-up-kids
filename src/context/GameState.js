@@ -24,6 +24,7 @@ import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
 import { buildTinyTask } from "@/lib/game/habits";
+import { applyDefer, requestHelp, applyDrop, clearRescue } from "@/lib/game/rescue";
 import { applyTaskEdit, toInt } from "@/lib/game/taskEdit";
 import * as journeySystem from "@/lib/game/journeys";
 import { generateTimetableTasks } from "@/lib/game/timetable";
@@ -691,6 +692,39 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  // ---------------- B1.2: gỡ vướng việc chưa xong (không phạt, không xấu hổ) ----------------
+  /** Con dời việc: mode "tomorrow" = để mai; "later" = hôm nay giờ khác (kèm nhãn slot). */
+  const deferTask = useCallback((id, mode = "tomorrow", slot = null) => {
+    setState((prev) =>
+      prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? applyDefer(t, mode, slot) : t)) } : prev
+    );
+    return { success: true };
+  }, []);
+
+  /** Con nhờ người lớn hỗ trợ 1 việc. */
+  const requestTaskHelp = useCallback((id) => {
+    setState((prev) =>
+      prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? requestHelp(t) : t)) } : prev
+    );
+    return { success: true };
+  }, []);
+
+  /** Con bỏ 1 việc có lý do (lý do lạ → reducer no-op an toàn). */
+  const dropTask = useCallback((id, reasonId) => {
+    setState((prev) =>
+      prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? applyDrop(t, reasonId) : t)) } : prev
+    );
+    return { success: true };
+  }, []);
+
+  /** Con đổi ý — gỡ trạng thái "đang gỡ vướng" để làm luôn (giữ deferCount tích luỹ). */
+  const clearTaskRescue = useCallback((id) => {
+    setState((prev) =>
+      prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? clearRescue(t) : t)) } : prev
+    );
+    return { success: true };
+  }, []);
+
   // ---------------- Kế hoạch ngày mai: một lần buổi tối, dùng ngoài màn hình ----------------
   const saveTomorrowPlan = useCallback((options = {}) => {
     let saved = null;
@@ -947,6 +981,10 @@ export function GameProvider({ children }) {
         updateTask,
         splitTask,
         dismissAtRisk,
+        deferTask,
+        requestTaskHelp,
+        dropTask,
+        clearTaskRescue,
         tomorrowPlan: s.tomorrowPlan || null,
         saveTomorrowPlan,
         clearTomorrowPlan,
@@ -1032,6 +1070,10 @@ export function GameProvider({ children }) {
       updateTask,
       splitTask,
       dismissAtRisk,
+      deferTask,
+      requestTaskHelp,
+      dropTask,
+      clearTaskRescue,
       saveTomorrowPlan,
       clearTomorrowPlan,
       confirmScaffoldLevelUp,

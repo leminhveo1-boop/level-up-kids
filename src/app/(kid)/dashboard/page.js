@@ -16,6 +16,7 @@ import GoalBar from "@/features/kid/components/GoalBar";
 import FamilyStrip from "@/features/kid/components/FamilyStrip";
 import TaskFilterBar from "@/features/kid/components/TaskFilterBar";
 import TaskCard from "@/features/kid/components/TaskCard";
+import TaskRescueSheet from "@/features/kid/components/TaskRescueSheet";
 import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
@@ -69,6 +70,10 @@ export default function DashboardPage() {
     saveTomorrowPlan,
     clearTomorrowPlan,
     scaffoldLevel,
+    deferTask,
+    requestTaskHelp,
+    dropTask,
+    clearTaskRescue,
   } = useGame();
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
@@ -83,6 +88,8 @@ export default function DashboardPage() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const [verifyToast, setVerifyToast] = useState(""); // small info toast
+  const [rescueTaskId, setRescueTaskId] = useState(null); // B1.2: task đang mở sheet gỡ vướng
+  const rescueTask = rescueTaskId ? tasks.find((t) => t.id === rescueTaskId) : null;
 
   const showVerifyToast = (msg) => {
     setVerifyToast(msg);
@@ -437,6 +444,8 @@ export default function DashboardPage() {
                         onToggleComplete={handleTaskComplete}
                         onStartFocus={handleStartFocus}
                         onStopFocus={handleStopFocus}
+                        onRescue={setRescueTaskId}
+                        onClearRescue={clearTaskRescue}
                       />
                     ))}
                   </div>
@@ -468,6 +477,17 @@ export default function DashboardPage() {
 
       {criticalToast && (
         <CriticalToast toast={criticalToast} charName={charName} onClose={() => setCriticalToast(null)} />
+      )}
+
+      {/* B1.2 — Thẻ Hỗ trợ: 4 lối gỡ vướng cho việc chưa xong (không phạt). */}
+      {rescueTask && (
+        <TaskRescueSheet
+          task={rescueTask}
+          onDefer={(mode, slot) => deferTask(rescueTask.id, mode, slot)}
+          onHelp={() => requestTaskHelp(rescueTask.id)}
+          onDrop={(reasonId) => dropTask(rescueTask.id, reasonId)}
+          onClose={() => setRescueTaskId(null)}
+        />
       )}
 
       {/* Floating Carrier Pigeon if there are unread messages */}

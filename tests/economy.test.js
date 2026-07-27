@@ -407,6 +407,45 @@ describe("resetDailyTasks", () => {
     const next = resetDailyTasks(state);
     expect(next.pets[0].hunger).toBe(45);
   });
+
+  // B1.2: việc con CHỦ ĐỘNG dời/nhờ/bỏ không bị coi là "miss" khi sang ngày mới.
+  test("B1.2: việc bị DỜI không bump missStreak và mang sang mai với cờ rescue đã gỡ", () => {
+    const state = freshState({
+      tasks: [
+        { id: "t1", title: "A", completed: false, missStreak: 1, deferState: "tomorrow", deferSlot: null, deferCount: 2 },
+      ],
+    });
+    const next = resetDailyTasks(state);
+    const carried = next.tasks.find((t) => t.id === "t1");
+    expect(carried).toBeTruthy();
+    expect(carried.missStreak).toBe(1); // KHÔNG +1 vì đã xử lý chủ động
+    expect(carried.deferState).toBeUndefined(); // cờ tạm đã gỡ
+    expect(carried.deferCount).toBe(2); // tích luỹ vẫn giữ
+    expect(carried.completed).toBe(false);
+  });
+
+  test("B1.2: việc BỎ-có-lý-do bị loại khỏi ngày mai, không nợ dồn, không tính miss", () => {
+    const state = freshState({
+      tasks: [
+        { id: "t1", title: "A", completed: false, dropReason: "tired", missStreak: 0 },
+        { id: "t2", title: "B", completed: false, missStreak: 0 },
+      ],
+    });
+    const next = resetDailyTasks(state);
+    expect(next.tasks.find((t) => t.id === "t1")).toBeUndefined(); // đã bỏ → không carry
+    const b = next.tasks.find((t) => t.id === "t2");
+    expect(b.missStreak).toBe(1); // việc KHÔNG xử lý mới bị tính miss như cũ
+  });
+
+  test("B1.2: NHỜ NGƯỜI LỚN không tính miss, cờ help gỡ sang ngày mới", () => {
+    const state = freshState({
+      tasks: [{ id: "t1", title: "A", completed: false, helpRequested: true, missStreak: 2 }],
+    });
+    const next = resetDailyTasks(state);
+    const carried = next.tasks.find((t) => t.id === "t1");
+    expect(carried.missStreak).toBe(2); // không +1
+    expect(carried.helpRequested).toBeUndefined();
+  });
 });
 
 describe("P0 escrow & trust (PDCA Check)", () => {

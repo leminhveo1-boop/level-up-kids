@@ -37,6 +37,7 @@ import { advanceJourneyDaily } from "./journeys";
 import { generateTimetableTasks } from "./timetable";
 import { northStarSignals } from "./progress";
 import { evaluateScaffoldLevel } from "./scaffolding";
+import { isConsciouslyHandled, clearRescue } from "./rescue";
 import { dateKey } from "./planning";
 
 /**
@@ -670,13 +671,17 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
   const tasksWithHabits = journeyed.tasks.map((t) => ({
     ...t,
     habitStreak: t.completed ? (t.habitStreak || 0) + 1 : 0,
-    // D4: consecutive misses drive the "chia nhỏ" suggestion
-    missStreak: t.completed ? 0 : (t.missStreak || 0) + 1,
+    // D4: consecutive misses drive the "chia nhỏ" suggestion.
+    // B1.2: việc con CHỦ ĐỘNG dời/nhờ/bỏ = "gỡ vướng", KHÔNG tính miss (không xấu
+    // hổ, không kích chia-nhỏ như thất bại). deferCount lo phần "xem lại cùng bố mẹ".
+    missStreak: t.completed ? 0 : isConsciouslyHandled(t) ? t.missStreak || 0 : (t.missStreak || 0) + 1,
   }));
   const remainingTasks = tasksWithHabits.filter((t) => {
     // 📅 Thời khóa biểu: task theo ngày, không tồn dư — sinh lại ở dưới cho ngày mới.
     // (loại trước vòng graduation: task lịch không phải "thói quen" nên không tốt nghiệp)
     if (t.source === "timetable") return false;
+    // B1.2: con đã BỎ có lý do → không nợ dồn sang mai.
+    if (t.dropReason) return false;
     if ((t.habitStreak || 0) >= GRADUATION_DAYS) {
       graduatedNow.push({
         title: t.title,
@@ -705,7 +710,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     lastGraduation: graduatedNow.length > 0 ? { ...graduatedNow[0], timestamp: Date.now() } : journeyed.lastGraduation,
     tasks: [
       ...remainingTasks.map((t) => ({
-        ...t,
+        ...clearRescue(t), // B1.2: gỡ cờ dời/nhờ tạm thời (giữ deferCount tích luỹ)
         completed: false,
         approval: undefined,
         pendingPoints: 0,

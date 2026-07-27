@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
-import { Star, Clock, Trees, Sprout } from "lucide-react";
+import { Star, Clock, Trees, Sprout, LifeBuoy, RotateCcw } from "lucide-react";
 import { stripEmoji } from "@/lib/text";
 import { rewardDoseFactor } from "@/lib/game/economy";
+import { rescueStatusLabel } from "@/lib/game/rescue";
 import { FADE_START, GRADUATION_DAYS } from "@/lib/game/constants";
 
 const formatStopwatch = (totalSecs) => {
@@ -25,9 +26,13 @@ export default function TaskCard({
   onToggleComplete,
   onStartFocus,
   onStopFocus,
+  onRescue,
+  onClearRescue,
 }) {
   const { t } = useLang();
   const focusable = Boolean(task.durationMin);
+  // B1.2: trạng thái "đang gỡ vướng" (chỉ khi việc chưa xong).
+  const rescueLabel = !task.completed ? rescueStatusLabel(task) : null;
   const rawPoints = task.points !== undefined ? task.points : task.exp;
   // PROD-1: hiển thị điểm nền ĐÃ cân liều (khớp điểm thực nhận, hết lệch).
   const habitStreak = task.habitStreak || 0;
@@ -117,6 +122,35 @@ export default function TaskCard({
             </button>
           )}
         </div>
+      )}
+
+      {/* B1.2 — Gỡ vướng: khi việc chưa xong con có 4 lối nhân văn thay vì để nó
+          đứng đó như "thất bại". Đang gỡ vướng → hiện nhãn trung tính + nút đổi ý. */}
+      {!task.completed && onRescue && (
+        rescueLabel ? (
+          <div className="flex items-center gap-2 border-t border-sand pt-3 -mt-1">
+            <span className="flex items-center gap-1.5 text-scale-2xs font-bold accent-text">
+              <LifeBuoy size={14} className="flex-shrink-0" /> {rescueLabel}
+            </span>
+            {onClearRescue && (
+              <button
+                type="button"
+                onClick={() => onClearRescue(task.id)}
+                className="ml-auto flex items-center gap-1 text-scale-2xs font-bold text-gray-400 active:accent-text transition-colors"
+              >
+                <RotateCcw size={13} /> Làm luôn
+              </button>
+            )}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onRescue(task.id)}
+            className="self-start flex items-center gap-1.5 text-scale-2xs font-bold text-gray-400 active:accent-text transition-colors -mt-1"
+          >
+            <LifeBuoy size={14} className="flex-shrink-0" /> Cần gỡ vướng?
+          </button>
+        )
       )}
     </div>
   );
