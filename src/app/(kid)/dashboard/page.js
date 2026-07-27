@@ -22,8 +22,9 @@ import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
 import TomorrowPlanner from "@/features/kid/components/TomorrowPlanner";
 import DailyReviewCard from "@/features/kid/components/DailyReviewCard";
+import FocusSessionMode from "@/features/kid/components/FocusSessionMode";
 import BottomNav from "@/ui/BottomNav";
-import { Target, SlidersHorizontal, Coins, Globe, Mail } from "lucide-react";
+import { Target, SlidersHorizontal, Coins, Globe, Mail, NotebookPen } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -78,6 +79,7 @@ export default function DashboardPage() {
 
   const [taskFilter, setTaskFilter] = useState("all"); // Filter daily tasks
   const [showFilter, setShowFilter] = useState(false); // category filter hidden until asked
+  const [showFocusSession, setShowFocusSession] = useState(false); // D3.1 chế độ sổ / không màn hình
   const [selectedMessage, setSelectedMessage] = useState(null); // Pigeon Modal Message
   const [criticalToast, setCriticalToast] = useState(null); // Toast for Critical Hit Points!
 
@@ -311,6 +313,16 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            {/* D3.1 — lối vào Chế độ sổ: danh sách sạch để in / đặt giờ phiên
+                (giải nghịch lý màn hình). Nút phụ trầm, không tranh điểm nhấn. */}
+            <button
+              type="button"
+              onClick={() => setShowFocusSession(true)}
+              className="w-full min-h-tap flex items-center justify-center gap-2 bg-white border border-sand rounded-xl px-4 py-2.5 text-scale-2xs font-bold text-gray-500 active:scale-[0.99] transition-transform"
+            >
+              <NotebookPen size={15} /> Chế độ sổ · in việc / đặt giờ phiên
+            </button>
+
             {/* P0: Pending approval summary + child-initiated nudge */}
             {pendingCount > 0 && (
               <div className="w-full bg-sky-light/60 border border-sky/30 p-2.5 rounded-xl flex items-center justify-between gap-2">
@@ -489,6 +501,9 @@ export default function DashboardPage() {
           onClose={() => setRescueTaskId(null)}
         />
       )}
+
+      {/* D3.1 — Chế độ sổ / không màn hình (overlay toàn màn) */}
+      {showFocusSession && <FocusSessionMode onClose={() => setShowFocusSession(false)} />}
 
       {/* Floating Carrier Pigeon if there are unread messages */}
       {unreadLetters.length > 0 && (

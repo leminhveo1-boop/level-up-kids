@@ -158,11 +158,14 @@
   }
 
   #tomorrow-plan-print,
-  #tomorrow-plan-print * {
+  #tomorrow-plan-print *,
+  #focus-session-print,
+  #focus-session-print * {
     visibility: visible !important;
   }
 
-  #tomorrow-plan-print {
+  #tomorrow-plan-print,
+  #focus-session-print {
     position: absolute;
     inset: 0 auto auto 0;
     width: 100%;
@@ -174,11 +177,13 @@
     padding: 24px;
   }
 
-  #tomorrow-plan-print .no-print {
+  #tomorrow-plan-print .no-print,
+  #focus-session-print .no-print {
     display: none !important;
   }
 
-  #tomorrow-plan-print .print-plan-list {
+  #tomorrow-plan-print .print-plan-list,
+  #focus-session-print .print-plan-list {
     display: block !important;
   }
 }
