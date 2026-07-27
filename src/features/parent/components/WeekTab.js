@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { generatePraiseSuggestions } from "@/lib/game/recognition";
 import { compareWeeks } from "@/lib/game/progress";
-import { Send, Share2 } from "lucide-react";
+import Collapsible from "@/ui/Collapsible";
+import { Send, Share2, BookOpen } from "lucide-react";
 
 const STAT_META = {
   strength: { label: "Thể lực", color: "bg-terracotta", emoji: "❤️" },
@@ -57,7 +58,7 @@ export default function WeekTab() {
     showFlash("Đã gửi lời khen qua bồ câu! 🕊️ Con sẽ thấy ngay trên màn hình.");
   };
 
-  // ===== Thẻ Khoe Con — 9:16 share card via canvas (CAC≈0 growth loop) =====
+  // ===== Thẻ Thành Tích Tuần — 9:16 share card via canvas (CAC≈0 growth loop) =====
   const handleShareCard = async () => {
     const W = 720, H = 1280;
     const canvas = document.createElement("canvas");
@@ -119,7 +120,7 @@ export default function WeekTab() {
     // Try native share, fall back to download
     try {
       const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], `khoe-con-${charName}.png`, { type: "image/png" });
+      const file = new File([blob], `thanh-tich-${charName}.png`, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `Thành tích của ${charName}!` });
         return;
@@ -129,9 +130,9 @@ export default function WeekTab() {
     }
     const a = document.createElement("a");
     a.href = dataUrl;
-    a.download = `khoe-con-${charName}.png`;
+    a.download = `thanh-tich-${charName}.png`;
     a.click();
-    showFlash("Đã tải Thẻ Khoe Con — đăng Facebook/Zalo khoe ngay! 📸");
+    showFlash("Đã lưu thẻ thành tích của " + charName + " 📸 — cất làm kỷ niệm hay chia sẻ tuỳ bố mẹ.");
   };
 
   return (
@@ -287,35 +288,43 @@ export default function WeekTab() {
           </p>
         </div>
 
-        {praises.map((text, idx) => (
-          <div key={idx} className="border border-sand rounded-xl p-3 flex items-start gap-2">
-            <p className="flex-grow text-scale-2xs text-gray-600 font-medium leading-relaxed">{text}</p>
-            <button
-              onClick={() => handleSendPraise(text, idx)}
-              disabled={sentIdx.includes(idx)}
-              className={`min-w-tap min-h-tap rounded-xl flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform ${
-                sentIdx.includes(idx) ? "bg-sand text-gray-400" : "bg-sky text-white"
-              }`}
-              title="Gửi qua bồ câu"
-            >
-              {sentIdx.includes(idx) ? "✓" : <Send size={16} />}
-            </button>
+        <Collapsible summary={`Xem ${praises.length} gợi ý lời khen`} icon={BookOpen} tone="quiet">
+          <div className="space-y-3">
+            {praises.map((text, idx) => (
+              <div key={idx} className="border border-sand rounded-xl p-3 flex items-start gap-2">
+                <p className="flex-grow text-scale-2xs text-gray-600 font-medium leading-relaxed">{text}</p>
+                <button
+                  onClick={() => handleSendPraise(text, idx)}
+                  disabled={sentIdx.includes(idx)}
+                  className={`min-w-tap min-h-tap rounded-xl flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform ${
+                    sentIdx.includes(idx) ? "bg-sand text-gray-400" : "bg-sky text-white"
+                  }`}
+                  title="Gửi qua bồ câu"
+                >
+                  {sentIdx.includes(idx) ? "✓" : <Send size={16} />}
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        </Collapsible>
       </div>
 
-      {/* ===== Thẻ Khoe Con — shareable brag card ===== */}
+      {/* ===== Thẻ Thành Tích Tuần — shareable keepsake card ===== */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
-        <h3 className="text-scale-sm font-black text-forest-dark">📸 Thẻ Khoe Con</h3>
-        <p className="text-scale-2xs text-gray-400">
-          Xuất ảnh thành tích tuần của {charName} để đăng Facebook/Zalo — khoe con một chút cũng đáng mà!
-        </p>
-        <button
-          onClick={handleShareCard}
-          className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-        >
-          <Share2 size={16} /> Xuất thẻ khoe con
-        </button>
+        <h3 className="text-scale-sm font-black text-forest-dark">📸 Thẻ Thành Tích Tuần</h3>
+        <Collapsible summary="Lưu thẻ thành tích" icon={Share2}>
+          <div className="space-y-2">
+            <p className="text-scale-2xs text-gray-400">
+              Lưu chặng đường tuần này của {charName} thành một tấm thẻ đẹp — để dành làm kỷ niệm, hoặc chia sẻ nếu bố mẹ muốn.
+            </p>
+            <button
+              onClick={handleShareCard}
+              className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+            >
+              <Share2 size={16} /> Lưu ảnh thành tích
+            </button>
+          </div>
+        </Collapsible>
       </div>
 
       {flash && (
