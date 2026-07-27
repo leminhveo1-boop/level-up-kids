@@ -232,7 +232,7 @@ Kỹ thuật (T) + Business (BZ): chạy song song, không chặn.
 |---|---|:-:|---|
 | **C2.1** | Thiết kế insight điểm-mạnh: số→gợi-ý-hành-vi, ẩn %; teen chỉ summary | 🔴 O | Spec mapping số→câu khen; không lộ % phán xét |
 | **C2.2** | Code phòng phụ huynh insight card | 🟡 S | Screenshot; ẩn %; vitest |
-| **C2.3** | Aha-moment tuần qua Zalo (Worker cron 19h T6) | 🟡 S | Gửi thật (cần Zalo integ); log Worker |
+| **C2.3** | Aha-moment tuần qua Zalo (Worker cron 19h T6) | 🟡 S | ⛔ **CHẶN Zalo integ** (gộp với D3.4 + mục-6): cần founder lập Zalo OA/ZNS + CF cron secret. Bản in-app trùng InsightCard (C2.2) nên hoãn tới khi có kênh gửi thật. |
 | **C2.4** | Luồng ông bà: nút "Chia sẻ lịch hôm nay" (text Zalo/SMS, không cần app) | 🟡 S | Bản text đúng; `/demo` |
 | **C2.5** | Lý do từ chối cụ thể (3 nút nhanh) nối Definition of Done | 🟢 H | 3 nút; ghi lý do |
 
