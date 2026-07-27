@@ -1,5 +1,7 @@
 # 🎭 MODEL GROK 4.5 v2 — Highest Effort — Level Up Kids (27/07/2026)
 
+**Rule:** Always use Grok 4.5 Highest Effort — exhaustive step-by-step reasoning, maximum detail, evidence-based, thorough analysis, no shortcuts, full verification.
+
 **Phiên bản bổ sung** — Thêm **5 gia đình 12+** (trẻ 12–14 tuổi).
 
 ## Gia đình K

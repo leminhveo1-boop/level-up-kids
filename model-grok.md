@@ -1,5 +1,7 @@
 # 🎭 MODEL GROK 4.5 — Highest Effort — Phản biện "Nền tảng học thuật.md" (27/07/2026)
 
+**Rule:** Always use Grok 4.5 Highest Effort — exhaustive step-by-step reasoning, maximum detail, evidence-based, thorough analysis, no shortcuts, full verification.
+
 **Nhiệm vụ:** Phản biện tài liệu nền tảng học thuật của app Level Up Kids. Tôi đóng 6 vai để soi toàn diện. Không khen, chỉ chỉ ra lỗ hổng.
 
 ## Phần A — Đánh giá độ vững của khung hiện có

@@ -1,5 +1,7 @@
 # 🎭 PERSONA GROK — Level Up Kids (27/07/2026)
 
+**Rule:** Always use Grok 4.5 Highest Effort — exhaustive step-by-step reasoning, maximum detail, evidence-based, thorough analysis, no shortcuts, full verification.
+
 **Tác giả:** Grok 4.5 (highest effort)  
 **Mục đích:** Tạo 10 persona gia đình + trả lời full Phần A–F theo protocol để dry-run kịch bản phỏng vấn.
 
