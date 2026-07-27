@@ -5,11 +5,22 @@ import { useGame } from "@/context/GameState";
 import {
   WEEKDAY_KEYS,
   createEmptyTimetable,
+  createSampleTimetableText,
   generateTimetableTasks,
+  parseTimetableText,
   TIMETABLE_TASK_DEFAULTS,
 } from "@/lib/game/timetable";
 import Collapsible from "@/ui/Collapsible";
-import { CalendarDays, Plus, Trash2, BookOpen, Backpack, SlidersHorizontal } from "lucide-react";
+import {
+  Backpack,
+  BookOpen,
+  CalendarDays,
+  FileText,
+  Plus,
+  RotateCcw,
+  SlidersHorizontal,
+  Trash2,
+} from "lucide-react";
 
 /** Nhãn thứ tiếng Việt cho từng ô lịch. */
 const WEEKDAY_LABELS = {
@@ -34,6 +45,8 @@ export default function TimetableSection({ showFlash }) {
   const defaults = { ...TIMETABLE_TASK_DEFAULTS, ...(tt.taskDefaults || {}) };
 
   const [newName, setNewName] = useState("");
+  const [quickText, setQuickText] = useState("");
+  const [quickError, setQuickError] = useState("");
 
   const commit = (next) => setTimetable(next);
 
@@ -79,6 +92,34 @@ export default function TimetableSection({ showFlash }) {
 
   const toggleEnabled = () => commit({ ...tt, enabled: !(tt.enabled ?? true) });
 
+  const importQuickText = () => {
+    const result = parseTimetableText(quickText);
+    if (!result.success) {
+      setQuickError("Chưa đọc được lịch. Mỗi dòng cần bắt đầu như “T2:” hoặc “Thứ 2:”.");
+      return;
+    }
+    commit({
+      ...result.timetable,
+      taskDefaults: tt.taskDefaults,
+      updatedAt: Date.now(),
+    });
+    setQuickError("");
+    showFlash?.("Đã tạo thời khóa biểu từ nội dung vừa dán! ✅");
+  };
+
+  const useSample = () => {
+    setQuickText(createSampleTimetableText());
+    setQuickError("");
+  };
+
+  const clearTimetable = () => {
+    if (!confirm("Xóa toàn bộ môn và lịch học hiện tại?")) return;
+    commit(createEmptyTimetable());
+    setQuickText("");
+    setQuickError("");
+    showFlash?.("Đã xóa thời khóa biểu.");
+  };
+
   const enabled = tt.enabled ?? true;
   const preview = enabled ? generateTimetableTasks(tt, new Date()) : [];
 
@@ -100,12 +141,53 @@ export default function TimetableSection({ showFlash }) {
       </div>
 
       <p className="text-scale-2xs text-gray-500 font-medium leading-relaxed">
-        Nhập TKB lớp một lần — app tự nhắc {charName || "con"}: hôm nay làm bài tập, mai soạn sách vở. Dùng cả kỳ, không nhập lại mỗi tuần.
+        Dán lịch lớp một lần. App sẽ tự nhắc {charName || "con"} làm bài hôm nay và soạn cặp cho ngày mai.
       </p>
 
       {enabled && (
         <>
-          <Collapsible summary="Chỉnh môn & lịch học" icon={SlidersHorizontal} defaultOpen={subjectList.length === 0}>
+          <div className="bg-sand-light rounded-xl p-3 space-y-3">
+            <div className="flex items-center gap-2">
+              <FileText size={16} className="text-forest" />
+              <p className="text-scale-xs font-bold text-forest-dark">Cách nhanh nhất: dán nguyên lịch</p>
+            </div>
+            <textarea
+              value={quickText}
+              onChange={(event) => {
+                setQuickText(event.target.value);
+                setQuickError("");
+              }}
+              rows={6}
+              placeholder={"T2: Toán, Tiếng Việt, Tiếng Anh\nT3: Toán, Khoa học\nT4: Tiếng Việt, Thể dục"}
+              className="w-full bg-white border border-sand rounded-xl px-3 py-2 text-scale-xs font-semibold text-forest-dark focus:outline-none focus:border-forest resize-y"
+            />
+            {quickError && <p className="text-scale-2xs font-semibold text-terracotta">{quickError}</p>}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={importQuickText}
+                disabled={!quickText.trim()}
+                className="flex-1 min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl disabled:opacity-40"
+              >
+                Tạo lịch
+              </button>
+              <button
+                type="button"
+                onClick={useSample}
+                className="min-h-tap px-3 bg-white border border-sand text-gray-600 text-scale-2xs font-bold rounded-xl"
+              >
+                Xem bản mẫu
+              </button>
+            </div>
+            <p className="text-scale-2xs text-gray-500">
+              Mỗi dòng là một thứ. Ngăn các môn bằng dấu phẩy; ngày nghỉ có thể để trống.
+            </p>
+          </div>
+
+          <Collapsible
+            summary={`Chỉnh chi tiết${subjectList.length ? ` · ${subjectList.length} môn` : ""}`}
+            icon={SlidersHorizontal}
+          >
           <div className="space-y-3">
           {/* ---- Danh mục môn ---- */}
           <div className="bg-sand-light border border-sand rounded-xl p-3 space-y-2">
@@ -228,6 +310,16 @@ export default function TimetableSection({ showFlash }) {
           </div>
           </div>
           </Collapsible>
+
+          {subjectList.length > 0 && (
+            <button
+              type="button"
+              onClick={clearTimetable}
+              className="w-full min-h-tap flex items-center justify-center gap-2 text-scale-2xs font-bold text-gray-500"
+            >
+              <RotateCcw size={14} /> Xóa lịch và làm lại
+            </button>
+          )}
 
           {/* ---- Xem trước hôm nay ---- */}
           <div className="bg-forest-light/20 border border-forest/20 rounded-xl p-3 space-y-1">

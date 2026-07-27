@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
 import { createInitialState, reconcileRewardsForAge, BOSS_MAX_HP } from "@/lib/game/constants";
 import { createTomorrowPlan } from "@/lib/game/planning";
+import { updateRewardById } from "@/lib/game/rewards";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import * as economy from "@/lib/game/economy";
@@ -778,6 +779,13 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  const updateReward = useCallback((id, patch) => {
+    setState((prev) =>
+      prev ? { ...prev, rewards: updateRewardById(prev.rewards, id, patch) } : prev
+    );
+    return { success: true };
+  }, []);
+
   const resetDailyTasks = useCallback(() => {
     setState((prev) => (prev ? economy.resetDailyTasks(prev) : prev));
   }, []);
@@ -924,6 +932,7 @@ export function GameProvider({ children }) {
         cancelJourney,
         clearJourneyCelebration,
         addCustomReward,
+        updateReward,
         deleteReward,
         resetDailyTasks,
         resetEntireGame,
@@ -996,6 +1005,7 @@ export function GameProvider({ children }) {
       cancelJourney,
       clearJourneyCelebration,
       addCustomReward,
+      updateReward,
       deleteReward,
       resetDailyTasks,
       resetEntireGame,

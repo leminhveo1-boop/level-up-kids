@@ -13,7 +13,11 @@ import {
 } from "lucide-react";
 import Button from "@/ui/Button";
 import Card from "@/ui/Card";
-import { getPlanPhase, selectDefaultFocusTask } from "@/lib/game/planning";
+import {
+  getPlanPhase,
+  selectDefaultFocusTask,
+  shouldOfferTomorrowPlanning,
+} from "@/lib/game/planning";
 
 function formatTargetDate(value) {
   if (!value) return "";
@@ -44,6 +48,7 @@ export default function TomorrowPlanner({
 
   const focusItem = plan?.items?.find((item) => item.taskId === plan.focusTaskId);
   const activePlan = phase === "today" || phase === "tomorrow" ? plan : null;
+  const shouldShow = shouldOfferTomorrowPlanning({ plan, allTasksCompleted });
 
   const startEditing = () => {
     setFocusTaskId(phase === "tomorrow" ? plan?.focusTaskId || fallbackFocus : fallbackFocus);
@@ -59,6 +64,14 @@ export default function TomorrowPlanner({
       setShowAll(false);
     }
   };
+
+  const resetDraft = () => {
+    setFocusTaskId(fallbackFocus);
+    setFirstStep("");
+    setAnchor("");
+  };
+
+  if (!shouldShow) return null;
 
   if (editing) {
     return (
@@ -88,7 +101,7 @@ export default function TomorrowPlanner({
             </div>
 
             <div className="space-y-2">
-              <p className="text-scale-2xs font-bold text-gray-500">Bắt đầu từ việc nào?</p>
+              <p className="text-scale-2xs font-bold text-gray-500">1. Việc con sẽ bắt đầu trước</p>
               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                 {(tasks || []).map((task) => {
                   const selected = task.id === focusTaskId;
@@ -118,7 +131,7 @@ export default function TomorrowPlanner({
             </div>
 
             <label className="block space-y-2">
-              <span className="text-scale-2xs font-bold text-gray-500">Con sẽ bắt đầu khi nào?</span>
+              <span className="text-scale-2xs font-bold text-gray-500">2. Con sẽ bắt đầu khi nào?</span>
               <input
                 value={anchor}
                 onChange={(event) => setAnchor(event.target.value)}
@@ -126,10 +139,22 @@ export default function TomorrowPlanner({
                 placeholder="Ví dụ: Sau khi ăn tối"
                 className="w-full min-h-tap bg-sand-light border border-sand rounded-xl px-3 text-scale-xs font-semibold text-forest-dark focus:outline-none focus:accent-border"
               />
+              <div className="flex flex-wrap gap-2">
+                {["Sau khi ăn tối", "Sau khi tắm", "Lúc 19:30"].map((example) => (
+                  <button
+                    key={example}
+                    type="button"
+                    onClick={() => setAnchor(example)}
+                    className="min-h-9 px-3 rounded-full bg-sand-light text-scale-2xs font-semibold text-gray-600"
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
             </label>
 
             <label className="block space-y-2">
-              <span className="text-scale-2xs font-bold text-gray-500">Bước đầu tiên thật nhỏ là gì?</span>
+              <span className="text-scale-2xs font-bold text-gray-500">3. Hành động đầu tiên thật nhỏ</span>
               <input
                 value={firstStep}
                 onChange={(event) => setFirstStep(event.target.value)}
@@ -142,9 +167,14 @@ export default function TomorrowPlanner({
               </span>
             </label>
 
-            <Button type="button" onClick={handleSave} className="w-full">
-              Lưu kế hoạch ngày mai <ArrowRight size={16} />
-            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" onClick={resetDraft}>
+                Đặt lại
+              </Button>
+              <Button type="button" onClick={handleSave} className="flex-1">
+                Lưu kế hoạch ngày mai <ArrowRight size={16} />
+              </Button>
+            </div>
           </Card>
         </div>
       </div>
@@ -160,10 +190,10 @@ export default function TomorrowPlanner({
           </div>
           <div className="flex-grow min-w-0">
             <h3 className="text-scale-sm font-bold text-forest-dark">
-              {allTasksCompleted ? "Hôm nay đã xong. Chuẩn bị ngày mai nhé" : "Chuẩn bị ngày mai"}
+              {allTasksCompleted ? "Hôm nay đã xong. Lên kế hoạch ngày mai nhé" : "Kế hoạch ngày mai · 2 phút"}
             </h3>
             <p className="text-scale-2xs text-gray-500 mt-1">
-              Lập một lần buổi tối, rồi dùng sổ hoặc giấy trong ngày.
+              Chọn việc bắt đầu, lúc làm và bước đầu tiên. Sau đó in hoặc chép ra giấy.
             </p>
           </div>
           <Button type="button" onClick={startEditing} className="flex-shrink-0">
@@ -242,9 +272,16 @@ export default function TomorrowPlanner({
         <Button type="button" variant="secondary" onClick={() => window.print()} className="flex-1">
           <Printer size={15} /> In / lưu PDF
         </Button>
-        {phase === "today" && (
-          <Button type="button" variant="ghost" onClick={onClear} className="flex-1">
-            Đã chép vào sổ
+        {phase === "tomorrow" && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              if (confirm("Xóa kế hoạch này để làm lại từ đầu?")) onClear();
+            }}
+            className="flex-1"
+          >
+            Xóa & làm lại
           </Button>
         )}
       </div>

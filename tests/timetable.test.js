@@ -5,6 +5,8 @@ import {
   nextDay,
   createEmptyTimetable,
   generateTimetableTasks,
+  parseTimetableText,
+  createSampleTimetableText,
   TIMETABLE_TASK_DEFAULTS,
 } from "@/lib/game/timetable";
 import { resetDailyTasks } from "@/lib/game/economy";
@@ -65,6 +67,41 @@ describe("createEmptyTimetable", () => {
     expect(tt.enabled).toBe(true);
     expect(tt.subjects).toEqual({});
     for (const k of WEEKDAY_KEYS) expect(tt.week[k]).toEqual([]);
+  });
+});
+
+describe("nhập thời khóa biểu bằng văn bản", () => {
+  test("dán lịch theo T2..CN → tự tạo môn và xếp đúng ngày", () => {
+    const result = parseTimetableText(`
+      T2: Toán, Tiếng Việt, Anh
+      Thứ 3: Toán; Khoa học
+      T7: Bơi
+      CN: nghỉ
+    `);
+
+    expect(result.success).toBe(true);
+    expect(Object.values(result.timetable.subjects).map((s) => s.name)).toEqual([
+      "Toán",
+      "Tiếng Việt",
+      "Anh",
+      "Khoa học",
+      "Bơi",
+    ]);
+    const namesFor = (key) =>
+      result.timetable.week[key].map((id) => result.timetable.subjects[id].name);
+    expect(namesFor("mon")).toEqual(["Toán", "Tiếng Việt", "Anh"]);
+    expect(namesFor("tue")).toEqual(["Toán", "Khoa học"]);
+    expect(namesFor("sat")).toEqual(["Bơi"]);
+    expect(namesFor("sun")).toEqual([]);
+  });
+
+  test("báo lỗi khi chưa nhận ra dòng lịch nào", () => {
+    expect(parseTimetableText("Toán, Văn, Anh").success).toBe(false);
+  });
+
+  test("có bản mẫu để phụ huynh sửa, không phải bắt đầu từ trang trắng", () => {
+    expect(createSampleTimetableText()).toContain("T2:");
+    expect(createSampleTimetableText()).toContain("T6:");
   });
 });
 

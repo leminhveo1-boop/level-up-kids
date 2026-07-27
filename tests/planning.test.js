@@ -3,6 +3,7 @@ import {
   createTomorrowPlan,
   dateKey,
   getPlanPhase,
+  shouldOfferTomorrowPlanning,
   selectDefaultFocusTask,
 } from "@/lib/game/planning";
 
@@ -71,5 +72,35 @@ describe("planning — kế hoạch ngày mai", () => {
     expect(getPlanPhase({ targetDate: "2026-07-28" }, now)).toBe("tomorrow");
     expect(getPlanPhase({ targetDate: "2026-07-26" }, now)).toBe("stale");
     expect(getPlanPhase(null, now)).toBe("none");
+  });
+
+  test("chỉ mời lập kế hoạch vào buổi tối hoặc khi đã xong toàn bộ việc", () => {
+    expect(
+      shouldOfferTomorrowPlanning({
+        now: new Date(2026, 6, 27, 18, 59),
+        allTasksCompleted: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldOfferTomorrowPlanning({
+        now: new Date(2026, 6, 27, 19, 0),
+        allTasksCompleted: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldOfferTomorrowPlanning({
+        now: new Date(2026, 6, 27, 15, 0),
+        allTasksCompleted: true,
+      })
+    ).toBe(true);
+  });
+
+  test("kế hoạch hôm nay/ngày mai vẫn luôn nhìn thấy để dùng", () => {
+    expect(
+      shouldOfferTomorrowPlanning({
+        now: new Date(2026, 6, 27, 10, 0),
+        plan: { targetDate: "2026-07-27" },
+      })
+    ).toBe(true);
   });
 });

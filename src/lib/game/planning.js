@@ -68,3 +68,17 @@ export function getPlanPhase(plan, now = new Date()) {
   if (plan.targetDate === tomorrow) return "tomorrow";
   return plan.targetDate < today ? "stale" : "future";
 }
+
+/**
+ * Tránh kéo trẻ vào màn hình để "xem kế hoạch" cả ngày: chỉ mời lập sau 19h
+ * hoặc ngay khi checklist hôm nay đã hoàn tất. Kế hoạch đang dùng luôn hiện.
+ */
+export function shouldOfferTomorrowPlanning({
+  plan,
+  allTasksCompleted = false,
+  now = new Date(),
+} = {}) {
+  const phase = getPlanPhase(plan, now);
+  if (phase === "today" || phase === "tomorrow") return true;
+  return Boolean(allTasksCompleted || now.getHours() >= 19);
+}

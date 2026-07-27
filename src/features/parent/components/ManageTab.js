@@ -57,6 +57,7 @@ export default function ManageTab() {
     splitTask,
     dismissAtRisk,
     addCustomReward,
+    updateReward,
     deleteReward,
     setInventory,
     parentConfig,
@@ -145,6 +146,33 @@ export default function ManageTab() {
     setRewardTitle("");
     setRewardVnd("");
     showFlash("Đã thêm phần thưởng mới! ✅");
+  };
+
+  const [editRewardId, setEditRewardId] = useState(null);
+  const [rewardEdit, setRewardEdit] = useState(null);
+
+  const startRewardEdit = (reward) => {
+    setEditRewardId(reward.id);
+    setRewardEdit({
+      title: reward.title,
+      cost: reward.cost,
+      currency: reward.currency || "points",
+      type: reward.type || "perk",
+      minutes: reward.type === "game_time" ? reward.value || 20 : 20,
+    });
+  };
+
+  const cancelRewardEdit = () => {
+    setEditRewardId(null);
+    setRewardEdit(null);
+  };
+
+  const saveRewardEdit = (event) => {
+    event.preventDefault();
+    if (!rewardEdit?.title.trim()) return;
+    updateReward(editRewardId, rewardEdit);
+    cancelRewardEdit();
+    showFlash("Đã cập nhật phần thưởng! ✅");
   };
 
   // ----- Inventory gifting -----
@@ -525,21 +553,98 @@ export default function ManageTab() {
         </Collapsible>
 
         <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-          {rewards.map((r) => (
-            <div key={r.id} className="border border-sand rounded-xl px-3 py-2 flex items-center gap-2">
-              <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{r.title}</span>
-              <span className="text-scale-2xs font-black text-gray-500 flex-shrink-0">
-                {r.cost} {r.currency === "heroCoins" ? "🪙" : "⭐"}
-              </span>
-              <button
-                onClick={() => confirm("Xóa phần thưởng này?") && deleteReward(r.id)}
-                className="min-w-tap min-h-tap flex items-center justify-center text-terracotta hover:text-red-700"
-                title="Xóa"
+          {rewards.map((r) =>
+            editRewardId === r.id ? (
+              <form
+                key={r.id}
+                onSubmit={saveRewardEdit}
+                className="bg-sand-light rounded-xl p-3 space-y-2"
               >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
+                <input
+                  value={rewardEdit.title}
+                  onChange={(event) =>
+                    setRewardEdit((value) => ({ ...value, title: event.target.value }))
+                  }
+                  maxLength={60}
+                  className="w-full min-h-tap bg-white border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
+                  aria-label="Tên phần thưởng"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={rewardEdit.type}
+                    onChange={(event) =>
+                      setRewardEdit((value) => ({ ...value, type: event.target.value }))
+                    }
+                    className="min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-2xs font-bold text-forest-dark"
+                    aria-label="Loại phần thưởng"
+                  >
+                    <option value="perk">Quà thực tế</option>
+                    <option value="game_time">Giờ chơi game</option>
+                    <option value="card">Thẻ đặc quyền</option>
+                  </select>
+                  <select
+                    value={rewardEdit.currency}
+                    onChange={(event) =>
+                      setRewardEdit((value) => ({ ...value, currency: event.target.value }))
+                    }
+                    className="min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-2xs font-bold text-forest-dark"
+                    aria-label="Ví thanh toán"
+                  >
+                    <option value="points">Ví Điểm ⭐</option>
+                    <option value="heroCoins">Ví Hero Coin 🪙</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    value={rewardEdit.cost}
+                    onChange={(event) =>
+                      setRewardEdit((value) => ({ ...value, cost: event.target.value }))
+                    }
+                    className="flex-1 min-h-tap bg-white border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark"
+                    aria-label="Giá phần thưởng"
+                  />
+                  <button
+                    type="submit"
+                    className="min-h-tap px-4 bg-forest text-white text-scale-xs font-bold rounded-xl"
+                  >
+                    Lưu
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelRewardEdit}
+                    className="min-w-tap min-h-tap flex items-center justify-center text-gray-500"
+                    aria-label="Hủy sửa"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div key={r.id} className="border border-sand rounded-xl px-3 py-2 flex items-center gap-2">
+                <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{r.title}</span>
+                <span className="text-scale-2xs font-black text-gray-500 flex-shrink-0">
+                  {r.cost} {r.currency === "heroCoins" ? "🪙" : "⭐"}
+                </span>
+                <button
+                  onClick={() => startRewardEdit(r)}
+                  className="min-w-tap min-h-tap flex items-center justify-center text-forest"
+                  title="Sửa phần thưởng"
+                  aria-label={`Sửa ${r.title}`}
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => confirm("Xóa phần thưởng này?") && deleteReward(r.id)}
+                  className="min-w-tap min-h-tap flex items-center justify-center text-terracotta hover:text-red-700"
+                  title="Xóa"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            )
+          )}
         </div>
       </div>
 

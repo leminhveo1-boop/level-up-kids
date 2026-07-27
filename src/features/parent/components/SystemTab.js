@@ -7,9 +7,9 @@ import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
 import { BUSY_MODE_MS, COIN_RATE_VND } from "@/lib/game/constants";
 import { track } from "@/lib/analytics";
-import { Save, RotateCcw, Lock, Palette, Bell, BellOff, Globe, Plane, Settings } from "lucide-react";
+import { Save, Lock, Palette, Bell, BellOff, Globe, Plane, Settings } from "lucide-react";
 
-/** Tab ⚙️ HỆ THỐNG — one-time configs: limits, economy rate, PIN, daily reset. */
+/** Tab Hệ thống — chỉ chứa cấu hình phụ huynh thực sự cần dùng. */
 export default function SystemTab() {
   const {
     isLoaded,
@@ -17,7 +17,6 @@ export default function SystemTab() {
     setParentConfig,
     parentPin,
     setParentPin,
-    resetDailyTasks,
     setScreenRedeemsThisWeek,
     screenRedeemsThisWeek,
   } = useGame();
@@ -221,26 +220,6 @@ export default function SystemTab() {
       {/* Push notifications */}
       <PushCard showFlash={showFlash} />
 
-      {/* Daily reset */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
-        <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
-          <RotateCcw size={16} /> Kích hoạt ngày mới
-        </h3>
-        <p className="text-scale-2xs text-gray-500">
-          Nhiệm vụ được làm mới, điểm treo còn lại tự duyệt, streak cộng dồn nếu con làm đủ 3 việc. Bình thường hệ thống tự chạy lúc sang ngày — nút này chỉ dùng khi cần chủ động.
-        </p>
-        <button
-          onClick={() => {
-            if (confirm("Reset ngày mới và chốt streak cho con?")) {
-              resetDailyTasks();
-              showFlash("Đã kích hoạt ngày mới! 🔄");
-            }
-          }}
-          className="w-full min-h-tap bg-amber text-white text-scale-xs font-black rounded-xl active:scale-[0.98] transition-transform"
-        >
-          Giả lập ngày mới
-        </button>
-      </div>
     </div>
   );
 }
@@ -318,7 +297,7 @@ function PushCard({ showFlash }) {
         const r = await enablePush("parent");
         if (r.success) {
           setEnabled(true);
-          showFlash("Đã bật thông báo! Bố mẹ sẽ được nhắc duyệt điểm lúc 20h. 🔔");
+          showFlash("Đã bật thông báo! Bố mẹ sẽ được nhắc duyệt điểm lúc 20:00. 🔔");
         } else if (r.error === "PERMISSION_DENIED") {
           showFlash("Trình duyệt đã chặn thông báo — mở cài đặt site để cho phép lại. ⚠️");
         } else {
@@ -336,7 +315,7 @@ function PushCard({ showFlash }) {
         {enabled ? <Bell size={16} /> : <BellOff size={16} />} Thông báo đẩy (thiết bị này)
       </h3>
       <p className="text-scale-2xs text-gray-500">
-        Nhận nhắc nhở khi con xin duyệt điểm và tóm tắt cuối ngày. Không gửi sau 20h30.
+        Nhắc duyệt điểm lúc 20:00. Không gửi trong giờ ngủ 22:00–07:00.
       </p>
       <button
         onClick={handleToggle}

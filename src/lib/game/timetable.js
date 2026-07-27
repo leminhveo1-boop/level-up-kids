@@ -46,6 +46,102 @@ export function createEmptyTimetable() {
   };
 }
 
+const DAY_ALIASES = {
+  t2: "mon",
+  "thứ 2": "mon",
+  "thu 2": "mon",
+  t3: "tue",
+  "thứ 3": "tue",
+  "thu 3": "tue",
+  t4: "wed",
+  "thứ 4": "wed",
+  "thu 4": "wed",
+  t5: "thu",
+  "thứ 5": "thu",
+  "thu 5": "thu",
+  t6: "fri",
+  "thứ 6": "fri",
+  "thu 6": "fri",
+  t7: "sat",
+  "thứ 7": "sat",
+  "thu 7": "sat",
+  cn: "sun",
+  "chủ nhật": "sun",
+  "chu nhat": "sun",
+};
+
+export function createSampleTimetableText() {
+  return [
+    "T2: Toán, Tiếng Việt, Tiếng Anh",
+    "T3: Toán, Khoa học",
+    "T4: Tiếng Việt, Tiếng Anh",
+    "T5: Toán, Lịch sử",
+    "T6: Tiếng Việt, Thể dục",
+  ].join("\n");
+}
+
+function subjectIdFromName(name, usedIds) {
+  const base =
+    name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_|_$/g, "") || "mon";
+  let id = base;
+  let suffix = 2;
+  while (usedIds.has(id)) id = `${base}_${suffix++}`;
+  usedIds.add(id);
+  return id;
+}
+
+/**
+ * Nhập nhanh từ văn bản phụ huynh đang có, ví dụ:
+ * `T2: Toán, Văn, Anh`. Trả kết quả thay vì throw để UI báo lỗi thân thiện.
+ */
+export function parseTimetableText(text) {
+  const parsedDays = {};
+  for (const rawLine of String(text || "").split(/\r?\n/)) {
+    const [rawDay, ...rest] = rawLine.split(":");
+    if (rest.length === 0) continue;
+    const dayKey = DAY_ALIASES[rawDay.trim().toLowerCase()];
+    if (!dayKey) continue;
+    const names = rest
+      .join(":")
+      .split(/[,;|]/)
+      .map((name) => name.trim())
+      .filter((name) => name && !/^nghỉ$/i.test(name));
+    parsedDays[dayKey] = names;
+  }
+
+  if (Object.keys(parsedDays).length === 0) {
+    return { success: false, error: "NO_RECOGNIZED_DAYS" };
+  }
+
+  const timetable = createEmptyTimetable();
+  const usedIds = new Set();
+  const idByName = new Map();
+
+  for (const dayKey of WEEKDAY_KEYS) {
+    timetable.week[dayKey] = (parsedDays[dayKey] || []).map((name) => {
+      const normalized = name.toLocaleLowerCase("vi");
+      if (!idByName.has(normalized)) {
+        const id = subjectIdFromName(name, usedIds);
+        idByName.set(normalized, id);
+        timetable.subjects[id] = {
+          id,
+          name,
+          hasHomework: true,
+          needsPrep: true,
+        };
+      }
+      return idByName.get(normalized);
+    });
+  }
+
+  return { success: true, timetable };
+}
+
 /** Các môn của một ô thứ (bỏ id không còn trong danh mục — chống drift khi xoá môn). */
 function subjectsOfDay(timetable, dayKey) {
   return (timetable.week?.[dayKey] || [])

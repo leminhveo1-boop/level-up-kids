@@ -2,6 +2,7 @@
 // For every child with pending approvals, notify the parent's subscribed devices.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
+import { isNotificationQuietTime } from "../_shared/quiet-hours.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -26,9 +27,8 @@ Deno.serve(async (req) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Quiet hours guard: never push after 20:30 VN (13:30 UTC)
-  const utcMinutes = new Date().getUTCHours() * 60 + new Date().getUTCMinutes();
-  if (utcMinutes > 13 * 60 + 30 && utcMinutes < 23 * 60) {
+  // Gia đình ngủ: tuyệt đối không gửi 22:00–07:00 giờ Việt Nam.
+  if (isNotificationQuietTime(new Date())) {
     return Response.json({ skipped: "quiet_hours" });
   }
 
