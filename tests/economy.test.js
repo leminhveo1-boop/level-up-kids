@@ -680,3 +680,53 @@ describe("streak freeze ❄️", () => {
     expect(next.heroCoins).toBe(500); // not charged
   });
 });
+
+describe("GĐ0: North Star trong daily snapshot (đo tầng máy, không phô số)", () => {
+  test("snapshot ghi remindersNeeded / importantDone / importantTotal / plannedLastNight", () => {
+    let state = freshState({ remindersToday: 2 });
+    // kế hoạch tối qua nhắm đúng ngày đóng → plannedLastNight
+    state = { ...state, tomorrowPlan: { targetDate: "05/07/2026", items: [] } };
+    // xong 1 việc quan trọng (t2 seeded importance) + 1 việc thường (t1)
+    state = completeTask(state, "t2", rngQueue(0.99)).state;
+    state = completeTask(state, "t1", rngQueue(0.99)).state;
+
+    const next = resetDailyTasks(state, rngQueue(0.99), "05/07/2026");
+    const snap = next.history[next.history.length - 1];
+
+    expect(snap.importantTotal).toBe(3); // t2, t3, t4 seeded importance
+    expect(snap.importantDone).toBe(1); // chỉ t2
+    expect(snap.remindersNeeded).toBe(2);
+    expect(snap.plannedLastNight).toBe(true);
+  });
+
+  test("kế hoạch nhắm ngày khác → plannedLastNight false; không reminder → 0", () => {
+    let state = freshState();
+    state = { ...state, tomorrowPlan: { targetDate: "99/99/9999", items: [] } };
+    const next = resetDailyTasks(state, rngQueue(0.99), "05/07/2026");
+    const snap = next.history[next.history.length - 1];
+    expect(snap.plannedLastNight).toBe(false);
+    expect(snap.remindersNeeded).toBe(0);
+    expect(snap.importantDone).toBe(0);
+  });
+
+  test("remindersToday reset về 0 sau ngày mới", () => {
+    const state = freshState({ remindersToday: 3 });
+    const next = resetDailyTasks(state, rngQueue(0.99), "05/07/2026");
+    expect(next.remindersToday).toBe(0);
+  });
+
+  test("state cũ không có importance/remindersToday vẫn chạy (backward-compat)", () => {
+    // giả lập state seed cũ: gỡ importance khỏi mọi task, bỏ remindersToday
+    const old = freshState();
+    const legacy = {
+      ...old,
+      remindersToday: undefined,
+      tasks: old.tasks.map(({ importance, ...rest }) => rest),
+    };
+    const next = resetDailyTasks(legacy, rngQueue(0.99), "05/07/2026");
+    const snap = next.history[next.history.length - 1];
+    expect(snap.importantTotal).toBe(0);
+    expect(snap.importantDone).toBe(0);
+    expect(snap.remindersNeeded).toBe(0);
+  });
+});

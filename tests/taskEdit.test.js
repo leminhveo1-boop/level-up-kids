@@ -114,6 +114,26 @@ describe("applyTaskEdit — sửa gợi ý nhiệm vụ (#2)", () => {
   test("task null → trả null (không vỡ)", () => {
     expect(applyTaskEdit(null, { title: "X" })).toBeNull();
   });
+
+  // GĐ0 A0.1: phụ huynh gắn cờ "quan trọng" + hạn cho North Star
+  test("đặt importance true/false (ép boolean)", () => {
+    expect(applyTaskEdit(baseTask(), { importance: true }).importance).toBe(true);
+    expect(applyTaskEdit(baseTask(), { importance: 1 }).importance).toBe(true);
+    const flagged = { ...baseTask(), importance: true };
+    expect(applyTaskEdit(flagged, { importance: false }).importance).toBe(false);
+  });
+
+  test("importance không đụng tới nếu patch không nhắc", () => {
+    const flagged = { ...baseTask(), importance: true };
+    expect(applyTaskEdit(flagged, { title: "X" }).importance).toBe(true);
+  });
+
+  test("đặt dueDate (string) và xoá dueDate (null)", () => {
+    const r = applyTaskEdit(baseTask(), { dueDate: "2026-07-30" });
+    expect(r.dueDate).toBe("2026-07-30");
+    const cleared = applyTaskEdit(r, { dueDate: null });
+    expect(cleared.dueDate).toBeNull();
+  });
 });
 
 // Clamp durationMin dùng chung với addCustomTask (GameState) — khoá contract min 1, mặc định 10.

@@ -21,7 +21,7 @@ export const toInt = (v, min, fallback) => {
 
 /**
  * @param {object} task            nhiệm vụ hiện tại
- * @param {object} patch           các field muốn đổi: title, category, exp, energy, verifyType, durationMin, isMandatory
+ * @param {object} patch           các field muốn đổi: title, category, exp, energy, verifyType, durationMin, isMandatory, importance, dueDate
  * @param {object} [statKeyMap]    map category→statKey (mặc định TASK_STAT_KEY_MAP)
  * @returns {object} task mới đã áp thay đổi
  */
@@ -62,6 +62,10 @@ export function applyTaskEdit(task, patch, statKeyMap = TASK_STAT_KEY_MAP) {
   }
 
   if (p.isMandatory != null) next.isMandatory = !!p.isMandatory;
+
+  // GĐ0 North Star: cờ "quan trọng" + hạn (phụ huynh gắn để đo việc con tự khởi động).
+  if (p.importance != null) next.importance = !!p.importance;
+  if (p.dueDate !== undefined) next.dueDate = p.dueDate === null ? null : String(p.dueDate);
 
   return next;
 }

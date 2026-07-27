@@ -108,11 +108,19 @@ export const CHARACTER_CLASSES = [
 //   parent = việc bố mẹ dễ xác nhận/tự tick giúp (dậy sớm, kết nối)
 //   focus  = có thể bật timer tập trung TÙY CHỌN để nhận thưởng (durationMin)
 // Every task claims with a single frictionless tap; verification is async.
+//
+// GĐ0 A0.1: mỗi task còn có 2 field TÙY CHỌN cho North Star (vắng = mặc định):
+//   importance (bool, default false) — việc "quan trọng dài hạn" con nên TỰ
+//     khởi động; là mẫu số của North Star. Phụ huynh sửa được (applyTaskEdit).
+//   dueDate (string|null, default null) — hạn giờ/ngày, để tinh chỉnh sau. Chưa
+//     có compute nào đọc dueDate (ponytail: nối khi có lịch giờ trong ngày).
+// Seed importance=true cho 3 việc HỌC bắt buộc (thể dục/đọc/tiếng Anh) để North
+// Star có mẫu số ngay; các việc khác để phụ huynh tự gắn cờ.
 export const DEFAULT_TASKS = [
   { id: "t1", title: "Dậy đúng giờ đón bình minh 🌅", exp: 10, points: 5, energy: 1, category: "discipline", completed: false, statKey: "discipline", statVal: 1, isMandatory: false, verifyType: "parent" },
-  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 2, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 15 },
-  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 2, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20 },
-  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 2, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20 },
+  { id: "t2", title: "Tập thể dục năng động 15 phút 🏃‍♂️", exp: 20, points: 10, energy: 2, category: "strength", completed: false, statKey: "strength", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 15, importance: true },
+  { id: "t3", title: "Đọc sách tinh hoa 20 phút 📚", exp: 20, points: 10, energy: 2, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20, importance: true },
+  { id: "t4", title: "Học tiếng Anh hoặc tìm hiểu AI 🤖", exp: 20, points: 10, energy: 2, category: "intellect", completed: false, statKey: "intellect", statVal: 2, isMandatory: true, verifyType: "focus", durationMin: 20, importance: true },
   { id: "t5", title: "Lau dọn nhà cửa & quét dọn phụ mẹ 🧹", exp: 25, points: 12, energy: 2, category: "help", completed: false, statKey: "help", statVal: 2, isMandatory: false, verifyType: "trust" },
   { id: "t6", title: "Làm chủ cảm xúc, luôn mỉm cười 🌸", exp: 15, points: 8, energy: 1, category: "help", completed: false, statKey: "help", statVal: 1, isMandatory: false, verifyType: "trust" },
   { id: "t7", title: "Sắp xếp phòng ngủ ngăn nắp, xếp chăn màn ✨", exp: 20, points: 10, energy: 2, category: "discipline", completed: false, statKey: "discipline", statVal: 2, isMandatory: false, verifyType: "trust" },
@@ -237,6 +245,7 @@ export function createInitialState(opts = {}) {
     parentPin: "1234",
     encouragements: [],
     lastResetDate: "",
+    remindersToday: 0, // GĐ0 North Star: số lần bố mẹ phải nhắc trong ngày (reset mỗi ngày)
     heroCoins: 0,
     points: 0,
     lastPointsGain: null,

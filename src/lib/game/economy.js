@@ -35,6 +35,7 @@ import { decayPetsHunger } from "./pets";
 import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 import { advanceJourneyDaily } from "./journeys";
 import { generateTimetableTasks } from "./timetable";
+import { northStarSignals } from "./progress";
 
 /**
  * PROD-1 — reward dose factor: việc đã thành nếp (habitStreak cao) rút DẦN liều điểm.
@@ -618,8 +619,11 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
 
   // 📊 V1.2: daily snapshot of the closing day (feeds the weekly report)
   const mandatoryTotal = settled.tasks.filter((t) => t.isMandatory).length;
+  const snapDate = closingDate || settled.lastResetDate || "";
+  // GĐ0: tín hiệu North Star đo ở tầng máy (không phô số phán xét cho trẻ)
+  const northStar = northStarSignals(settled, snapDate);
   const snapshot = {
-    date: closingDate || settled.lastResetDate || "",
+    date: snapDate,
     completed: completedCount,
     total: settled.tasks.length,
     mandatoryDone: settled.tasks.filter((t) => t.isMandatory && t.completed).length,
@@ -627,6 +631,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     screenMinutes: settled.screenMinutesUsedToday || 0,
     trustScore: settled.trustScore || 0,
     streak,
+    ...northStar,
   };
   const history = [...(settled.history || []), snapshot].slice(-HISTORY_LIMIT_DAYS);
 
@@ -692,5 +697,6 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     energy: Math.min(ENERGY_CAP, journeyed.energy + DAILY_ENERGY_BONUS),
     rewards: journeyed.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
+    remindersToday: 0, // GĐ0: counter nhắc trong ngày reset theo ngày mới
   };
 }

@@ -9,6 +9,33 @@ import { COMPARE_MIN_LAST_WEEK_DAYS } from "./constants";
 const sumCompleted = (days) => days.reduce((acc, d) => acc + (d.completed || 0), 0);
 
 /**
+ * GĐ0 — tầng ĐO North Star (T3). North Star = việc QUAN TRỌNG con TỰ khởi động
+ * đúng giờ, không cần nhắc. Đo đầy đủ ở tầng máy để dựng insight điểm-mạnh sau
+ * này; TUYỆT ĐỐI không phô con số này như một điểm số phán xét cho trẻ.
+ *
+ * Pure, không side effect. Nhận state ĐÃ settle của ngày đóng + ngày đóng.
+ * @param {object} state          state ngày đang đóng (sau approveAllPending)
+ * @param {string} closingDate    khoá ngày đang đóng (khớp tomorrowPlan.targetDate)
+ * @returns {{ remindersNeeded: number, importantDone: number,
+ *             importantTotal: number, plannedLastNight: boolean }}
+ */
+export function northStarSignals(state, closingDate = "") {
+  const tasks = Array.isArray(state?.tasks) ? state.tasks : [];
+  const important = tasks.filter((t) => t.importance);
+  // ponytail: remindersToday là counter thô, CHƯA có UI tăng — nối khi nút
+  // "bố mẹ nhắc" ra đời (D3.4). Tới đó field vẫn ghi 0 an toàn.
+  const reminders = Math.trunc(Number(state?.remindersToday));
+  return {
+    remindersNeeded: Number.isFinite(reminders) ? Math.max(0, reminders) : 0,
+    importantDone: important.filter((t) => t.completed).length,
+    importantTotal: important.length,
+    plannedLastNight: Boolean(
+      state?.tomorrowPlan && closingDate && state.tomorrowPlan.targetDate === closingDate
+    ),
+  };
+}
+
+/**
  * Compare the last 7 days against the 7 days before them.
  * @param {Array<{date: string, completed: number, total: number}>} history
  *        closed daily snapshots, oldest → newest (as stored in game state)
