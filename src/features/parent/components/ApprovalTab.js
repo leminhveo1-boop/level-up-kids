@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import MomentCard from "./MomentCard";
+import InsightCard from "./InsightCard";
 import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap } from "lucide-react";
 
 const VERIFY_META = {
@@ -88,6 +89,10 @@ export default function ApprovalTab() {
 
   return (
     <div className="space-y-4">
+      {/* C2.2 — Insight điểm-mạnh: ngày mai đã sẵn sàng + quan sát để bố mẹ khen.
+          Thay bảng-số phán xét bằng gợi-ý-hành-vi tích cực (T3, ẩn %). */}
+      <InsightCard />
+
       {/* Nudge banner from child */}
       {todayNudges > 0 && pending.length > 0 && (
         <div className="bg-amber-light border border-amber/40 rounded-xl p-3 flex items-center gap-2 text-scale-xs font-bold text-amber-dark">

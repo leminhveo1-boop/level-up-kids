@@ -922,6 +922,9 @@ export function GameProvider({ children }) {
         hasActiveChild: Boolean(activeChildId && state),
         charName: s.charName,
         setCharName: makeFieldSetter("charName"),
+        // uiMode sống ở profile con (activeChild), KHÔNG trong state document —
+        // phòng phụ huynh cần nó để gating insight teen (C2.1). Mặc định "kid".
+        uiMode: activeChild?.ui_mode || "kid",
         charClass: s.charClass,
         setCharClass: makeFieldSetter("charClass"),
         level: s.level,
@@ -1045,6 +1048,7 @@ export function GameProvider({ children }) {
       authLoaded,
       isLoaded,
       activeChildId,
+      activeChild,
       state,
       s,
       displaySecondsLeft,

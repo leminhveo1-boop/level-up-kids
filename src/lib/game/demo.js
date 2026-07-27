@@ -72,12 +72,38 @@ export function createDemoState() {
     date: new Date(now - (13 - i) * dayMs).toLocaleDateString("vi-VN"),
     completed: i < 7 ? 3 : 4,
     total: 11,
-    mandatoryDone: 3,
+    mandatoryDone: 4,
     mandatoryTotal: 4,
     screenMinutes: 25,
     trustScore: 80 + i,
     streak: i,
+    // C2.2: tín hiệu North Star để phòng phụ huynh khoe insight điểm-mạnh đầy đủ
+    // (demo best-foot-forward, không persist). Tuần gần đây con tự giác + tự lập kế hoạch.
+    remindersNeeded: 0,
+    importantDone: 4,
+    importantTotal: 4,
+    plannedLastNight: i >= 6,
+    reviewed: i >= 6,
+    reviewMood: i >= 6 ? "good" : null,
   }));
+
+  // Kế hoạch ngày mai (yyyy-mm-dd) để card "Ngày mai đã sẵn sàng" hiện ở tab Duyệt.
+  const pad = (n) => String(n).padStart(2, "0");
+  const tmr = new Date(now + dayMs);
+  const tomorrowKey = `${tmr.getFullYear()}-${pad(tmr.getMonth() + 1)}-${pad(tmr.getDate())}`;
+  const demoTomorrowPlan = {
+    targetDate: tomorrowKey,
+    items: [
+      { taskId: "d_read", title: "Đọc sách 15 phút", isMandatory: false },
+      { taskId: "d_room", title: "Dọn bàn học", isMandatory: false },
+      { taskId: "d_exercise", title: "Tập thể dục buổi sáng", isMandatory: false },
+      { taskId: "d_math", title: "Làm bài tập Toán", isMandatory: true },
+    ],
+    focusTaskId: "d_math",
+    firstStep: "Mở sách trang đang đọc dở",
+    anchor: "Sau bữa tối",
+    createdAt: now,
+  };
 
   return {
     ...base,
@@ -90,6 +116,7 @@ export function createDemoState() {
     trustScore: 88, // Uy Tín cao → demo khoe luôn auto-duyệt thông minh
     treeGrowth: 175, // D5: demo tree già dặn (giai đoạn "Cây Nhỏ") để khoe sứ mệnh chung
     history,
+    tomorrowPlan: demoTomorrowPlan,
     stats: { strength: 24, intellect: 19, discipline: 22, creative: 15, help: 18 },
     bossHp: 34,
     // 🛤️ B-lite: mid-journey week 2 so the JourneyCard + parent tip show live
