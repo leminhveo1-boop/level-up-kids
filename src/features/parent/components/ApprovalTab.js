@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import MomentCard from "./MomentCard";
 import InsightCard from "./InsightCard";
+import { REJECT_REASONS } from "@/lib/game/economy";
 import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap } from "lucide-react";
 
 const VERIFY_META = {
@@ -41,6 +42,8 @@ export default function ApprovalTab() {
   // overwhelming (real parent feedback: "vào thấy ngộp, quá nhiều chữ").
   const [showLog, setShowLog] = useState(false);
   const [showQuick, setShowQuick] = useState(false);
+  // C2.5: id việc đang chọn lý do trả-về (mở picker 3 lý do inline thay confirm cụt)
+  const [rejectingId, setRejectingId] = useState(null);
 
   const pending = tasks.filter((t) => t.approval === "pending");
   // Tasks the child hasn't claimed yet — parent can log them directly
@@ -62,10 +65,11 @@ export default function ApprovalTab() {
     showFlash(`Đã duyệt ${r.count} nhiệm vụ, nhả ${r.totalReleased} ⭐ cho ${charName}! ✅`);
   };
 
-  const handleReject = (task) => {
-    if (!confirm(`Bác nhiệm vụ "${task.title}"?\nĐiểm treo sẽ bị hủy và Uy Tín của con giảm mạnh.`)) return;
-    rejectTask(task.id);
-    showFlash(`Đã bác "${task.title}" — Uy Tín của con -8. ⚠️`);
+  // C2.5: trả việc về kèm lý do DoD cụ thể — con biết đúng chỗ cần hoàn thiện.
+  const handleRejectWithReason = (task, reason) => {
+    rejectTask(task.id, reason.id);
+    setRejectingId(null);
+    showFlash(`Đã gửi "${task.title}" về cho ${charName} làm lại — lý do: ${reason.label}.`);
   };
 
   const handleQuickBonus = (currency) => {
@@ -138,36 +142,65 @@ export default function ApprovalTab() {
             {pending.map((task) => {
               const meta = VERIFY_META[task.verifyType] || VERIFY_META.trust;
               const MetaIcon = meta.icon;
+              const isRejecting = rejectingId === task.id;
               return (
-                <div key={task.id} className="border border-sand rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-sand-light border border-sand flex items-center justify-center flex-shrink-0">
-                    <MetaIcon size={18} className="text-gray-400" />
+                <div key={task.id} className="border border-sand rounded-xl p-3 space-y-2.5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-sand-light border border-sand flex items-center justify-center flex-shrink-0">
+                      <MetaIcon size={18} className="text-gray-400" />
+                    </div>
+
+                    <div className="flex-grow min-w-0">
+                      <p className="text-scale-xs font-bold text-forest-dark truncate">{task.title}</p>
+                      <p className="text-scale-2xs text-gray-400">
+                        {meta.label} · +{task.pendingPoints} ⭐ treo
+                        {task.completedAt ? ` · ${new Date(task.completedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}` : ""}
+                      </p>
+                    </div>
+
+                    {!isRejecting && (
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          onClick={() => approveTask(task.id)}
+                          className="min-w-tap min-h-tap rounded-xl bg-forest-light text-forest border border-forest/30 flex items-center justify-center active:scale-90 transition-transform"
+                          title="Duyệt"
+                        >
+                          <Check size={18} />
+                        </button>
+                        <button
+                          onClick={() => setRejectingId(task.id)}
+                          className="min-w-tap min-h-tap rounded-xl bg-rose-50 text-terracotta border border-red-200 flex items-center justify-center active:scale-90 transition-transform"
+                          title="Gửi về cho con làm lại"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex-grow min-w-0">
-                    <p className="text-scale-xs font-bold text-forest-dark truncate">{task.title}</p>
-                    <p className="text-scale-2xs text-gray-400">
-                      {meta.label} · +{task.pendingPoints} ⭐ treo
-                      {task.completedAt ? ` · ${new Date(task.completedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}` : ""}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button
-                      onClick={() => approveTask(task.id)}
-                      className="min-w-tap min-h-tap rounded-xl bg-forest-light text-forest border border-forest/30 flex items-center justify-center active:scale-90 transition-transform"
-                      title="Duyệt"
-                    >
-                      <Check size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleReject(task)}
-                      className="min-w-tap min-h-tap rounded-xl bg-rose-50 text-terracotta border border-red-200 flex items-center justify-center active:scale-90 transition-transform"
-                      title="Bác — con sẽ bị trừ Uy Tín"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
+                  {/* C2.5 — picker lý do: bố mẹ chọn 1 nút, con biết đúng chỗ cần hoàn thiện */}
+                  {isRejecting && (
+                    <div className="space-y-2 border-t border-sand pt-2.5">
+                      <p className="text-scale-2xs font-bold text-gray-500">Gửi về cho con làm lại vì:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {REJECT_REASONS.map((reason) => (
+                          <button
+                            key={reason.id}
+                            onClick={() => handleRejectWithReason(task, reason)}
+                            className="min-h-tap px-3 rounded-xl bg-rose-50 text-terracotta border border-red-200 text-scale-2xs font-bold active:scale-95 transition-transform"
+                          >
+                            {reason.label}
+                          </button>
+                        ))}
+                        <button
+                          onClick={() => setRejectingId(null)}
+                          className="min-h-tap px-3 rounded-xl bg-sand-light text-gray-500 border border-sand text-scale-2xs font-bold active:scale-95 transition-transform"
+                        >
+                          Thôi
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

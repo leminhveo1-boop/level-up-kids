@@ -492,6 +492,31 @@ describe("P0 escrow & trust (PDCA Check)", () => {
     expect(rejected.pets).toEqual(state.pets); // assets untouched
   });
 
+  test("C2.5: reject ghi lý do DoD cụ thể lên task để con biết làm lại gì", () => {
+    const state = freshState({ trustScore: 50 });
+    const { state: done } = completeTask(state, "t1", rngQueue(0.99));
+    const { state: rejected } = rejectTask(done, "t1", "unclean");
+    const t = rejected.tasks.find((x) => x.id === "t1");
+    expect(t.wasRejected).toBe(true);
+    expect(t.rejectReason).toBe("unclean");
+  });
+
+  test("C2.5: reject không kèm lý do → rejectReason null (tương thích ngược)", () => {
+    const state = freshState({ trustScore: 50 });
+    const { state: done } = completeTask(state, "t1", rngQueue(0.99));
+    const { state: rejected } = rejectTask(done, "t1");
+    const t = rejected.tasks.find((x) => x.id === "t1");
+    expect(t.rejectReason).toBeNull();
+  });
+
+  test("C2.5: lý do lạ bị bỏ qua → rejectReason null (chỉ nhận id hợp lệ)", () => {
+    const state = freshState({ trustScore: 50 });
+    const { state: done } = completeTask(state, "t1", rngQueue(0.99));
+    const { state: rejected } = rejectTask(done, "t1", "bogus_reason");
+    const t = rejected.tasks.find((x) => x.id === "t1");
+    expect(t.rejectReason).toBeNull();
+  });
+
   test("trust never goes below 0 or above 100", () => {
     const low = freshState({ trustScore: 3 });
     const { state: d1 } = completeTask(low, "t1", rngQueue(0.99));

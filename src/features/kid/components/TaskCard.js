@@ -4,7 +4,7 @@ import React from "react";
 import { useLang } from "@/context/LanguageContext";
 import { Star, Clock, Trees, Sprout, LifeBuoy, RotateCcw } from "lucide-react";
 import { stripEmoji } from "@/lib/text";
-import { rewardDoseFactor } from "@/lib/game/economy";
+import { rewardDoseFactor, REJECT_REASONS } from "@/lib/game/economy";
 import { rescueStatusLabel } from "@/lib/game/rescue";
 import { FADE_START, GRADUATION_DAYS } from "@/lib/game/constants";
 
@@ -33,6 +33,11 @@ export default function TaskCard({
   const focusable = Boolean(task.durationMin);
   // B1.2: trạng thái "đang gỡ vướng" (chỉ khi việc chưa xong).
   const rescueLabel = !task.completed ? rescueStatusLabel(task) : null;
+  // C2.5: việc bị bố mẹ gửi về làm lại — gợi ý ĐÚNG chỗ cần hoàn thiện (khung ấm).
+  const rejectHint =
+    task.wasRejected && !task.completed && task.rejectReason
+      ? REJECT_REASONS.find((r) => r.id === task.rejectReason)?.kidHint
+      : null;
   const rawPoints = task.points !== undefined ? task.points : task.exp;
   // PROD-1: hiển thị điểm nền ĐÃ cân liều (khớp điểm thực nhận, hết lệch).
   const habitStreak = task.habitStreak || 0;
@@ -86,6 +91,14 @@ export default function TaskCard({
         <div className="flex items-center gap-1.5 text-scale-2xs font-bold text-gray-500 -mt-1">
           <Sprout size={14} className="text-amber flex-shrink-0" />
           {t("game.task.instinctGrowing", { days: daysToInstinct })}
+        </div>
+      )}
+
+      {/* C2.5 — việc được gửi về làm lại: nói rõ chỗ cần hoàn thiện, khung ấm
+          (không xấu hổ). Amber mềm, KHÔNG đỏ gắt. */}
+      {rejectHint && (
+        <div className="flex items-center gap-1.5 text-scale-2xs font-bold text-amber-dark bg-amber-light border border-amber/30 rounded-xl px-3 py-2">
+          <RotateCcw size={14} className="flex-shrink-0" /> Bố mẹ nhờ con {rejectHint}
         </div>
       )}
 

@@ -246,7 +246,19 @@ export function approveAllPending(state, opts = {}) {
  * Reject a pending task: undo the completion (exp/energy/stats/boss), heavy trust hit.
  * Held points simply evaporate (never credited). Pet/level assets untouched by design.
  */
-export function rejectTask(state, taskId) {
+/**
+ * C2.5 — lý do trả-về-làm-lại cụ thể, nối Definition of Done: bố mẹ chọn 1 nút
+ * thay vì bác cụt lủn, con biết ĐÚNG chỗ cần hoàn thiện (chất lượng / đúng giờ /
+ * đủ bước). Khung "làm lại" chứ không phải trừng phạt.
+ */
+export const REJECT_REASONS = [
+  { id: "unclean", label: "Chưa sạch/gọn", kidHint: "làm sạch gọn hơn chút nữa nhé" },
+  { id: "late", label: "Trễ giờ", kidHint: "lần sau làm đúng giờ hơn nhé" },
+  { id: "incomplete", label: "Làm còn thiếu", kidHint: "còn thiếu vài bước, con làm nốt nhé" },
+];
+const REJECT_REASON_IDS = new Set(REJECT_REASONS.map((r) => r.id));
+
+export function rejectTask(state, taskId, reasonId = null) {
   const task = state.tasks.find((t) => t.id === taskId);
   if (!task || task.approval !== "pending") return { state, result: { success: false, error: "NOT_PENDING" } };
 
@@ -254,13 +266,15 @@ export function rejectTask(state, taskId) {
   const nextStats = task.statKey
     ? { ...state.stats, [task.statKey]: Math.max(10, (state.stats[task.statKey] || 10) - task.statVal) }
     : state.stats;
+  // chỉ nhận id hợp lệ; lý do lạ/không có → null (không tin dữ liệu ngoài)
+  const rejectReason = REJECT_REASON_IDS.has(reasonId) ? reasonId : null;
 
   return {
     state: {
       ...state,
       tasks: state.tasks.map((t) =>
         t.id === taskId
-          ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedEnergy: 0, wasRejected: true }
+          ? { ...t, completed: false, approval: undefined, pendingPoints: 0, earnedEnergy: 0, wasRejected: true, rejectReason }
           : t
       ),
       stats: nextStats,
@@ -269,7 +283,7 @@ export function rejectTask(state, taskId) {
       bossHp: state.bossDefeated ? 0 : Math.min(state.bossMaxHp || BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
       trustScore: Math.max(TRUST_MIN, (state.trustScore || 0) - TRUST_LOSS_ON_REJECT),
     },
-    result: { success: true, taskTitle: task.title },
+    result: { success: true, taskTitle: task.title, rejectReason },
   };
 }
 
@@ -717,6 +731,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
         earnedPoints: 0,
         earnedEnergy: 0,
         wasRejected: false,
+        rejectReason: null, // C2.5: ngày mới không mang theo nhãn "cần làm lại" cũ
         wasApprovedToday: undefined, // grace window is same-day only
         focusEarnedToday: false, // reset the optional focus-session flag
       })),

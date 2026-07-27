@@ -343,11 +343,11 @@ export function GameProvider({ children }) {
     return outcome;
   }, []);
 
-  const rejectTask = useCallback((taskId) => {
+  const rejectTask = useCallback((taskId, reasonId = null) => {
     let outcome = { success: false };
     setState((prev) => {
       if (!prev) return prev;
-      const { state: next, result } = economy.rejectTask(prev, taskId);
+      const { state: next, result } = economy.rejectTask(prev, taskId, reasonId);
       outcome = result;
       if (result.success) playSound("uncomplete");
       return result.success ? next : prev;
