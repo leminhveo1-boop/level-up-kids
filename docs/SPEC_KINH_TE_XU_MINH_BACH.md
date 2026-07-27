@@ -324,33 +324,68 @@ Mục tiêu: giữ **100% xanh** (`npx vitest run`) + `npm run build` xanh trư�
 
 ---
 
-## 13. Hệ quả khi KHÔNG làm — "hệ quả tự nhiên", KHÔNG phải hình phạt
+## 13. Hệ quả khi KHÔNG làm — thiết kế theo LỨA TUỔI (không phải hình phạt)
 
-> Founder phản hồi đúng: *"Cái này mới có thưởng và chưa có phạt."* Một hệ thống chỉ thưởng dạy trẻ *"có quà mới làm"* (đúng cảnh báo overjustification ở `Nền tảng học thuật.md` §5). Nhưng nền tảng học thuật **cũng** cấm trừng phạt cứng: *"Không trừ điểm vì không hoàn hảo"*, *"không dùng streak reset về 0"*. Lời giải không phải "thêm hình phạt" mà là **làm cho hệ quả tự nhiên của việc bỏ trách nhiệm trở nên NHÌN THẤY được** — đối xứng với thưởng, nhưng không tùy tiện, không sỉ nhục.
+> **Cập nhật 2026-07-28** sau khi đối chiếu 4 bản phản biện độc lập (Claude Opus 4.8, Grok 4.5,
+> Gemini 3.1 Pro, Gemini 3.6 Flash) — xem [PHUONG_AN_HE_QUA_THEO_LUA_TUOI.md](PHUONG_AN_HE_QUA_THEO_LUA_TUOI.md)
+> và [PHAN_BIEN_CO_CHE_PHAT_XU.md](PHAN_BIEN_CO_CHE_PHAT_XU.md). Founder đã duyệt Q1–Q3 (28/07/2026).
+>
+> Founder phản hồi đúng: *"Cái này mới có thưởng và chưa có phạt."* Nhưng "phạt" đúng cách **phụ
+> thuộc lứa tuổi** (Kohlberg — trẻ 6–9 ở giai đoạn tiền-ước-lệ, chưa thấm khái niệm trừu tượng như
+> "danh dự"; teen mới có tư duy giao dịch). Bản thiết kế cũ (chỉ số "Giữ lời" đơn nhất cho mọi tuổi)
+> đã bị **3/4 model** cảnh báo là **shaming trá hình** (kích hoạt Hiệu ứng buông xả AVE + bị bố mẹ
+> vũ khí hóa). Mục 13 nay tách theo tuổi, game-hóa lớp hệ quả, và mở 2 ngoại lệ có kiểm soát.
 
-### 13.1. Bốn tầng hệ quả (từ nhẹ → nặng), tất cả là hệ quả TỰ NHIÊN
+### 13.1. Ba nguyên tắc BẤT BIẾN (mọi lứa tuổi)
 
-| Tầng | Hệ quả | Có sẵn/cần thêm | Nguyên tắc |
+1. **Nghĩa vụ KHÔNG gắn xu** — không thưởng xu, không phạt xu. Định giá nghĩa vụ bằng tiền (dù cộng hay trừ) biến bổn phận thành giao dịch mua-bán (Gneezy & Rustichini 2000 "A Fine is a Price"). Xu chỉ chảy vào **đóng góp thêm**.
+2. **KHÔNG có nút "trừ xu một phía"** cho bố mẹ bấm để phạt — chặn tác dụng phụ trừng phạt ngoại tại (Azrin & Holz 1966: nói dối / đối phó / gây hấn). Bằng chứng thực địa: mọi persona phỏng vấn có "trừ điểm/xu phạt" đều đi kèm "báo cáo láo", "bấm gian lận", "khóc".
+3. **Mọi "mất" (nếu có)** phải thoả cả 3: **trên tài nguyên game hoặc tự-nguyện** (không phải xu bị tước một phía) · **phục hồi được** (không AVE, không về 0) · **biết trước & không dán nhãn nhân cách**.
+
+### 13.2. Hệ quả bỏ NGHĨA VỤ — theo 3 nhóm tuổi
+
+| | **6–8 tuổi** (EF non, tiền-ước-lệ) | **9–11 tuổi** (EF đang lớn) | **12–13 tuổi** (EF khá, giao dịch) |
 |---|---|---|---|
-| 1. Không lương | Việc không làm → **không có xu** cho việc đó (lương theo lao động, không làm không trả) | ĐÃ CÓ (xu chỉ cấp khi approve) | Đây đã là "phạt" đúng nghĩa và lành mạnh nhất: mất **cơ hội kiếm**, không mất **cái đã có**. |
-| 2. Chỉ số Giữ lời giảm | Bỏ nghĩa vụ → **tỷ lệ "Giữ lời" tuần giảm** (đo theo % cam kết giữ được), hiện trên scoreboard | CẦN THÊM (scoreboard 3 chỉ số — xem deepdive) | Phản hồi trung thực, không phải trừng phạt. Con thấy "tuần này giữ lời 60%" và tự muốn kéo lên. |
-| 3. Hệ quả trong game | Bỏ bê pet → **pet đói** (đã có `PET_HUNGER_DAILY_DECAY`); mất streak → dùng cơ chế **an toàn** (số ngày ổn định /14, "con đã quay lại"), KHÔNG về 0 | ĐÃ CÓ hunger; streak cần làm mềm | Hệ quả tự nhiên của bỏ chăm sóc, không phải app tịch thu. |
-| 4. Hệ quả đời thực | Bố mẹ đặt trước **quyền lợi gắn điều kiện** (vd "đủ 80% việc tuần mới có giờ chơi cuối tuần") — app chỉ **hiển thị trạng thái**, bố mẹ thực thi ngoài đời | CẦN THÊM (tùy chọn, làm sau) | Hệ quả do gia đình thoả thuận TRƯỚC, minh bạch, không phải app tự phán. |
+| **Nguyên lý** | Thuần White Hat (Octalysis). Không "mất" gì, kể cả streak. | Bắt đầu có "mất phục hồi được" trên tài nguyên **game**. | Thêm tự-ràng-buộc tự nguyện; đề phòng reactance. |
+| **Hệ quả** | **Extinction thuần**: không làm = không có sao/xu cho việc đó. Pet **hơi xìu**, tươi lại ngay khi làm. **KHÔNG con số %**, KHÔNG báo "độ tin cậy" về máy bố mẹ. | **"Độ bền Khiên / Phong độ"** (game): bỏ việc → khiên **mẻ**, KHỎE lại được, **không về 0, không dán nhãn**. Vẫn không đụng xu. | Như 9–11 + trẻ **tự xem** phong độ tuần của mình (self-monitoring), bố mẹ không chấm điểm. |
+| **Octalysis** | CD2 + CD3 + CD5 (pet) | CD2 + CD4 | CD2 + CD4 + chút CD6 (cọc) |
 
-### 13.2. Ranh giới ĐỎ (cấm — vi phạm nền tảng học thuật)
+> **Đổi tên chính thức (Q1 đã duyệt):** chỉ số cũ **"Giữ lời"** (mang phán xét đạo đức) → **"Độ bền
+> Khiên"** / **"Phong độ"** (game hóa). Khi trẻ hụt, đó là *mẻ khiên trong hành trình* — phục hồi
+> được — **KHÔNG phải** bị hệ thống dán nhãn "đứa thất hứa". **KHÔNG đẩy % này về máy phụ huynh**
+> như "điểm tin cậy" (chống vũ khí hóa + AVE). Bố mẹ nhận hệ quả qua Restitution + Tầng đời thực.
 
-- **CẤM trừ xu/điểm ĐÃ kiếm** vì một việc sau đó không làm. Tiền đã trả là đã trả (mục 9.2 giữ số dư cũ cùng tinh thần). Chỉ "không cấp thêm", không "lấy lại".
-- **CẤM reset streak về 0** — dùng cơ chế phục hồi (nền tảng học thuật §"Streak vừa tạo động lực vừa có thể gây hại").
-- **CẤM ngôn ngữ trừng phạt/thua cuộc** ("Con thất bại", "Con bị phạt", màu đỏ báo động cho việc lỡ). Dùng giọng phục hồi: *"Việc này chưa xong. Con muốn làm gì?"* → chuyển ngày / chia nhỏ / nhờ giúp / bỏ có lý do (nền tảng học thuật §"Nếu trẻ chưa hoàn thành việc hôm nay").
-- **CẤM app tự ý cắt quyền lợi** — tầng 4 chỉ hiển thị trạng thái để bố mẹ quyết, không tự động khoá tính năng của trẻ.
+### 13.3. Hai NGOẠI LỆ có kiểm soát (KHÁC phạt xu — Hệ quả logic của Dreikurs)
 
-### 13.3. Phạm vi trong đợt này
+**A. Bồi thường thiệt hại — Restitution (từ 9 tuổi).**
+Trẻ gây thiệt hại vật chất cụ thể (làm hỏng đồ, lãng phí) → trích **≤20–30% số xu đang có** để "sửa/mua lại". Đây là *hệ quả logic*, không phải phạt tùy tiện: có nguyên nhân cụ thể, số tiền = giá trị thiệt hại, mục tiêu là **sửa chữa**, dạy trách nhiệm dân sự.
+- **Q2 đã duyệt — CHỈ GHI NHẬN, không tự trừ:** app **KHÔNG** có nút "bố mẹ trừ xu". Cơ chế là **nghi thức 2 bên**: bố mẹ *đề nghị* đền bù cho một thiệt hại cụ thể → **con bấm đồng ý** → xu chuyển vào mục "sửa chữa". Không đồng thuận thì không trừ.
 
-- **Tầng 1 nằm sẵn trong spec này** (không làm ≠ không có lương — đã là hành vi mặc định của mô hình lương-theo-approve).
-- **Tầng 2 & 4** phụ thuộc **scoreboard 3 chỉ số** và **hệ quả-điều-kiện** — hai thứ này thuộc lớp "quản lý công việc" lớn hơn kinh tế xu, sẽ được đặc tả trong **deepdive triển khai vs nền tảng học thuật** (tài liệu song hành) rồi mới lên spec riêng. Ghi nợ ở đây để không quên tính đối xứng.
-- **Tầng 3 (streak an toàn)** ghi nợ, làm cùng đợt scoreboard.
+**B. Cọc cam kết tự nguyện — Commitment Device (chỉ 12–13 tuổi).**
+Trẻ **tự khởi tạo** một cam kết + tự đặt cọc để thắng sự trì hoãn của chính mình (Bryan, Karlan & Nelson 2010).
+- **Q3 đã duyệt:** **mặc định cọc bằng Điểm ⭐**; cho phép **nâng lên Xu thật NHỎ** nếu trẻ tự chọn (teen coi điểm game rẻ). Cọc mất → **vào "quỹ chung nhà"**, **KHÔNG** về tay bố mẹ → nên là *tự thắng bản thân* (commitment device), không phải *bị người lớn tước* (response cost).
+- Điều kiện: hoàn toàn opt-in, trẻ tự đặt, cọc nhỏ có trần, biết trước. **Không mở cho <12** (EF chưa đủ → dễ tick khống giữ cọc).
 
-→ Kết luận: đợt kinh tế-xu này **đã có "phạt" ở tầng lành mạnh nhất** (mất cơ hội kiếm). Các tầng phản hồi/hệ quả sâu hơn được thiết kế **không-trừng-phạt** và móc nối sang tài liệu deepdive, tránh biến app thành công cụ phạt trẻ.
+### 13.4. Ranh giới ĐỎ (cấm tuyệt đối — mọi lứa tuổi)
+
+- **CẤM trừ xu/điểm ĐÃ kiếm** vì một việc sau đó không làm (phạt nghĩa vụ). Chỉ "không cấp thêm", không "lấy lại". *(Restitution & Cọc ở 13.3 KHÔNG vi phạm: một cái do 2-bên-đồng-thuận đền thiệt hại cụ thể, một cái do trẻ tự nguyện đặt — cả hai không phải app/bố mẹ tước một phía.)*
+- **CẤM reset streak về 0** — dùng cơ chế phục hồi ("Độ bền Khiên" khoẻ lại được).
+- **CẤM ngôn ngữ trừng phạt/thua cuộc** ("Con thất bại", "Con bị phạt", "đứa thất hứa", màu đỏ báo động cho việc lỡ). Dùng giọng phục hồi: *"Việc này chưa xong. Con muốn làm gì?"*
+- **CẤM app tự ý cắt quyền lợi** — Tầng đời thực chỉ **hiển thị trạng thái** để bố mẹ quyết, không tự động khoá tính năng.
+- **CẤM đẩy chỉ số "Độ bền Khiên/Phong độ" về máy phụ huynh dạng "điểm tin cậy"** — chống bố mẹ vũ khí hóa để sỉ nhục con.
+
+### 13.5. Hệ quả đời thực (Tầng bố mẹ — mọi tuổi, tùy chọn)
+
+Bố mẹ đặt trước **quyền lợi gắn điều kiện** (vd "đủ 80% việc tuần mới có giờ chơi cuối tuần") — app chỉ **hiển thị trạng thái**, bố mẹ thực thi ngoài đời. Đây là hệ quả do gia đình thoả thuận TRƯỚC, minh bạch, không phải app tự phán. Đây cũng là câu trả lời cho lo ngại "app cấm tuyệt đối trừ xu thì yếu ớt, thiếu răng" (4/4 model nêu): **răng nằm ở hệ quả đời thực + Restitution, không nằm ở việc tước tiền của con.**
+
+### 13.6. Phạm vi & thứ tự triển khai
+
+- **Bất biến 13.1 + Extinction (6–8t)** nằm sẵn trong spec này (lương-theo-approve).
+- **"Độ bền Khiên/Phong độ" (9–13t)** phụ thuộc **scoreboard** — làm cùng đợt scoreboard (deepdive), không code trước.
+- **Restitution + Cọc tự nguyện** cần **UI 2-bên-xác-nhận** — đặc tả ở đợt scoreboard, không tự động hoá.
+- **Streak an toàn + Tầng đời thực** ghi nợ, làm cùng đợt scoreboard.
+
+→ Kết luận: đợt kinh tế-xu này giữ **ranh giới đỏ** (không tước xu một phía) và **tách hệ quả theo tuổi**; "răng" thật đến từ **Restitution + hệ quả đời thực**, không từ trừng phạt tiền — tránh biến app thành công cụ phạt trẻ.
 
 ---
 
