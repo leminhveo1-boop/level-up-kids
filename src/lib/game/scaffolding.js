@@ -20,8 +20,8 @@ const MAX_LEVEL = 3;
 const PROMOTE = {
   // 1 → 2
   2: (m) => m.mandatoryRate >= 0.8 && m.remindersAvg <= 1.0 && m.plannedRate >= 0.5 && m.streakMax >= 7,
-  // 2 → 3 (reviewedRate bỏ qua tới khi B1.1 thêm field `reviewed` vào snapshot)
-  3: (m) => m.importantRate >= 0.75 && m.remindersAvg <= 0.5 && m.plannedRate >= 0.7,
+  // 2 → 3 (B1.1: reviewedRate đã kích hoạt — cần con đều đặn nhìn nhận cuối ngày)
+  3: (m) => m.importantRate >= 0.75 && m.remindersAvg <= 0.5 && m.plannedRate >= 0.7 && m.reviewedRate >= 0.5,
 };
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
@@ -53,6 +53,7 @@ function computeMetrics(window) {
   let imp = 0;
   let reminders = 0;
   let plannedDays = 0;
+  let reviewedDays = 0;
   let streakMax = 0;
   let streakResets = 0;
   let prevStreak = null;
@@ -62,6 +63,7 @@ function computeMetrics(window) {
     imp += num(s.importantDone) / Math.max(1, num(s.importantTotal));
     reminders += num(s.remindersNeeded);
     if (s.plannedLastNight === true) plannedDays += 1;
+    if (s.reviewed === true) reviewedDays += 1;
     const st = num(s.streak);
     if (st > streakMax) streakMax = st;
     if (prevStreak != null && prevStreak > 0 && st === 0) streakResets += 1;
@@ -73,6 +75,7 @@ function computeMetrics(window) {
     importantRate: imp / n,
     remindersAvg: reminders / n,
     plannedRate: plannedDays / n,
+    reviewedRate: reviewedDays / n,
     streakMax,
     streakResets,
   };

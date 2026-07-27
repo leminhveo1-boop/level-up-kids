@@ -731,6 +731,24 @@ describe("GĐ0: North Star trong daily snapshot (đo tầng máy, không phô s�
   });
 });
 
+describe("B1.1: nhìn nhận cuối ngày (review emoji) ghi vào snapshot", () => {
+  test("có todayReview → snapshot.reviewed=true + reviewMood; ngày mới xoá review", () => {
+    const state = { ...freshState(), todayReview: { mood: "good", at: 123 } };
+    const next = resetDailyTasks(state, rngQueue(0.99), "05/07/2026");
+    const snap = next.history[next.history.length - 1];
+    expect(snap.reviewed).toBe(true);
+    expect(snap.reviewMood).toBe("good");
+    expect(next.todayReview).toBeNull(); // ngày mới bắt đầu chưa nhìn nhận
+  });
+
+  test("không nhìn nhận → snapshot.reviewed=false, reviewMood=null", () => {
+    const next = resetDailyTasks(freshState(), rngQueue(0.99), "05/07/2026");
+    const snap = next.history[next.history.length - 1];
+    expect(snap.reviewed).toBe(false);
+    expect(snap.reviewMood).toBeNull();
+  });
+});
+
 describe("GĐ0 A0.5: Scaffolding level tự đánh giá trong resetDailyTasks", () => {
   const goodDay = {
     date: "2026-07-01",

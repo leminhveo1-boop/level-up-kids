@@ -24,6 +24,7 @@ function snap(over = {}) {
     importantDone: 3,
     importantTotal: 3,
     plannedLastNight: true,
+    reviewed: true,
     ...over,
   };
 }
@@ -115,6 +116,16 @@ describe("evaluateScaffoldLevel — THĂNG (đề xuất, không tự nhảy)", 
     expect(r.level).toBe(2);
     expect(r.pending).toBe(3);
     expect(r.reason).toBe("promote_ready");
+  });
+
+  test("2→3 KHÔNG đủ khi ít nhìn nhận cuối ngày (reviewedRate thấp) → hold", () => {
+    const r = evaluateScaffoldLevel({
+      history: days(14, { reviewed: false }), // các tiêu chí khác đạt, chỉ thiếu review
+      config: { scaffoldLevel: 2, scaffoldMode: "auto", scaffoldChangedAt: "" },
+      today,
+    });
+    expect(r.pending).toBeNull();
+    expect(r.reason).toBe("hold");
   });
 
   test("chưa đủ (planned thấp) → không pending, hold", () => {

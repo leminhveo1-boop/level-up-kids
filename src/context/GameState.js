@@ -721,6 +721,18 @@ export function GameProvider({ children }) {
     return outcome;
   }, []);
 
+  // ---------------- B1.1: nhìn nhận cuối ngày (review emoji 1-tap, không ô text) ----------------
+  const submitDailyReview = useCallback((mood) => {
+    if (mood !== "good" && mood !== "ok" && mood !== "tough") return { success: false };
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      outcome = { success: true, mood };
+      return { ...prev, todayReview: { mood, at: Date.now() } };
+    });
+    return outcome;
+  }, []);
+
   // ---------------- 📅 Thời khóa biểu (thời khóa biểu → tự sinh nhiệm vụ học) ----------------
   /** Đặt/sửa TKB + làm mới NGAY nhiệm vụ học của hôm nay (không đợi sang ngày). */
   const setTimetable = useCallback((timetable) => {
@@ -982,6 +994,9 @@ export function GameProvider({ children }) {
         scaffoldLevel: getScaffoldLevel(s),
         scaffoldPendingLevel: s.parentConfig?.scaffoldPendingLevel ?? null,
         confirmScaffoldLevelUp,
+        // B1.1: nhìn nhận cuối ngày (kid)
+        todayReview: s.todayReview || null,
+        submitDailyReview,
         screenMinutesUsedToday: s.screenMinutesUsedToday,
         setScreenMinutesUsedToday: makeFieldSetter("screenMinutesUsedToday"),
         screenRedeemsThisWeek: s.screenRedeemsThisWeek,
@@ -1020,6 +1035,7 @@ export function GameProvider({ children }) {
       saveTomorrowPlan,
       clearTomorrowPlan,
       confirmScaffoldLevelUp,
+      submitDailyReview,
       setTimetable,
       startJourney,
       cancelJourney,

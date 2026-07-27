@@ -634,6 +634,10 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     trustScore: settled.trustScore || 0,
     streak,
     ...northStar,
+    // B1.1: con có nhìn nhận cuối ngày không (1-tap emoji, không ô text). Tín hiệu
+    // cho reviewedRate của scaffolding (2→3). Thiếu field cũ → false (tương thích ngược).
+    reviewed: Boolean(settled.todayReview),
+    reviewMood: settled.todayReview?.mood || null,
   };
   const history = [...(settled.history || []), snapshot].slice(-HISTORY_LIMIT_DAYS);
 
@@ -718,6 +722,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     rewards: journeyed.rewards.map((r) => ({ ...r, parentApproved: false })),
     screenMinutesUsedToday: 0,
     remindersToday: 0, // GĐ0: counter nhắc trong ngày reset theo ngày mới
+    todayReview: null, // B1.1: ngày mới bắt đầu chưa nhìn nhận (đã ghi vào snapshot ngày đóng)
     parentConfig: nextParentConfig, // GĐ0 A0.5: level scaffolding sau đánh giá
   };
 }

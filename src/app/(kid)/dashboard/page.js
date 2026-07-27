@@ -20,6 +20,7 @@ import JourneyCard from "@/features/kid/components/JourneyCard";
 import LetterModal from "@/features/kid/components/LetterModal";
 import CriticalToast from "@/features/kid/components/CriticalToast";
 import TomorrowPlanner from "@/features/kid/components/TomorrowPlanner";
+import DailyReviewCard from "@/features/kid/components/DailyReviewCard";
 import BottomNav from "@/ui/BottomNav";
 import { Target, SlidersHorizontal, Coins, Globe, Mail } from "lucide-react";
 
@@ -274,6 +275,9 @@ export default function DashboardPage() {
           uiMode={uiMode}
           scaffoldLevel={scaffoldLevel}
         />
+
+        {/* B1.1 — nhìn nhận cuối ngày (mở từ Scaffolding Level 2) */}
+        <DailyReviewCard allTasksCompleted={totalTasksCount > 0 && completedTasksCount === totalTasksCount} />
 
         {/* ===== FOCAL BLOCK: today's tasks — the one thing the child opens the
              app to do. Promoted above the ambient "world" cards so the primary
