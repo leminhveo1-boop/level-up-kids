@@ -21,6 +21,7 @@ import * as cosmeticsSystem from "@/lib/game/cosmetics";
 import * as bossSystem from "@/lib/game/boss";
 import { deductGiftCost, markGiftsRead as markGiftsReadPure } from "@/lib/game/gifting";
 import { buildTinyTask } from "@/lib/game/habits";
+import { applyTaskEdit } from "@/lib/game/taskEdit";
 import * as journeySystem from "@/lib/game/journeys";
 import { generateTimetableTasks } from "@/lib/game/timetable";
 import { deliverGiftToSibling } from "@/lib/siblingGift";
@@ -649,6 +650,16 @@ export function GameProvider({ children }) {
     return { success: true };
   }, []);
 
+  /** #2 UX: phụ huynh sửa gợi ý — đổi nội dung/điểm/loại 1 nhiệm vụ đã có (immutable). */
+  const updateTask = useCallback((id, patch) => {
+    setState((prev) =>
+      prev
+        ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? applyTaskEdit(t, patch, CUSTOM_TASK_STAT_KEY_MAP) : t)) }
+        : prev
+    );
+    return { success: true };
+  }, []);
+
   /** D4: create a smaller version of a task the child keeps missing (Fogg tiny-habit). */
   const splitTask = useCallback((id) => {
     setState((prev) => {
@@ -881,6 +892,7 @@ export function GameProvider({ children }) {
         readAllMessages,
         addCustomTask,
         deleteTask,
+        updateTask,
         splitTask,
         dismissAtRisk,
         timetable: s.timetable || null,
@@ -954,6 +966,7 @@ export function GameProvider({ children }) {
       readAllMessages,
       addCustomTask,
       deleteTask,
+      updateTask,
       splitTask,
       dismissAtRisk,
       setTimetable,

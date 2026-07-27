@@ -8,7 +8,7 @@ import { COIN_RATE_VND } from "@/lib/game/constants";
 import JourneySection from "@/features/parent/components/JourneySection";
 import TimetableSection from "@/features/parent/components/TimetableSection";
 import Collapsible from "@/ui/Collapsible";
-import { Trash2, Plus, Gift, PackageOpen } from "lucide-react";
+import { Trash2, Plus, Gift, PackageOpen, Pencil, Check, X } from "lucide-react";
 
 const TASK_TEMPLATES = [
   { title: "🧹 Rửa bát chén sạch sẽ", category: "help", exp: 15, energy: 15, verifyType: "trust" },
@@ -53,6 +53,7 @@ export default function ManageTab() {
     rewards,
     addCustomTask,
     deleteTask,
+    updateTask,
     splitTask,
     dismissAtRisk,
     addCustomReward,
@@ -95,6 +96,36 @@ export default function ManageTab() {
     setTaskTitle("");
     setTaskIsMandatory(false);
     showFlash("Đã thêm nhiệm vụ mới! ✅");
+  };
+
+  // ----- #2: Sửa gợi ý nhiệm vụ (inline edit) -----
+  const [editId, setEditId] = useState(null);
+  const [edit, setEdit] = useState(null);
+
+  const startEdit = (tk) => {
+    setEditId(tk.id);
+    setEdit({
+      title: tk.title,
+      category: tk.category || "discipline",
+      exp: tk.exp ?? 20,
+      energy: tk.energy ?? 15,
+      verifyType: tk.verifyType || "trust",
+      durationMin: tk.durationMin || 15,
+      isMandatory: !!tk.isMandatory,
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setEdit(null);
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    if (!edit || !edit.title.trim()) return;
+    updateTask(editId, edit);
+    cancelEdit();
+    showFlash("Đã cập nhật nhiệm vụ! ✏️");
   };
 
   // ----- Reward form -----
@@ -287,21 +318,125 @@ export default function ManageTab() {
         </form>
         </Collapsible>
 
-        <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-          {tasks.map((t) => (
-            <div key={t.id} className={`border rounded-xl px-3 py-2 flex items-center gap-2 ${t.isMandatory ? "border-red-200 bg-red-50/20" : "border-sand"}`}>
-              <span className="text-scale-xs">{verifyBadge(t)}</span>
-              <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{t.title}</span>
-              {t.isMandatory && <span className="text-scale-2xs text-terracotta font-black">🔴</span>}
-              <button
-                onClick={() => confirm("Xóa nhiệm vụ này?") && deleteTask(t.id)}
-                className="min-w-tap min-h-tap flex items-center justify-center text-terracotta hover:text-red-700"
-                title="Xóa"
+        <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+          {tasks.map((t) =>
+            editId === t.id ? (
+              <form
+                key={t.id}
+                onSubmit={handleSaveEdit}
+                className="border border-forest/40 bg-forest-light/10 rounded-xl p-3 space-y-2.5"
               >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
+                <input
+                  type="text"
+                  value={edit.title}
+                  onChange={(e) => setEdit((s) => ({ ...s, title: e.target.value }))}
+                  placeholder="Tên nhiệm vụ..."
+                  className="w-full min-h-tap bg-white border border-sand rounded-xl px-3 text-scale-xs font-bold text-forest-dark focus:outline-none focus:border-forest"
+                  maxLength={40}
+                  required
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={edit.category}
+                    onChange={(e) => setEdit((s) => ({ ...s, category: e.target.value }))}
+                    className="min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-2xs font-bold text-forest-dark focus:outline-none"
+                  >
+                    {CATEGORY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={edit.verifyType}
+                    onChange={(e) => setEdit((s) => ({ ...s, verifyType: e.target.value }))}
+                    className="min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-2xs font-bold text-forest-dark focus:outline-none"
+                  >
+                    {VERIFY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <label className="text-scale-2xs font-bold text-gray-500 space-y-1">
+                    <span>EXP/Điểm ⭐</span>
+                    <input
+                      type="number"
+                      value={edit.exp}
+                      onChange={(e) => setEdit((s) => ({ ...s, exp: Math.max(0, parseInt(e.target.value) || 0) }))}
+                      className="w-full min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-xs font-bold text-forest-dark focus:outline-none"
+                      min={0}
+                    />
+                  </label>
+                  <label className="text-scale-2xs font-bold text-gray-500 space-y-1">
+                    <span>Năng lượng ⚡</span>
+                    <input
+                      type="number"
+                      value={edit.energy}
+                      onChange={(e) => setEdit((s) => ({ ...s, energy: Math.max(0, parseInt(e.target.value) || 0) }))}
+                      className="w-full min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-xs font-bold text-forest-dark focus:outline-none"
+                      min={0}
+                    />
+                  </label>
+                  {edit.verifyType === "focus" && (
+                    <label className="text-scale-2xs font-bold text-gray-500 space-y-1">
+                      <span>Phút ⏱️</span>
+                      <input
+                        type="number"
+                        value={edit.durationMin}
+                        onChange={(e) => setEdit((s) => ({ ...s, durationMin: Math.max(1, parseInt(e.target.value) || 1) }))}
+                        className="w-full min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-xs font-bold text-forest-dark focus:outline-none"
+                        min={1}
+                      />
+                    </label>
+                  )}
+                </div>
+                <label className="flex items-center gap-2 text-scale-2xs font-bold text-gray-600 cursor-pointer min-h-tap">
+                  <input
+                    type="checkbox"
+                    checked={edit.isMandatory}
+                    onChange={(e) => setEdit((s) => ({ ...s, isMandatory: e.target.checked }))}
+                    className="w-5 h-5 rounded text-forest focus:ring-forest"
+                  />
+                  🔴 Nhiệm vụ BẮT BUỘC hằng ngày
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="flex-grow min-h-tap bg-forest text-white text-scale-xs font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
+                  >
+                    <Check size={16} /> Lưu thay đổi
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    className="min-w-tap min-h-tap bg-sand text-gray-600 rounded-xl flex items-center justify-center active:scale-95 transition-transform"
+                    title="Huỷ"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div key={t.id} className={`border rounded-xl px-3 py-2 flex items-center gap-2 ${t.isMandatory ? "border-red-200 bg-red-50/20" : "border-sand"}`}>
+                <span className="text-scale-xs">{verifyBadge(t)}</span>
+                <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{t.title}</span>
+                {t.isMandatory && <span className="text-scale-2xs text-terracotta font-black">🔴</span>}
+                <button
+                  onClick={() => startEdit(t)}
+                  className="min-w-tap min-h-tap flex items-center justify-center text-forest hover:text-forest-dark"
+                  title="Sửa"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => confirm("Xóa nhiệm vụ này?") && deleteTask(t.id)}
+                  className="min-w-tap min-h-tap flex items-center justify-center text-terracotta hover:text-red-700"
+                  title="Xóa"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            )
+          )}
         </div>
       </div>
 
