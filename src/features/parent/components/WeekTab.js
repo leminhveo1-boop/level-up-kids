@@ -4,8 +4,13 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { generatePraiseSuggestions } from "@/lib/game/recognition";
 import { compareWeeks } from "@/lib/game/progress";
+import { buildShareCard } from "@/lib/game/shareCard";
+import { getEquipped } from "@/lib/game/cosmetics";
 import Collapsible from "@/ui/Collapsible";
-import { Send, Share2, BookOpen } from "lucide-react";
+import { Send, Share2, BookOpen, Sparkles } from "lucide-react";
+
+/** Emoji đại diện theo lớp cho avatar trên thẻ ảnh (canvas không vẽ được SVG của HeroCard). */
+const CLASS_EMOJI = { Mage: "🧙", Druid: "🌿", Warrior: "🛡️" };
 
 const STAT_META = {
   strength: { label: "Thể lực", color: "bg-terracotta", emoji: "❤️" },
@@ -35,6 +40,7 @@ export default function WeekTab() {
     history,
     childMessages,
     readAllChildMessages,
+    cosmetics,
   } = useGame();
 
   const [flash, setFlash] = useState("");
@@ -52,6 +58,11 @@ export default function WeekTab() {
 
   const praises = generatePraiseSuggestions({ charName, streak, trustScore, tasks });
 
+  // ===== Thẻ Thành Tích — nội dung chọn bởi logic thuần (1 hero, milestone peak-end) =====
+  const mandatoryTotal = tasks.filter((t) => t.isMandatory).length;
+  const mandatoryAllDone = mandatoryTotal > 0 && tasks.filter((t) => t.isMandatory && t.completed).length === mandatoryTotal;
+  const card = buildShareCard({ charName, level, streak, weekCompare, mandatoryAllDone });
+
   const handleSendPraise = (text, idx) => {
     sendEncouragement(text);
     setSentIdx((prev) => [...prev, idx]);
@@ -59,6 +70,8 @@ export default function WeekTab() {
   };
 
   // ===== Thẻ Thành Tích Tuần — 9:16 share card via canvas (CAC≈0 growth loop) =====
+  // Redesign (docs/DEEP_05): nền kem ấm · 1 con số HERO xanh · avatar con là nhân
+  // vật chính · title case (KHÔNG IN HOA) · so-với-chính-mình · watermark mờ.
   const handleShareCard = async () => {
     const W = 720, H = 1280;
     const canvas = document.createElement("canvas");
@@ -66,54 +79,90 @@ export default function WeekTab() {
     canvas.height = H;
     const ctx = canvas.getContext("2d");
 
-    // background
-    const grad = ctx.createLinearGradient(0, 0, W, H);
-    grad.addColorStop(0, "#4CAF50");
-    grad.addColorStop(1, "#1B5E20");
+    // ── Nền kem ấm (không corporate xanh lá) ──
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, "#FDF8F0");
+    grad.addColorStop(1, "#F0E8D8");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
-    // card panel
-    ctx.fillStyle = "#FDFBF7";
-    const rx = 48, px = 60, py = 200, pw = W - 120, ph = 760;
-    ctx.beginPath();
-    ctx.roundRect(px, py, pw, ph, rx);
-    ctx.fill();
-
     ctx.textAlign = "center";
-    ctx.fillStyle = "#FDFBF7";
-    ctx.font = "bold 44px system-ui";
-    ctx.fillText("🌟 ANH HÙNG NHÍ TUẦN NÀY 🌟", W / 2, 120);
 
-    ctx.fillStyle = "#1B5E20";
-    ctx.font = "90px system-ui";
-    ctx.fillText("🦸", W / 2, py + 150);
-    ctx.font = "bold 56px system-ui";
-    ctx.fillText(charName, W / 2, py + 240);
-    ctx.font = "bold 34px system-ui";
-    ctx.fillStyle = "#D97706";
-    ctx.fillText(`CẤP ${level} · 🔥 STREAK ${streak} NGÀY`, W / 2, py + 300);
+    // ── Title (title case) + subtitle ──
+    ctx.fillStyle = "#33271A";
+    ctx.font = "bold 48px system-ui";
+    ctx.fillText(card.title, W / 2, 150);
+    ctx.fillStyle = "#6C5F4E";
+    ctx.font = "600 32px system-ui";
+    ctx.fillText(card.subtitle, W / 2, 200);
 
-    ctx.fillStyle = "#444";
-    ctx.font = "32px system-ui";
-    ctx.fillText(`✅ ${completedToday} nhiệm vụ hôm nay`, W / 2, py + 380);
-    ctx.fillText(`🤝 Uy Tín ${trustScore}/100`, W / 2, py + 435);
-    ctx.fillText(`⭐ ${points} điểm · 🪙 ${heroCoins} coin`, W / 2, py + 490);
-
-    // D8: the one-line proof of progress — only brag when it's up
-    if (weekCompare.status === "up") {
-      ctx.fillStyle = "#D97706";
-      ctx.font = "bold 34px system-ui";
-      ctx.fillText(`📈 +${weekCompare.deltaPct}% so với tuần trước`, W / 2, py + 548);
+    // ── Ruy-băng milestone (chỉ khi có), accent vàng tiền tệ ──
+    if (card.milestone) {
+      const label = card.milestone.reason;
+      ctx.font = "bold 30px system-ui";
+      const tw = ctx.measureText(label).width;
+      const bw = tw + 64, bx = (W - bw) / 2, by = 232, bh = 56;
+      ctx.fillStyle = "#E8A13A";
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 28);
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillText(label, W / 2, by + 38);
     }
 
-    ctx.fillStyle = "#2E7D32";
-    ctx.font = "italic 30px system-ui";
-    ctx.fillText('"Mỗi việc tốt là một bước lên cấp!"', W / 2, py + 620);
+    // ── Avatar con là nhân vật chính (emoji lớp + mũ trang bị) ──
+    const avatarY = card.milestone ? 470 : 440;
+    const classEmoji = CLASS_EMOJI[charClass] || CLASS_EMOJI.Warrior;
+    ctx.font = "150px system-ui";
+    ctx.fillText(classEmoji, W / 2, avatarY);
+    const hatEmoji = getEquipped({ cosmetics }).hat?.emoji;
+    if (hatEmoji) {
+      ctx.font = "72px system-ui";
+      ctx.fillText(hatEmoji, W / 2 + 60, avatarY - 96);
+    }
 
-    ctx.fillStyle = "#999";
-    ctx.font = "28px system-ui";
-    ctx.fillText("Level Up Kids — levelupkids.vn", W / 2, H - 80);
+    // ── HERO: MỘT con số duy nhất, xanh dương accent ──
+    const heroY = avatarY + 230;
+    ctx.fillStyle = "#2E7CD6";
+    ctx.font = "bold 130px system-ui";
+    ctx.fillText(card.hero.value, W / 2, heroY);
+    ctx.fillStyle = "#5C5243";
+    ctx.font = "600 36px system-ui";
+    ctx.fillText(card.hero.label, W / 2, heroY + 56);
+
+    // ── Evidence strip (≤2 dòng, so-với-chính-mình) ──
+    let ey = heroY + 130;
+    ctx.fillStyle = "#5C5243";
+    ctx.font = "500 32px system-ui";
+    card.evidence.forEach((line) => {
+      ctx.fillText(line, W / 2, ey);
+      ey += 48;
+    });
+
+    // ── Narrative: 1 câu, tự xuống dòng nếu dài ──
+    ctx.fillStyle = "#6C5F4E";
+    ctx.font = "italic 30px system-ui";
+    const words = card.narrative.split(" ");
+    let line = "", ny = ey + 24;
+    const maxW = W - 140;
+    words.forEach((w) => {
+      const test = line ? `${line} ${w}` : w;
+      if (ctx.measureText(test).width > maxW && line) {
+        ctx.fillText(line, W / 2, ny);
+        ny += 42;
+        line = w;
+      } else {
+        line = test;
+      }
+    });
+    if (line) ctx.fillText(line, W / 2, ny);
+
+    // ── Watermark mờ (nhận diện, không lấn) ──
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = "#33271A";
+    ctx.font = "600 26px system-ui";
+    ctx.fillText("Level Up Kids · levelupkids.vn", W / 2, H - 64);
+    ctx.globalAlpha = 1;
 
     const dataUrl = canvas.toDataURL("image/png");
 
@@ -122,7 +171,7 @@ export default function WeekTab() {
       const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], `thanh-tich-${charName}.png`, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `Thành tích của ${charName}!` });
+        await navigator.share({ files: [file], title: `Cột mốc của ${charName}` });
         return;
       }
     } catch {
@@ -310,22 +359,43 @@ export default function WeekTab() {
       </div>
 
       {/* ===== Thẻ Thành Tích Tuần — shareable keepsake card ===== */}
-      <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
-        <h3 className="text-scale-sm font-black text-forest-dark">📸 Thẻ Thành Tích Tuần</h3>
-        <Collapsible summary="Lưu thẻ thành tích" icon={Share2}>
-          <div className="space-y-2">
-            <p className="text-scale-2xs text-gray-400">
-              Lưu chặng đường tuần này của {charName} thành một tấm thẻ đẹp — để dành làm kỷ niệm, hoặc chia sẻ nếu bố mẹ muốn.
-            </p>
-            <button
-              onClick={handleShareCard}
-              className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-            >
-              <Share2 size={16} /> Lưu ảnh thành tích
-            </button>
+      {/* Peak-end: chỉ TỰ nổi bật ở milestone; ngày thường thì gấp lại (đỡ ngộp). */}
+      {card.milestone ? (
+        <div className="bg-amber-light/40 border border-amber/40 rounded-xl p-4 space-y-2.5">
+          <div className="flex items-start gap-2">
+            <Sparkles size={18} className="text-amber-dark flex-shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <h3 className="text-scale-sm font-black text-forest-dark">Cột mốc của {charName}!</h3>
+              <p className="text-scale-2xs text-gray-600 font-medium leading-relaxed">
+                {card.milestone.reason} Một khoảnh khắc đáng nhớ — lưu lại tấm thẻ để dành làm kỷ niệm, hay gửi ông bà xem.
+              </p>
+            </div>
           </div>
-        </Collapsible>
-      </div>
+          <button
+            onClick={handleShareCard}
+            className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          >
+            <Share2 size={16} /> Lưu ảnh cột mốc
+          </button>
+        </div>
+      ) : (
+        <div className="bg-white border border-sand rounded-xl p-4 space-y-2">
+          <h3 className="text-scale-sm font-black text-forest-dark">📸 Thẻ Thành Tích Tuần</h3>
+          <Collapsible summary="Lưu thẻ thành tích" icon={Share2}>
+            <div className="space-y-2">
+              <p className="text-scale-2xs text-gray-400">
+                Lưu chặng đường tuần này của {charName} thành một tấm thẻ đẹp — để dành làm kỷ niệm, hoặc chia sẻ nếu bố mẹ muốn.
+              </p>
+              <button
+                onClick={handleShareCard}
+                className="w-full min-h-tap bg-forest text-white text-scale-xs font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              >
+                <Share2 size={16} /> Lưu ảnh thành tích
+              </button>
+            </div>
+          </Collapsible>
+        </div>
+      )}
 
       {flash && (
         <p className="text-scale-xs font-bold text-center text-forest bg-forest-light/30 border border-forest/20 rounded-xl p-2.5">
