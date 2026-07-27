@@ -8,6 +8,7 @@ import { getJourneysForAge, JOURNEY_AGE_BANDS, recommendJourneys, getPainpointBy
 import PainpointPicker from "@/features/parent/components/PainpointPicker";
 import { track } from "@/lib/analytics";
 import { COIN_RATE_VND } from "@/lib/game/constants";
+import { seedScaffoldLevel } from "@/lib/game/scaffolding";
 
 /**
  * Onboarding wizard — from "paid" to "child playing" in under 3 minutes.
@@ -76,6 +77,44 @@ const REWARDS_BY_AGE = {
   ],
 };
 
+// 3 câu onboarding (spec §5): tuổi (đã có) + 2 câu năng lực → level scaffolding khởi đầu.
+// Bảo thủ: chỉ seed L2 khi CẢ HAI đều mức cao nhất; mặc định nghiêng nâng đỡ (L1).
+const SELF_START_OPTS = [
+  { id: "none", label: "Cần nhắc nhiều" },
+  { id: "some", label: "Đôi khi tự làm" },
+  { id: "many", label: "Hầu như tự giác" },
+];
+const SELF_PLAN_OPTS = [
+  { id: "no", label: "Chưa" },
+  { id: "sometimes", label: "Đôi khi" },
+  { id: "yes", label: "Tự lên kế hoạch" },
+];
+
+/** Segmented control 1 dòng — dùng cho 2 câu năng lực onboarding. */
+function CapabilityRow({ label, options, value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[11px] font-bold text-forest-dark">{label}</p>
+      <div className="grid grid-cols-3 gap-1.5">
+        {options.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => onChange(opt.id)}
+            className={`min-h-tap px-2 py-2 rounded-xl border-2 text-[10px] font-black leading-tight transition-all ${
+              value === opt.id
+                ? "border-forest bg-forest-light/20 text-forest-dark shadow-game-forest"
+                : "border-sand bg-white text-gray-400 shadow-game-flat"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function SetupWizardPage() {
   const router = useRouter();
   const { isLoaded, charName, journey, startJourney, addCustomTask, addCustomReward, setParentPin, parentConfig, setParentConfig } = useGame();
@@ -85,6 +124,8 @@ export default function SetupWizardPage() {
   const initialAgeBand = uiMode === "teen" ? "13-15" : "7-9";
   const [ageBand, setAgeBand] = useState(initialAgeBand);
   const [painpoints, setPainpoints] = useState([]);
+  const [selfStart, setSelfStart] = useState("some"); // câu 2: tự khởi động
+  const [selfPlan, setSelfPlan] = useState("sometimes"); // câu 3: tự lập kế hoạch
   const [selectedJourney, setSelectedJourney] = useState(() => getJourneysForAge(initialAgeBand)[0]?.id || null);
   const [showExtraTasks, setShowExtraTasks] = useState(false);
   const [checkedTasks, setCheckedTasks] = useState(() => TASKS_BY_AGE[initialAgeBand].map(() => false));
@@ -169,8 +210,15 @@ export default function SetupWizardPage() {
     }
 
     // Apply everything at once
-    // Lưu "chẩn đoán" (kể cả painpoint chưa có lộ trình) — nguồn cho thẻ Khoảnh khắc sau này
-    setParentConfig({ ...(parentConfig || {}), intake: { ageBand, painpoints, updatedAt: Date.now() } });
+    // Lưu "chẩn đoán" + seed level scaffolding khởi đầu (3 câu → L1 mặc định, chỉ L2 khi CẢ HAI mạnh + tuổi ≥10).
+    // Nguồn "chẩn đoán" cũng dùng cho thẻ Khoảnh khắc sau này.
+    const seededScaffoldLevel = seedScaffoldLevel({ ageBand, selfStart, selfPlan });
+    setParentConfig({
+      ...(parentConfig || {}),
+      intake: { ageBand, painpoints, selfStart, selfPlan, updatedAt: Date.now() },
+      scaffoldLevel: seededScaffoldLevel,
+      scaffoldMode: "auto",
+    });
     if (selectedJourney && !journey) {
       const r = startJourney(selectedJourney);
       if (r.success) track("journey_started", { id: selectedJourney, source: "onboarding" });
@@ -192,6 +240,7 @@ export default function SetupWizardPage() {
       journey: selectedJourney || "none",
       tasks: checkedTasks.filter(Boolean).length,
       rewards: rewards.filter((r) => r.enabled).length,
+      scaffold_level: seededScaffoldLevel,
     });
     router.push("/dashboard");
   };
@@ -237,6 +286,22 @@ export default function SetupWizardPage() {
                 <p className="text-[10px] text-gray-400 font-bold leading-tight">{band.desc}</p>
               </button>
             ))}
+          </div>
+
+          {/* 2 câu năng lực (câu 3 = tuổi ở trên) → level scaffolding khởi đầu */}
+          <div className="space-y-3 bg-sand-light/60 border border-sand rounded-2xl p-3">
+            <CapabilityRow
+              label="Con thường tự bắt đầu việc của mình không?"
+              options={SELF_START_OPTS}
+              value={selfStart}
+              onChange={setSelfStart}
+            />
+            <CapabilityRow
+              label="Con đã tự sắp xếp việc/thời gian chưa?"
+              options={SELF_PLAN_OPTS}
+              value={selfPlan}
+              onChange={setSelfPlan}
+            />
           </div>
 
           <PainpointPicker selected={painpoints} onChange={changePainpoints} />

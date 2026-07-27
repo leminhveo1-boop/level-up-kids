@@ -147,3 +147,20 @@ export function confirmScaffoldPromotion(config, today) {
   }
   return { ...config };
 }
+
+/** Tuổi cho phép khởi đầu ở L2 (nhỏ hơn thì nghiêng nâng đỡ, giữ L1). */
+const SEED_L2_AGE_BANDS = new Set(["10-12", "13-15"]);
+
+/**
+ * 3 câu onboarding → level KHỞI ĐẦU (spec §5). Bảo thủ theo thiết kế:
+ * mặc định L1; chỉ seed L2 khi CẢ HAI baseline (tự khởi động + tự lập kế hoạch)
+ * đều mạnh VÀ tuổi ≥ 10; KHÔNG bao giờ seed thẳng L3 (L3 phải chứng minh qua dữ liệu).
+ * @param {{ ageBand?: string, selfStart?: string, selfPlan?: string }} intake
+ * @returns {1|2}
+ */
+export function seedScaffoldLevel(intake = {}) {
+  const { ageBand, selfStart, selfPlan } = intake || {};
+  const bothStrong = selfStart === "many" && selfPlan === "yes";
+  const ageAllowsL2 = SEED_L2_AGE_BANDS.has(String(ageBand || ""));
+  return bothStrong && ageAllowsL2 ? 2 : 1;
+}

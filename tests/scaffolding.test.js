@@ -6,6 +6,7 @@ import {
   getScaffoldLevel,
   evaluateScaffoldLevel,
   confirmScaffoldPromotion,
+  seedScaffoldLevel,
 } from "@/lib/game/scaffolding";
 
 /** Sinh 1 snapshot ngày với các tín hiệu North Star (A0.1). */
@@ -236,5 +237,32 @@ describe("confirmScaffoldPromotion", () => {
     const next = confirmScaffoldPromotion(config, "2026-07-20");
     expect(next.scaffoldLevel).toBe(2);
     expect(next.scaffoldPendingLevel).toBeNull();
+  });
+});
+
+describe("seedScaffoldLevel — 3 câu onboarding → level khởi đầu (spec §5)", () => {
+  test("mặc định L1 khi thiếu/ambiguous đầu vào", () => {
+    expect(seedScaffoldLevel(undefined)).toBe(1);
+    expect(seedScaffoldLevel({})).toBe(1);
+    expect(seedScaffoldLevel({ ageBand: "7-9" })).toBe(1);
+  });
+
+  test("chỉ 1 trong 2 baseline mạnh → vẫn L1 (cần CẢ HAI)", () => {
+    expect(seedScaffoldLevel({ ageBand: "10-12", selfStart: "many", selfPlan: "no" })).toBe(1);
+    expect(seedScaffoldLevel({ ageBand: "10-12", selfStart: "none", selfPlan: "yes" })).toBe(1);
+  });
+
+  test("cả hai baseline mạnh + tuổi ≥10 → seed L2", () => {
+    expect(seedScaffoldLevel({ ageBand: "10-12", selfStart: "many", selfPlan: "yes" })).toBe(2);
+    expect(seedScaffoldLevel({ ageBand: "13-15", selfStart: "many", selfPlan: "yes" })).toBe(2);
+  });
+
+  test("cả hai mạnh nhưng tuổi nhỏ (<10) → giữ L1 (nghiêng nâng đỡ)", () => {
+    expect(seedScaffoldLevel({ ageBand: "4-6", selfStart: "many", selfPlan: "yes" })).toBe(1);
+    expect(seedScaffoldLevel({ ageBand: "7-9", selfStart: "many", selfPlan: "yes" })).toBe(1);
+  });
+
+  test("KHÔNG bao giờ seed thẳng L3 (dù input cực mạnh)", () => {
+    expect(seedScaffoldLevel({ ageBand: "13-15", selfStart: "many", selfPlan: "yes" })).toBeLessThanOrEqual(2);
   });
 });
