@@ -142,6 +142,8 @@ export function migrateState(data) {
     parentPin: data.parentPin || "1234",
     encouragements: data.encouragements || [],
     lastResetDate: data.lastResetDate || "",
+    // Pha E — trần KIẾM xu; state cũ thiếu → default rỗng, không đụng heroCoins đã có (Q4 giữ tài sản).
+    allowance: data.allowance || { periodKey: "", earnedCoins: 0 },
     heroCoins,
     points: data.points || 0,
     lastPointsGain: null,

@@ -76,6 +76,10 @@ export const DEFAULT_PARENT_CONFIG = {
   screenRedeemMaxPerWeek: 5,
   requireAllMandatory: true,
   maxCoinBalance: 2000,
+  // Pha E — Lương xu minh bạch có trần (spec SPEC_KINH_TE_XU_MINH_BACH.md).
+  // 0 = lương xu TẮT (an toàn: state cũ không bỗng phát tiền). Bố mẹ đặt quỹ mới bật.
+  allowanceBudgetVnd: 0, // Quỹ tiêu vặt/chu kỳ, VNĐ. budgetCoins = round(vnd / COIN_RATE_VND)
+  allowancePeriod: "week", // "week" | "month" — chu kỳ nạp lại quỹ (bố mẹ tùy chỉnh)
   smartAutoApprove: true, // Uy Tín ≥80: việc tự-ghi-nhận nhả điểm ngay (chế độ tự lái)
   busyUntil: 0, // Tuần Bận: trước mốc này MỌI việc nhả điểm ngay (0 = tắt)
   // GĐ0 A0.5 — Scaffolding Level 1-2-3 (cơ chế luồng scale theo năng lực thực).
@@ -251,6 +255,8 @@ export function createInitialState(opts = {}) {
     encouragements: [],
     lastResetDate: "",
     remindersToday: 0, // GĐ0 North Star: số lần bố mẹ phải nhắc trong ngày (reset mỗi ngày)
+    // Pha E — trần KIẾM xu theo chu kỳ. budgetCoins luôn tính từ parentConfig (không lưu ở đây).
+    allowance: { periodKey: "", earnedCoins: 0 },
     heroCoins: 0,
     points: 0,
     lastPointsGain: null,

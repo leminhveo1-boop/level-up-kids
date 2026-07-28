@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { migrateState } from "@/lib/game/migrate";
-import { STATE_VERSION } from "@/lib/game/constants";
+import { STATE_VERSION, createInitialState, DEFAULT_PARENT_CONFIG } from "@/lib/game/constants";
 
 describe("migrateState — rescale tỷ giá 1 xu = 1000đ (version-gated)", () => {
   test("state v1 (chưa có stateVersion): ví chia 7 + đóng dấu stateVersion", () => {
@@ -69,5 +69,45 @@ describe("migrateState — parentConfig merge defaults", () => {
     const s = migrateState({ charName: "A" });
     expect(s.parentConfig.smartAutoApprove).toBe(true);
     expect(s.parentConfig.requireAllMandatory).toBe(true);
+  });
+});
+
+// Pha E — B1: data model Lương xu minh bạch có trần (allowance)
+describe("Pha E B1 — allowance data model + migration", () => {
+  test("DEFAULT_PARENT_CONFIG có allowanceBudgetVnd=0 (lương xu TẮT mặc định) + allowancePeriod=week", () => {
+    expect(DEFAULT_PARENT_CONFIG.allowanceBudgetVnd).toBe(0);
+    expect(DEFAULT_PARENT_CONFIG.allowancePeriod).toBe("week");
+  });
+
+  test("createInitialState có allowance rỗng + config quỹ mặc định", () => {
+    const s = createInitialState({ name: "A" });
+    expect(s.allowance).toEqual({ periodKey: "", earnedCoins: 0 });
+    expect(s.parentConfig.allowanceBudgetVnd).toBe(0);
+    expect(s.parentConfig.allowancePeriod).toBe("week");
+  });
+
+  test("state cũ KHÔNG có allowance → điền default {periodKey:'', earnedCoins:0}", () => {
+    const s = migrateState({ charName: "A", heroCoins: 50 });
+    expect(s.allowance).toEqual({ periodKey: "", earnedCoins: 0 });
+  });
+
+  test("state cũ thiếu config quỹ → parentConfig được vá field mới", () => {
+    const s = migrateState({ parentConfig: { screenMaxMinutesPerDay: 45 } });
+    expect(s.parentConfig.allowanceBudgetVnd).toBe(0);
+    expect(s.parentConfig.allowancePeriod).toBe("week");
+  });
+
+  test("allowance đã lưu → giữ nguyên, không reset (Q4 giữ tài sản trẻ)", () => {
+    const s = migrateState({
+      stateVersion: STATE_VERSION,
+      allowance: { periodKey: "2026-W30", earnedCoins: 120 },
+    });
+    expect(s.allowance).toEqual({ periodKey: "2026-W30", earnedCoins: 120 });
+  });
+
+  test("bố mẹ đã đặt quỹ → giữ giá trị, không bị default 0 ghi đè", () => {
+    const s = migrateState({ parentConfig: { allowanceBudgetVnd: 200000, allowancePeriod: "month" } });
+    expect(s.parentConfig.allowanceBudgetVnd).toBe(200000);
+    expect(s.parentConfig.allowancePeriod).toBe("month");
   });
 });
