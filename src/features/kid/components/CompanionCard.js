@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { getPetMood, getPetQuote } from "@/lib/game/pets";
+import { getPetMood, getPetQuote, petObligationMood } from "@/lib/game/pets";
 import { PET_HUNGER_MAX } from "@/lib/game/constants";
 import { useLang } from "@/context/LanguageContext";
+import { useGame } from "@/context/GameState";
 
 const MOOD_EMOJI = { joyful: "🤩", happy: "🙂", hungry: "😟", starving: "😢" };
 const MOOD_BAR_COLOR = { joyful: "bg-forest", happy: "bg-amber", hungry: "bg-terracotta", starving: "bg-red-500" };
@@ -13,7 +14,11 @@ const MOOD_BAR_COLOR = { joyful: "bg-forest", happy: "bg-amber", hungry: "bg-ter
 export default function CompanionCard({ companion }) {
   const router = useRouter();
   const { t } = useLang();
+  const { tasks, ageInfo } = useGame();
   const mood = getPetMood(companion);
+  // §13 Mảnh A — young_kid: pet "xìu" khi việc quan trọng chưa xong, tươi lại khi làm.
+  // null cho 9+/teen/thiếu-tuổi → giữ nguyên UI đói-theo-thời-gian.
+  const obligation = petObligationMood({ tasks, ageInfo });
   // Re-roll the quote only when the companion or its hunger changes — not on
   // every unrelated state update (pets array identity changes each render).
   const quote = React.useMemo(
@@ -27,7 +32,9 @@ export default function CompanionCard({ companion }) {
       <span className="text-2xl flex-shrink-0">{companion.emoji}</span>
       <div className="flex-grow min-w-0 space-y-1">
         <p className="text-[11px] font-bold text-forest-dark italic truncate">
-          {MOOD_EMOJI[mood]} &ldquo;{quote}&rdquo;
+          {obligation?.wilted
+            ? `${obligation.emoji} ${obligation.message}`
+            : `${MOOD_EMOJI[mood]} “${quote}”`}
         </p>
         <div className="h-2 bg-sand rounded-full overflow-hidden border border-sand">
           <div

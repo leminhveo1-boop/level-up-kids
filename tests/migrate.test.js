@@ -174,3 +174,20 @@ describe("Pha E B4 — pet/thẻ đổi tiền tệ Xu → Điểm ⭐", () => {
     expect(by.rp3.cost).toBe(300);
   });
 });
+
+describe("migrateState — §13 birthYear (JSONB document, không migration prod)", () => {
+  test("state cũ không có birthYear → null (an toàn, fallback ui_mode)", () => {
+    expect(migrateState({ charName: "A" }).birthYear).toBe(null);
+  });
+  test("giữ nguyên birthYear hợp lệ đã lưu", () => {
+    expect(migrateState({ charName: "A", birthYear: 2017 }).birthYear).toBe(2017);
+  });
+  test("birthYear rác (chuỗi/thập phân) → null, không phá state", () => {
+    expect(migrateState({ birthYear: "2017" }).birthYear).toBe(null);
+    expect(migrateState({ birthYear: 2017.5 }).birthYear).toBe(null);
+  });
+  test("createInitialState nhận opts.birthYear", () => {
+    expect(createInitialState({ birthYear: 2015 }).birthYear).toBe(2015);
+    expect(createInitialState({}).birthYear).toBe(null);
+  });
+});

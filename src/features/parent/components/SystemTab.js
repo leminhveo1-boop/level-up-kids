@@ -7,7 +7,7 @@ import { useLang } from "@/context/LanguageContext";
 import { enablePush, disablePush, getPushStatus, isPushSupported } from "@/lib/push";
 import { BUSY_MODE_MS, COIN_RATE_VND } from "@/lib/game/constants";
 import { track } from "@/lib/analytics";
-import { Save, Lock, Palette, Bell, BellOff, Globe, Plane, Settings } from "lucide-react";
+import { Save, Lock, Palette, Bell, BellOff, Globe, Plane, Settings, Cake } from "lucide-react";
 
 /** Tab Hệ thống — chỉ chứa cấu hình phụ huynh thực sự cần dùng. */
 export default function SystemTab() {
@@ -361,11 +361,26 @@ function LanguageCard() {
   );
 }
 
-/** Per-child UI mode switcher (kid 6-11 forest / teen 12+ dark). */
+/** Danh sách năm sinh cho select tuổi con (4–16 tuổi quanh năm hiện tại). */
+function birthYearOptions() {
+  const now = new Date().getFullYear();
+  const out = [];
+  for (let age = 4; age <= 16; age++) out.push({ year: now - age, age });
+  return out;
+}
+
+/** Per-child UI mode switcher (kid 6-11 forest / teen 12+ dark) + năm sinh (§13 hệ quả theo tuổi). */
 function UiModeCard({ showFlash }) {
   const { activeChild, activeChildId, uiMode, setChildUiMode, isDemo } = useAuth();
+  const { birthYear, setBirthYear } = useGame();
 
   if (!activeChildId || isDemo) return null;
+
+  const handleBirthYear = (raw) => {
+    const next = raw === "" ? null : Number(raw);
+    setBirthYear(next);
+    showFlash(next ? "Đã lưu tuổi của con." : "Đã bỏ trống tuổi của con.");
+  };
 
   const handleSwitch = async (mode) => {
     if (mode === uiMode) return;
@@ -399,6 +414,27 @@ function UiModeCard({ showFlash }) {
       <p className="text-scale-2xs text-gray-400">
         Teen: nền tối, gọn gàng, bớt hiệu ứng — cùng cơ chế game, khác cách thể hiện.
       </p>
+
+      <div className="pt-2 border-t border-sand space-y-1.5">
+        <label className="text-scale-2xs font-black text-forest-dark flex items-center gap-1.5">
+          <Cake size={14} /> Tuổi của {activeChild?.name}
+        </label>
+        <select
+          value={birthYear ?? ""}
+          onChange={(e) => handleBirthYear(e.target.value)}
+          className="w-full min-h-tap rounded-xl border border-sand bg-white px-3 text-scale-2xs font-bold text-forest-dark"
+        >
+          <option value="">— Chọn tuổi (để trống nếu chưa muốn) —</option>
+          {birthYearOptions().map(({ year, age }) => (
+            <option key={year} value={year}>
+              {age} tuổi (sinh {year})
+            </option>
+          ))}
+        </select>
+        <p className="text-scale-2xs text-gray-400">
+          Giúp app chọn đúng cách khích lệ &amp; hệ quả theo độ tuổi. Chỉ bố mẹ thấy.
+        </p>
+      </div>
     </div>
   );
 }

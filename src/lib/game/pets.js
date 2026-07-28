@@ -3,6 +3,7 @@
  */
 
 import { PET_HUNGER_MAX, PET_HUNGER_DAILY_DECAY, PET_HUNGER_LOW_THRESHOLD, PET_HUNGER_CRITICAL_THRESHOLD } from "./constants";
+import { extinctionEnabled } from "./age";
 
 const PET_MAP = {
   base: {
@@ -153,6 +154,33 @@ export function getPetQuote(pet, rng = Math.random) {
   const mood = getPetMood(pet);
   const list = PET_QUOTES[mood];
   return list[Math.floor(rng() * list.length)];
+}
+
+/**
+ * §13 Mảnh A — hệ quả tuổi 6–8: pet "xìu" khi nghĩa vụ hôm nay chưa xong, tươi lại
+ * ngay khi làm xong (extinction MỀM, phục hồi được). CHỈ áp cho young_kid (biết chắc ≤8);
+ * 9+ dùng "Độ bền Khiên", teen/thiếu-tuổi không áp. Thuần đọc từ task state, KHÔNG mutate,
+ * KHÔNG %, KHÔNG báo phụ huynh (ranh đỏ §13.4). "Nghĩa vụ" = việc QUAN TRỌNG chưa xong;
+ * không có việc quan trọng nào → không nợ gì → không xìu.
+ * @param {{ tasks?: Array<{importance?:boolean, completed?:boolean}>, ageInfo?: object }} args
+ * @returns {{ wilted: boolean, emoji: string, message: string }|null} null = không áp cho tuổi này
+ */
+export function petObligationMood({ tasks, ageInfo } = {}) {
+  if (!extinctionEnabled(ageInfo)) return null;
+  const list = Array.isArray(tasks) ? tasks : [];
+  const importantPending = list.some((t) => t?.importance && !t?.completed);
+  if (importantPending) {
+    return {
+      wilted: true,
+      emoji: "🥺",
+      message: "Bạn ấy hơi xìu... cùng làm nốt việc quan trọng cho bạn ấy vui lại nhé!",
+    };
+  }
+  return {
+    wilted: false,
+    emoji: "🌟",
+    message: "Bạn ấy tươi tỉnh vì cậu đã lo xong việc quan trọng rồi!",
+  };
 }
 
 /**

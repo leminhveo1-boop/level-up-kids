@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { hatchPet, feedPet, setActiveCompanion, decayPetsHunger, getPetMood, getPetQuote, PET_ROSTER } from "@/lib/game/pets";
+import { hatchPet, feedPet, setActiveCompanion, decayPetsHunger, getPetMood, getPetQuote, PET_ROSTER, petObligationMood } from "@/lib/game/pets";
+import { ageGroupFor } from "@/lib/game/age";
 import { migrateState } from "@/lib/game/migrate";
 import { createInitialState, PET_HUNGER_MAX } from "@/lib/game/constants";
 
@@ -189,5 +190,48 @@ describe("getPetQuote", () => {
   test("is deterministic given a fixed rng", () => {
     const pet = { hunger: 90 };
     expect(getPetQuote(pet, () => 0)).toBe(getPetQuote(pet, () => 0));
+  });
+});
+
+describe("petObligationMood — §13 Mảnh A: pet 'xìu' theo nghĩa vụ, CHỈ young_kid", () => {
+  const NOW = new Date(2026, 6, 28);
+  const youngKid = ageGroupFor({ birthYear: 2020 }, NOW); // 6 tuổi → young_kid
+  const olderKid = ageGroupFor({ birthYear: 2016 }, NOW); // 10 tuổi
+  const teen = ageGroupFor({ uiMode: "teen" }, NOW);
+  const unknownKid = ageGroupFor({ uiMode: "kid" }, NOW); // known:false
+
+  const imp = (completed) => ({ id: Math.random().toString(36), importance: true, completed });
+  const normal = (completed) => ({ id: Math.random().toString(36), importance: false, completed });
+
+  test("young_kid + việc quan trọng CHƯA xong → xìu (wilted:true), không có số %", () => {
+    const r = petObligationMood({ tasks: [imp(false), normal(true)], ageInfo: youngKid });
+    expect(r.wilted).toBe(true);
+    expect(r.message).toEqual(expect.any(String));
+    expect(JSON.stringify(r)).not.toMatch(/%|\d+\/\d+/); // không lộ %, không "x/y"
+  });
+
+  test("young_kid + tất cả việc quan trọng ĐÃ xong → tươi lại (wilted:false)", () => {
+    expect(petObligationMood({ tasks: [imp(true), imp(true)], ageInfo: youngKid }).wilted).toBe(false);
+  });
+
+  test("young_kid + KHÔNG có việc quan trọng nào → không xìu (không nợ gì)", () => {
+    expect(petObligationMood({ tasks: [normal(false), normal(false)], ageInfo: youngKid }).wilted).toBe(false);
+  });
+
+  test("older_kid (9-11) → null (dùng Khiên/Phong độ thay extinction)", () => {
+    expect(petObligationMood({ tasks: [imp(false)], ageInfo: olderKid })).toBe(null);
+  });
+
+  test("teen → null", () => {
+    expect(petObligationMood({ tasks: [imp(false)], ageInfo: teen })).toBe(null);
+  });
+
+  test("kid thiếu tuổi (known:false) → null (không hạ cấp trẻ có thể 11t)", () => {
+    expect(petObligationMood({ tasks: [imp(false)], ageInfo: unknownKid })).toBe(null);
+  });
+
+  test("tasks rỗng/thiếu → an toàn, không xìu", () => {
+    expect(petObligationMood({ tasks: [], ageInfo: youngKid }).wilted).toBe(false);
+    expect(petObligationMood({ ageInfo: youngKid }).wilted).toBe(false);
   });
 });

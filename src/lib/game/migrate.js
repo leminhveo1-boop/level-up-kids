@@ -122,6 +122,8 @@ export function migrateState(data) {
     // Cờ 1-lần để UI kid hiện banner "tiền đã quy đổi theo tỷ giá mới, giá trị không đổi".
     coinRescaleNotice: needsRescale ? true : (data.coinRescaleNotice || false),
     charName: data.charName || "",
+    // §13 — năm sinh (JSONB document, KHÔNG migration prod). Thiếu → null → fallback ui_mode.
+    birthYear: Number.isInteger(data.birthYear) ? data.birthYear : null,
     charClass: data.charClass || "Warrior",
     level: data.level || 1,
     exp: data.exp || 0,

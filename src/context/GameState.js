@@ -18,6 +18,7 @@ import { getScaffoldLevel, confirmScaffoldPromotion } from "@/lib/game/scaffoldi
 import { updateRewardById } from "@/lib/game/rewards";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
+import { ageGroupFor } from "@/lib/game/age";
 import * as economy from "@/lib/game/economy";
 import * as petSystem from "@/lib/game/pets";
 import * as cosmeticsSystem from "@/lib/game/cosmetics";
@@ -937,6 +938,11 @@ export function GameProvider({ children }) {
         // uiMode sống ở profile con (activeChild), KHÔNG trong state document —
         // phòng phụ huynh cần nó để gating insight teen (C2.1). Mặc định "kid".
         uiMode: activeChild?.ui_mode || "kid",
+        // §13 — năm sinh sống trong state document (JSONB). ageInfo tính sẵn cho consumer
+        // (gate hệ quả xu theo tuổi). Thiếu birthYear → fallback ui_mode, known:false.
+        birthYear: s.birthYear ?? null,
+        setBirthYear: makeFieldSetter("birthYear"),
+        ageInfo: ageGroupFor({ birthYear: s.birthYear, uiMode: activeChild?.ui_mode || "kid" }),
         charClass: s.charClass,
         setCharClass: makeFieldSetter("charClass"),
         level: s.level,

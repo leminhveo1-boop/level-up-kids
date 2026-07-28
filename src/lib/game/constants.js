@@ -286,6 +286,8 @@ export function createInitialState(opts = {}) {
   return {
     stateVersion: STATE_VERSION,
     charName: opts.name || "",
+    // §13 — năm sinh cho hệ quả theo tuổi; thiếu → null → fallback ui_mode.
+    birthYear: Number.isInteger(opts.birthYear) ? opts.birthYear : null,
     charClass,
     level: 1,
     exp: 0,
