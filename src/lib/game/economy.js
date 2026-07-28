@@ -36,6 +36,7 @@ import { TREE_GROWTH_PER_APPROVAL } from "./worldTree";
 import { advanceJourneyDaily } from "./journeys";
 import { generateTimetableTasks } from "./timetable";
 import { northStarSignals } from "./progress";
+import { groupSignals } from "./scoreboard";
 import { evaluateScaffoldLevel } from "./scaffolding";
 import { isConsciouslyHandled, clearRescue } from "./rescue";
 import { dateKey } from "./planning";
@@ -649,6 +650,9 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
     trustScore: settled.trustScore || 0,
     streak,
     ...northStar,
+    // D3.2/D3.3: breakdown nỗ lực theo 5 vùng (nền scoreboard + Pha E xu). ADDITIVE —
+    // snapshot cũ thiếu `groups`, buildScoreboard bỏ qua an toàn (không suy diễn).
+    groups: groupSignals(settled.tasks),
     // B1.1: con có nhìn nhận cuối ngày không (1-tap emoji, không ô text). Tín hiệu
     // cho reviewedRate của scaffolding (2→3). Thiếu field cũ → false (tương thích ngược).
     reviewed: Boolean(settled.todayReview),

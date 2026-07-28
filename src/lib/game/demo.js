@@ -85,6 +85,14 @@ export function createDemoState() {
     plannedLastNight: i >= 6,
     reviewed: i >= 6,
     reviewMood: i >= 6 ? "good" : null,
+    // D3.3: breakdown 5 vùng, tuần 2 (i>=7) nhỉnh hơn tuần 1 → scoreboard "up 📈"
+    groups: {
+      strength: { done: i < 7 ? 1 : 2, total: 2, importantDone: i < 7 ? 1 : 2, importantTotal: 2 },
+      intellect: { done: i < 7 ? 1 : 2, total: 2, importantDone: i < 7 ? 1 : 2, importantTotal: 2 },
+      discipline: { done: 1, total: 3, importantDone: 0, importantTotal: 0 },
+      creative: { done: i % 2 === 0 ? 1 : 0, total: 2, importantDone: 0, importantTotal: 0 },
+      help: { done: 1, total: 3, importantDone: 0, importantTotal: 0 },
+    },
   }));
 
   // Kế hoạch ngày mai (yyyy-mm-dd) để card "Ngày mai đã sẵn sàng" hiện ở tab Duyệt.

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useGame } from "@/context/GameState";
 import { generatePraiseSuggestions } from "@/lib/game/recognition";
 import { compareWeeks } from "@/lib/game/progress";
+import { buildScoreboard, GROUP_KEYS } from "@/lib/game/scoreboard";
 import { buildShareCard } from "@/lib/game/shareCard";
 import { getEquipped } from "@/lib/game/cosmetics";
 import Collapsible from "@/ui/Collapsible";
@@ -41,7 +42,14 @@ export default function WeekTab() {
     childMessages,
     readAllChildMessages,
     cosmetics,
+    uiMode,
   } = useGame();
+
+  // D3.3 — Cân bằng nỗ lực theo 5 vùng tuần này (gợi ý khích lệ, KHÔNG phán xét, KHÔNG %).
+  const scoreboard = buildScoreboard(history, { uiMode });
+  const groupRows = GROUP_KEYS.map((k) => scoreboard.groups[k]);
+  const maxEffort = Math.max(1, ...groupRows.map((g) => g.effort));
+  const quietest = [...groupRows].filter((g) => g.effort < maxEffort).sort((a, b) => a.effort - b.effort)[0];
 
   const [flash, setFlash] = useState("");
   const [sentIdx, setSentIdx] = useState([]);
@@ -309,6 +317,32 @@ export default function WeekTab() {
           );
         })}
       </div>
+
+      {/* ===== D3.3: Cân bằng vùng tuần này — gợi ý khích lệ, không phán xét ===== */}
+      {scoreboard.hasData && (
+        <div className="bg-white border border-sand rounded-xl p-4 space-y-3">
+          <div className="space-y-0.5">
+            <h3 className="text-scale-sm font-black text-forest-dark">🌱 Cân bằng vùng tuần này</h3>
+            <p className="text-scale-2xs text-gray-400">Nỗ lực theo 5 vùng — để biết nên khích lệ con ở đâu, không phải để chấm điểm.</p>
+          </div>
+          {groupRows.map((g) => (
+            <div key={g.key} className="space-y-1">
+              <div className="flex justify-between text-scale-2xs font-bold text-gray-600">
+                <span>{g.label}</span>
+                <span>{g.effort} việc</span>
+              </div>
+              <div className="w-full bg-sand h-2.5 rounded-full overflow-hidden">
+                <div className="bg-forest-medium h-full transition-all duration-500" style={{ width: `${Math.round((g.effort / maxEffort) * 100)}%` }} />
+              </div>
+            </div>
+          ))}
+          {quietest && quietest.effort < maxEffort && (
+            <p className="text-scale-2xs text-gray-500 bg-sand-light border border-sand rounded-xl px-3 py-2 leading-relaxed">
+              Vùng <span className="font-bold">{quietest.label}</span> tuần này ít hoạt động hơn — một lời khích lệ nhẹ có thể giúp con cân bằng lại.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Screen-time & weekly limits */}
       <div className="bg-white border border-sand rounded-xl p-4 space-y-2">

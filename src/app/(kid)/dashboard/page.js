@@ -12,6 +12,7 @@ import CompanionCard from "@/features/kid/components/CompanionCard";
 import WorldTreeCard from "@/features/kid/components/WorldTreeCard";
 import SeasonBanner from "@/features/kid/components/SeasonBanner";
 import StatsGrid from "@/features/kid/components/StatsGrid";
+import ScoreboardPanel from "@/features/kid/components/ScoreboardPanel";
 import GoalBar from "@/features/kid/components/GoalBar";
 import FamilyStrip from "@/features/kid/components/FamilyStrip";
 import TaskFilterBar from "@/features/kid/components/TaskFilterBar";
@@ -59,6 +60,7 @@ export default function DashboardPage() {
     treeGrowth,
     lastGraduation,
     clearLastGraduation,
+    history,
     journey,
     lastJourneyCompleted,
     clearJourneyCelebration,
@@ -480,6 +482,8 @@ export default function DashboardPage() {
           <SeasonBanner />
           <WorldTreeCard treeGrowth={treeGrowth} />
           <StatsGrid stats={stats} />
+
+          <ScoreboardPanel history={history} uiMode={uiMode} />
         </div>
       </div>
 

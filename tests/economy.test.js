@@ -363,6 +363,21 @@ describe("resetDailyTasks", () => {
     expect(next.energy).toBe(state.energy + 5);
   });
 
+  test("D3.3: snapshot ghi `groups` breakdown 5 vùng (nền scoreboard)", () => {
+    let state = freshState();
+    for (const id of ["t1", "t2", "t3"]) {
+      state = completeTask(state, id, rngQueue(0.99)).state; // discipline, strength, intellect
+    }
+    const snap = resetDailyTasks(state).history.at(-1);
+    expect(Object.keys(snap.groups).sort()).toEqual(
+      ["creative", "discipline", "help", "intellect", "strength"].sort()
+    );
+    expect(snap.groups.strength.done).toBe(1);
+    expect(snap.groups.intellect.done).toBe(1);
+    expect(snap.groups.discipline.done).toBe(1);
+    expect(snap.groups.help.total).toBe(3); // t5,t6 + connection tc1 gộp vào help
+  });
+
   test("streak resets to 0 when nothing completed and no freeze cards", () => {
     const state = freshState({ streak: 5, streakFreezes: 0 });
     const next = resetDailyTasks(state);
