@@ -29,6 +29,7 @@ import {
   FADE_START,
   FADE_FLOOR,
   DEFAULT_PARENT_CONFIG,
+  COIN_RATE_VND,
 } from "./constants";
 import { advanceBossWeek } from "./boss";
 import { decayPetsHunger } from "./pets";
@@ -40,6 +41,78 @@ import { groupSignals } from "./scoreboard";
 import { evaluateScaffoldLevel } from "./scaffolding";
 import { isConsciouslyHandled, clearRescue } from "./rescue";
 import { dateKey } from "./planning";
+
+/* ===================================================================
+ * Pha E — LƯƠNG XU MINH BẠCH CÓ TRẦN (spec SPEC_KINH_TE_XU_MINH_BACH.md)
+ * Xu 🪙 = tiền THẬT tiêu vặt, CHỈ từ lương nhiệm vụ minh bạch trong TRẦN quỹ
+ * bố mẹ đặt. P1: minh bạch tuyệt đối (không ngẫu nhiên). Q3: bỏ trần số dư.
+ * =================================================================== */
+
+/**
+ * Khoá chu kỳ quỹ hiện tại. week → ISO week "YYYY-Www" (tuần bắt đầu Thứ Hai,
+ * chuẩn VN); month → "YYYY-MM". Tất định theo `now` để test ổn định.
+ * @param {"week"|"month"} period
+ * @param {Date|number} [now]
+ * @returns {string}
+ */
+export function computePeriodKey(period, now = new Date()) {
+  const d = now instanceof Date ? now : new Date(now);
+  if (period === "month") {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  }
+  // ISO 8601 week: chuẩn hoá qua UTC theo các thành phần LỊCH địa phương (né lệch múi giờ).
+  const u = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = u.getUTCDay() || 7; // Thứ Hai=1 … Chủ Nhật=7
+  u.setUTCDate(u.getUTCDate() + 4 - dayNum); // dời tới Thứ Năm cùng tuần
+  const yearStart = new Date(Date.UTC(u.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((u - yearStart) / 86400000 + 1) / 7);
+  return `${u.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+}
+
+/** Trần KIẾM xu của chu kỳ = round(quỹ VNĐ / tỷ giá). budget=0 ⇒ lương xu TẮT. */
+export function budgetCoinsFor(parentConfig) {
+  const vnd = parentConfig?.allowanceBudgetVnd || 0;
+  return Math.round(vnd / COIN_RATE_VND);
+}
+
+/**
+ * Lazy-reset trần kiếm khi sang chu kỳ mới (không cần cron). Cùng chu kỳ → nguyên trạng.
+ * @param {object} state
+ * @param {Date|number} [now]
+ * @returns {object} state (mới nếu đổi chu kỳ, nguyên bản nếu không)
+ */
+export function rollAllowancePeriod(state, now = new Date()) {
+  const period = state.parentConfig?.allowancePeriod || "week";
+  const key = computePeriodKey(period, now);
+  const cur = state.allowance || { periodKey: "", earnedCoins: 0 };
+  if (cur.periodKey === key) return state;
+  return { ...state, allowance: { periodKey: key, earnedCoins: 0 } };
+}
+
+/**
+ * Tính lượng xu cấp cho 1 lần thực-nhận, CLAMP theo trần quỹ còn lại (I1/I2).
+ * KHÔNG áp maxCoinBalance (Q3 bỏ trần số dư). Trả về state đã roll chu kỳ + số cấp.
+ * @returns {{ state: object, granted: number, capped: boolean }}
+ */
+function grantAllowanceCoins(state, coinReward, now) {
+  const wanted = Math.max(0, Math.floor(coinReward || 0));
+  const rolled = rollAllowancePeriod(state, now);
+  if (wanted === 0) return { state: rolled, granted: 0, capped: false };
+  const budgetCoins = budgetCoinsFor(rolled.parentConfig);
+  const earned = rolled.allowance?.earnedCoins || 0;
+  const room = Math.max(0, budgetCoins - earned);
+  const granted = Math.min(wanted, room);
+  if (granted === 0) return { state: rolled, granted: 0, capped: wanted > 0 };
+  return {
+    state: {
+      ...rolled,
+      heroCoins: (rolled.heroCoins || 0) + granted,
+      allowance: { ...rolled.allowance, earnedCoins: earned + granted },
+    },
+    granted,
+    capped: wanted > granted,
+  };
+}
 
 /**
  * PROD-1 — reward dose factor: việc đã thành nếp (habitStreak cao) rút DẦN liều điểm.
@@ -130,10 +203,11 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
     task.verifyType === "trust" &&
     (state.trustScore || 0) >= TRUST_HIGH_THRESHOLD &&
     state.parentConfig?.smartAutoApprove !== false;
+  const now = opts.now ?? Date.now();
   // B-lite: Tuần Bận — parent switched to full autopilot for a few days:
   // EVERY claim releases instantly (approval "auto", trust untouched).
   const busyAutoApproved =
-    !task.wasApprovedToday && (state.parentConfig?.busyUntil || 0) > (opts.now ?? Date.now());
+    !task.wasApprovedToday && (state.parentConfig?.busyUntil || 0) > now;
   const instantApproved = Boolean(task.wasApprovedToday) || trustAutoApproved || busyAutoApproved;
   const approvalStatus = task.wasApprovedToday
     ? "approved"
@@ -141,7 +215,11 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
       ? "auto"
       : "pending";
 
-  const nextTasks = state.tasks.map((t) =>
+  // Pha E — Xu 🪙 chỉ vào ví khi việc THỰC-NHẬN (instant-approve). Non-instant → chờ
+  // approveTask cấp lúc duyệt (escrow). coinGrant cũng roll chu kỳ quỹ (lazy reset).
+  const coinGrant = grantAllowanceCoins(state, instantApproved ? task.coinReward : 0, now);
+
+  const nextTasks = coinGrant.state.tasks.map((t) =>
     t.id === taskId
       ? {
           ...t,
@@ -151,6 +229,8 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
           approval: approvalStatus,
           pendingPoints: instantApproved ? 0 : pointsAdded,
           earnedPoints: instantApproved ? pointsAdded : 0,
+          // Xu thực-nhận ghi lên task để uncomplete hoàn đúng số (I5)
+          earnedCoinReward: instantApproved ? coinGrant.granted : 0,
           wasApprovedToday: undefined,
           completedAt: Date.now(),
           earnedEnergy: energyAdded,
@@ -164,7 +244,7 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
 
   return {
     state: {
-      ...state,
+      ...coinGrant.state,
       tasks: nextTasks,
       stats: nextStats,
       level: expResult.level,
@@ -194,6 +274,8 @@ export function completeTask(state, taskId, rng = Math.random, opts = {}) {
       busyAutoApproved,
       energyAdded,
       bossDefeated: bossJustDefeated,
+      coinsGranted: coinGrant.granted,
+      coinsCapped: coinGrant.capped,
     },
   };
 }
@@ -209,21 +291,24 @@ export function approveTask(state, taskId, opts = {}) {
   if (!task || task.approval !== "pending") return { state, result: { success: false, error: "NOT_PENDING" } };
 
   const released = task.pendingPoints || 0;
+  // Pha E — duyệt = thời điểm THỰC-NHẬN xu (escrow). Cấp trong trần quỹ (I1/I2), roll chu kỳ.
+  const now = opts.now ?? Date.now();
+  const coinGrant = grantAllowanceCoins(state, task.coinReward, now);
 
   return {
     state: {
-      ...state,
-      points: state.points + released,
-      trustScore: Math.min(TRUST_MAX, (state.trustScore || 0) + TRUST_GAIN_ON_APPROVE),
+      ...coinGrant.state,
+      points: coinGrant.state.points + released,
+      trustScore: Math.min(TRUST_MAX, (coinGrant.state.trustScore || 0) + TRUST_GAIN_ON_APPROVE),
       // D5: an approved task grows the family World Tree
-      treeGrowth: (state.treeGrowth || 0) + TREE_GROWTH_PER_APPROVAL,
-      tasks: state.tasks.map((t) =>
+      treeGrowth: (coinGrant.state.treeGrowth || 0) + TREE_GROWTH_PER_APPROVAL,
+      tasks: coinGrant.state.tasks.map((t) =>
         t.id === taskId
-          ? { ...t, approval: opts.auto ? "auto" : "approved", earnedPoints: released, pendingPoints: 0 }
+          ? { ...t, approval: opts.auto ? "auto" : "approved", earnedPoints: released, pendingPoints: 0, earnedCoinReward: coinGrant.granted }
           : t
       ),
     },
-    result: { success: true, released, auto: Boolean(opts.auto) },
+    result: { success: true, released, auto: Boolean(opts.auto), coinsGranted: coinGrant.granted, coinsCapped: coinGrant.capped },
   };
 }
 
@@ -334,6 +419,9 @@ export function uncompleteTask(state, taskId) {
   const wasApproved = task.approval === "approved" || task.approval === "auto";
   const pointsToRevert = wasApproved ? task.earnedPoints ?? task.points ?? task.exp : 0;
   const energyToRevert = task.earnedEnergy ?? task.energy ?? 0;
+  // Pha E — xu chỉ vào ví khi đã thực-nhận; hoàn ĐÚNG số đã cấp, trả lại room quỹ (I5).
+  const coinsToRevert = wasApproved ? Math.max(0, Math.floor(task.earnedCoinReward || 0)) : 0;
+  const prevEarnedCoins = state.allowance?.earnedCoins || 0;
 
   const nextTasks = state.tasks.map((t) =>
     t.id === taskId
@@ -343,6 +431,7 @@ export function uncompleteTask(state, taskId) {
           approval: undefined,
           pendingPoints: 0,
           earnedPoints: 0,
+          earnedCoinReward: 0,
           earnedEnergy: 0,
           evidencePhoto: undefined,
           // Same-day grace: an accidentally un-ticked APPROVED task can be
@@ -363,11 +452,13 @@ export function uncompleteTask(state, taskId) {
       stats: nextStats,
       exp: Math.max(0, state.exp - task.exp),
       points: Math.max(0, state.points - pointsToRevert),
+      heroCoins: Math.max(0, (state.heroCoins || 0) - coinsToRevert),
+      allowance: { ...(state.allowance || { periodKey: "", earnedCoins: 0 }), earnedCoins: Math.max(0, prevEarnedCoins - coinsToRevert) },
       energy: Math.max(0, state.energy - energyToRevert),
       bossHp: state.bossDefeated ? 0 : Math.min(state.bossMaxHp || BOSS_MAX_HP, state.bossHp + Math.ceil(task.exp / 3)),
       lastPointsGain: null,
     },
-    events: { pointsReverted: pointsToRevert, energyReverted: energyToRevert },
+    events: { pointsReverted: pointsToRevert, energyReverted: energyToRevert, coinsReverted: coinsToRevert },
   };
 }
 
@@ -717,8 +808,16 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
   const hungered = decayPetsHunger(journeyed);
   const { state: bossAdvanced } = advanceBossWeek(hungered, new Date());
 
+  // Pha E — lazy-reset trần KIẾM xu nếu ngày mới đã sang chu kỳ quỹ mới (tuần/tháng).
+  const allowancePeriod = nextParentConfig.allowancePeriod || "week";
+  const allowanceKey = computePeriodKey(allowancePeriod, newDate);
+  const curAllowance = settled.allowance || { periodKey: "", earnedCoins: 0 };
+  const rolledAllowance =
+    curAllowance.periodKey === allowanceKey ? curAllowance : { periodKey: allowanceKey, earnedCoins: 0 };
+
   return {
     ...bossAdvanced,
+    allowance: rolledAllowance,
     streak,
     streakFreezes,
     lastFreezeUsed: freezeUsed,
@@ -733,6 +832,7 @@ export function resetDailyTasks(state, rng = Math.random, closingDate = "", newD
         approval: undefined,
         pendingPoints: 0,
         earnedPoints: 0,
+        earnedCoinReward: 0,
         earnedEnergy: 0,
         wasRejected: false,
         rejectReason: null, // C2.5: ngày mới không mang theo nhãn "cần làm lại" cũ
