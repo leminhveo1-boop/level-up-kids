@@ -6,7 +6,9 @@ import MomentCard from "./MomentCard";
 import InsightCard from "./InsightCard";
 import CaregiverShareButton from "./CaregiverShareButton";
 import { REJECT_REASONS } from "@/lib/game/economy";
-import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap } from "lucide-react";
+import { restitutionEnabled } from "@/lib/game/age";
+import { maxRestitution } from "@/lib/game/consequences";
+import { Check, X, ShieldCheck, HandHeart, Users, Trees, Send, PlusCircle, ChevronDown, PenLine, Zap, Wrench } from "lucide-react";
 
 const VERIFY_META = {
   trust: { icon: HandHeart, label: "Con tự ghi nhận" },
@@ -34,6 +36,9 @@ export default function ApprovalTab() {
     points,
     setPoints,
     sendEncouragement,
+    ageInfo,
+    restitutions,
+    proposeRestitution,
   } = useGame();
 
   const [flash, setFlash] = useState("");
@@ -45,6 +50,10 @@ export default function ApprovalTab() {
   const [showQuick, setShowQuick] = useState(false);
   // C2.5: id việc đang chọn lý do trả-về (mở picker 3 lý do inline thay confirm cụt)
   const [rejectingId, setRejectingId] = useState(null);
+  // §13 Mảnh B — đề nghị đền bù (gấp, chỉ 9t+ có tuổi)
+  const [showRestitution, setShowRestitution] = useState(false);
+  const [restReason, setRestReason] = useState("");
+  const [restAmount, setRestAmount] = useState(1);
 
   const pending = tasks.filter((t) => t.approval === "pending");
   // Tasks the child hasn't claimed yet — parent can log them directly
@@ -71,6 +80,24 @@ export default function ApprovalTab() {
     rejectTask(task.id, reason.id);
     setRejectingId(null);
     showFlash(`Đã gửi "${task.title}" về cho ${charName} làm lại — lý do: ${reason.label}.`);
+  };
+
+  // §13 Mảnh B — đề nghị đền bù: CHỈ tạo pending, con phải đồng ý mới chuyển xu.
+  const REST_ERR = {
+    AGE_NOT_ELIGIBLE: "Cần nhập tuổi con (≥9) ở phần Hệ Thống trước.",
+    INVALID_AMOUNT: "Số xu chưa hợp lệ.",
+    REASON_REQUIRED: "Ghi rõ chuyện gì cần sửa chữa.",
+    AMOUNT_TOO_HIGH: `Tối đa ${maxRestitution(heroCoins)} xu (30% ví con).`,
+  };
+  const handleProposeRestitution = () => {
+    const r = proposeRestitution({ reason: restReason, amount: Number(restAmount) });
+    if (r.success) {
+      showFlash(`Đã gửi đề nghị đền bù cho ${charName} — chờ con đồng ý.`);
+      setRestReason("");
+      setRestAmount(1);
+    } else {
+      showFlash(REST_ERR[r.error] || "Không gửi được đề nghị.");
+    }
   };
 
   const handleQuickBonus = (currency) => {
@@ -208,6 +235,64 @@ export default function ApprovalTab() {
           </div>
         )}
       </div>
+
+      {/* §13 Mảnh B — Đề nghị đền bù (chỉ 9t+ có tuổi). Gấp mặc định, không phải phạt. */}
+      {restitutionEnabled(ageInfo) && (
+        <div className="bg-white border border-sand rounded-xl shadow-game-flat">
+          <button
+            onClick={() => setShowRestitution((v) => !v)}
+            className="w-full flex items-center justify-between p-4 min-h-tap"
+          >
+            <h3 className="text-scale-sm font-black text-forest-dark flex items-center gap-1.5">
+              <Wrench size={16} /> Đề nghị đền bù
+              {restitutions.some((r) => r.status === "pending") && (
+                <span className="text-gray-400 font-bold">
+                  ({restitutions.filter((r) => r.status === "pending").length} chờ con đồng ý)
+                </span>
+              )}
+            </h3>
+            <ChevronDown size={16} className={`text-gray-400 transition-transform ${showRestitution ? "rotate-180" : ""}`} />
+          </button>
+          {showRestitution && (
+            <div className="px-4 pb-4 space-y-2.5 border-t border-sand pt-3">
+              <p className="text-scale-2xs text-gray-400">
+                Khi có hư hỏng cụ thể, đề nghị con góp một ít xu vào Quỹ sửa chữa của nhà. Đây là
+                <b className="text-gray-500"> sửa chữa, không phải phạt</b> — con phải đồng ý thì mới ghi nhận.
+              </p>
+              <input
+                type="text"
+                value={restReason}
+                onChange={(e) => setRestReason(e.target.value)}
+                placeholder="Chuyện gì cần sửa? (vd: làm vỡ cốc khi đùa)"
+                className="w-full min-h-tap rounded-xl border border-sand bg-white px-3 text-scale-2xs font-bold text-forest-dark"
+              />
+              <div className="flex items-center gap-2">
+                <label className="text-scale-2xs font-bold text-gray-500">Số xu</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={maxRestitution(heroCoins)}
+                  value={restAmount}
+                  onChange={(e) => setRestAmount(e.target.value)}
+                  className="w-16 min-h-tap rounded-xl border border-sand bg-white px-2 text-scale-2xs font-bold text-forest-dark text-center"
+                />
+                <span className="text-scale-2xs text-gray-400">tối đa {maxRestitution(heroCoins)} (30% ví con)</span>
+              </div>
+              <button
+                onClick={handleProposeRestitution}
+                className="w-full min-h-tap rounded-xl bg-forest text-white text-scale-2xs font-black active:scale-95 transition-transform"
+              >
+                Gửi đề nghị cho {charName}
+              </button>
+              {restitutions.filter((r) => r.status === "pending").map((r) => (
+                <p key={r.id} className="text-scale-2xs text-gray-400">
+                  • Đang chờ con đồng ý: “{r.reason}” · {r.amount} xu
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Parent-log — folded by default (progressive disclosure) */}
       <div className="bg-white border border-sand rounded-xl shadow-game-flat">

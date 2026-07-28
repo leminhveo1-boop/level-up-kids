@@ -6,6 +6,7 @@ import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import BottomNav from "@/ui/BottomNav";
 import AllowanceProgressKid from "@/features/kid/components/AllowanceProgressKid";
+import PledgeKidCard from "@/features/kid/components/PledgeKidCard";
 import { ChevronLeft } from "lucide-react";
 
 export default function RewardsPage() {
@@ -186,6 +187,7 @@ export default function RewardsPage() {
 
         {/* Pha E — Quỹ của con: chỉ hiện ở tab Xu (nơi con nghĩ về tiền thật) */}
         {rewardsTab === "heroCoins" && <AllowanceProgressKid />}
+        {rewardsTab === "heroCoins" && <PledgeKidCard />}
 
         {/* REWARDS STORE ITEMS LIST */}
         <div className="space-y-3">

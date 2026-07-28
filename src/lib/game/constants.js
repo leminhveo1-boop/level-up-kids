@@ -315,6 +315,11 @@ export function createInitialState(opts = {}) {
     remindersToday: 0, // GĐ0 North Star: số lần bố mẹ phải nhắc trong ngày (reset mỗi ngày)
     // Pha E — trần KIẾM xu theo chu kỳ. budgetCoins luôn tính từ parentConfig (không lưu ở đây).
     allowance: { periodKey: "", earnedCoins: 0 },
+    // §13 Mảnh B — Restitution/Cọc (9-13t). Quỹ tính bằng xu, dồn trong nhà (không về bố mẹ).
+    repairFund: 0,
+    familyFund: 0,
+    restitutions: [],
+    pledges: [],
     heroCoins: 0,
     points: 0,
     lastPointsGain: null,

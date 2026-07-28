@@ -19,6 +19,7 @@ import { updateRewardById } from "@/lib/game/rewards";
 import { createDemoState, DEMO_CHILD_ID } from "@/lib/game/demo";
 import { migrateState } from "@/lib/game/migrate";
 import { ageGroupFor } from "@/lib/game/age";
+import * as consequences from "@/lib/game/consequences";
 import * as economy from "@/lib/game/economy";
 import * as petSystem from "@/lib/game/pets";
 import * as cosmeticsSystem from "@/lib/game/cosmetics";
@@ -539,6 +540,73 @@ export function GameProvider({ children }) {
     setState((prev) => (prev ? petSystem.setActiveCompanion(prev, type, id) : prev));
   }, []);
 
+  // ---------------- §13 Mảnh B — Restitution (đền bù 2 bên) + Cọc cam kết ----------------
+  const ageInfoFor = (prev) => ageGroupFor({ birthYear: prev.birthYear, uiMode: activeChild?.ui_mode || "kid" });
+
+  const proposeRestitution = useCallback(
+    (payload) => {
+      let outcome = { success: false };
+      setState((prev) => {
+        if (!prev) return prev;
+        const { state: next, result } = consequences.proposeRestitution(prev, payload, ageInfoFor(prev));
+        outcome = result;
+        return result.success ? next : prev;
+      });
+      return outcome;
+    },
+    [activeChild]
+  );
+
+  const agreeRestitution = useCallback((id) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = consequences.agreeRestitution(prev, id);
+      outcome = result;
+      if (result.success) playSound("complete");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const dismissRestitution = useCallback((id) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = consequences.dismissRestitution(prev, id);
+      outcome = result;
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
+  const createPledge = useCallback(
+    (payload) => {
+      let outcome = { success: false };
+      setState((prev) => {
+        if (!prev) return prev;
+        const uiMode = activeChild?.ui_mode || "kid";
+        const { state: next, result } = consequences.createPledge(prev, payload, ageInfoFor(prev), uiMode);
+        outcome = result;
+        return result.success ? next : prev;
+      });
+      return outcome;
+    },
+    [activeChild]
+  );
+
+  const resolvePledge = useCallback((id, met) => {
+    let outcome = { success: false };
+    setState((prev) => {
+      if (!prev) return prev;
+      const { state: next, result } = consequences.resolvePledge(prev, id, met);
+      outcome = result;
+      if (result.success && met) playSound("complete");
+      return result.success ? next : prev;
+    });
+    return outcome;
+  }, []);
+
   // ---------------- D3: Co-op — gift food/coins to a sibling ----------------
   const sendGift = useCallback(
     async (toChildId, giftId) => {
@@ -1046,6 +1114,16 @@ export function GameProvider({ children }) {
         hatchPet,
         feedPet,
         setActiveCompanion,
+        // §13 Mảnh B — hệ quả 9-13t (gate qua ageInfo ở action)
+        repairFund: s.repairFund || 0,
+        familyFund: s.familyFund || 0,
+        restitutions: s.restitutions || [],
+        pledges: s.pledges || [],
+        proposeRestitution,
+        agreeRestitution,
+        dismissRestitution,
+        createPledge,
+        resolvePledge,
         receivedGifts: s.receivedGifts || [],
         sendGift,
         markReceivedGiftsRead,

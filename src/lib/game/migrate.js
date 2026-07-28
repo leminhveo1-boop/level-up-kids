@@ -150,6 +150,11 @@ export function migrateState(data) {
     lastResetDate: data.lastResetDate || "",
     // Pha E — trần KIẾM xu; state cũ thiếu → default rỗng, không đụng heroCoins đã có (Q4 giữ tài sản).
     allowance: data.allowance || { periodKey: "", earnedCoins: 0 },
+    // §13 Mảnh B — default-merge, state cũ thiếu → rỗng (không đụng ví/điểm đã có).
+    repairFund: Number.isFinite(data.repairFund) ? data.repairFund : 0,
+    familyFund: Number.isFinite(data.familyFund) ? data.familyFund : 0,
+    restitutions: Array.isArray(data.restitutions) ? data.restitutions : [],
+    pledges: Array.isArray(data.pledges) ? data.pledges : [],
     heroCoins,
     points: data.points || 0,
     lastPointsGain: null,

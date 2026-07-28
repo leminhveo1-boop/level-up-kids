@@ -9,6 +9,7 @@ import confetti from "canvas-confetti";
 import StatusBar from "@/features/kid/components/StatusBar";
 import HeroCard from "@/features/kid/components/HeroCard";
 import CompanionCard from "@/features/kid/components/CompanionCard";
+import RestitutionKidCard from "@/features/kid/components/RestitutionKidCard";
 import WorldTreeCard from "@/features/kid/components/WorldTreeCard";
 import SeasonBanner from "@/features/kid/components/SeasonBanner";
 import StatsGrid from "@/features/kid/components/StatsGrid";
@@ -408,6 +409,8 @@ export default function DashboardPage() {
             )}
 
             <GoalBar rewards={rewards} heroCoins={heroCoins} />
+
+            <RestitutionKidCard />
 
             {!isDemo && childProfiles.length > 1 && (
               <FamilyStrip
