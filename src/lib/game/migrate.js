@@ -16,6 +16,7 @@ import {
   COIN_RATE_VND,
   STATE_VERSION,
   ALL_DEFAULT_REWARDS,
+  reconcilePetRewardCurrency,
 } from "./constants";
 
 // Tỷ giá cũ (động) mà state v1 đã dùng để định giá quà + tích ví:
@@ -108,6 +109,9 @@ export function migrateState(data) {
       return r;
     });
   }
+
+  // Pha E §6 — đổi tiền tệ pet/thẻ (Xu→Điểm, rp2 giữ Xu rẻ) cho seed CHƯA sửa, mọi version.
+  rewards = reconcilePetRewardCurrency(rewards).rewards;
 
   // Legacy: gold wallet → heroCoins
   const rawHeroCoins = data.heroCoins !== undefined ? data.heroCoins : data.gold || 0;

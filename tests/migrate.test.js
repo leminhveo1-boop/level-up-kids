@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { migrateState } from "@/lib/game/migrate";
-import { STATE_VERSION, createInitialState, DEFAULT_PARENT_CONFIG } from "@/lib/game/constants";
+import { STATE_VERSION, createInitialState, DEFAULT_PARENT_CONFIG, DEFAULT_REWARDS, reconcilePetRewardCurrency } from "@/lib/game/constants";
 
 describe("migrateState — rescale tỷ giá 1 xu = 1000đ (version-gated)", () => {
   test("state v1 (chưa có stateVersion): ví chia 7 + đóng dấu stateVersion", () => {
@@ -109,5 +109,68 @@ describe("Pha E B1 — allowance data model + migration", () => {
     const s = migrateState({ parentConfig: { allowanceBudgetVnd: 200000, allowancePeriod: "month" } });
     expect(s.parentConfig.allowanceBudgetVnd).toBe(200000);
     expect(s.parentConfig.allowancePeriod).toBe("month");
+  });
+});
+
+// Pha E — B4: pet/thẻ đổi tiền tệ Xu → Điểm ⭐ (rp2 giữ Xu rẻ)
+describe("Pha E B4 — pet/thẻ đổi tiền tệ Xu → Điểm ⭐", () => {
+  test("DEFAULT_REWARDS: trứng thường/rồng/thuốc/combo + thẻ băng = points; rp2 sói = heroCoins rẻ", () => {
+    const by = Object.fromEntries(DEFAULT_REWARDS.map((r) => [r.id, r]));
+    expect(by.rp1.currency).toBe("points");
+    expect(by.rp3.currency).toBe("points");
+    expect(by.rp4.currency).toBe("points");
+    expect(by.rp5.currency).toBe("points");
+    expect(by.rf1.currency).toBe("points");
+    expect(by.rp2.currency).toBe("heroCoins"); // DUY NHẤT giữ Xu
+    expect(by.rp2.cost).toBe(15); // giá rẻ tiêu vặt
+  });
+
+  test("reconcile seed CHƯA sửa (currency cũ heroCoins) → đổi sang points + giá mới", () => {
+    const old = [
+      { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 15, currency: "heroCoins", type: "pet_egg", value: "base" },
+    ];
+    const { rewards, changed } = reconcilePetRewardCurrency(old);
+    expect(changed).toBe(true);
+    expect(rewards[0].currency).toBe("points");
+    expect(rewards[0].cost).toBe(60);
+  });
+
+  test("reconcile rp2 title CŨ → title mới + heroCoins cost 15 (giữ Xu rẻ)", () => {
+    const old = [
+      { id: "rp2", title: "Mua 🐺 Trứng Sói Chiến (Ấp sói nguyên tố hiếm)", cost: 40, currency: "heroCoins", type: "pet_egg", value: "wolf" },
+    ];
+    const { rewards } = reconcilePetRewardCurrency(old);
+    expect(rewards[0].currency).toBe("heroCoins");
+    expect(rewards[0].cost).toBe(15);
+    expect(rewards[0].title).toContain("tiêu vặt");
+  });
+
+  test("parent ĐÃ đổi tên pet reward → KHÔNG đụng (tôn trọng tuỳ biến)", () => {
+    const custom = [
+      { id: "rp1", title: "Trứng đặc biệt của nhà mình", cost: 99, currency: "heroCoins", type: "pet_egg", value: "base" },
+    ];
+    const { rewards, changed } = reconcilePetRewardCurrency(custom);
+    expect(changed).toBe(false);
+    expect(rewards[0].currency).toBe("heroCoins");
+    expect(rewards[0].cost).toBe(99);
+  });
+
+  test("idempotent: seed đã chuẩn Pha E → changed=false", () => {
+    const { changed } = reconcilePetRewardCurrency(DEFAULT_REWARDS);
+    expect(changed).toBe(false);
+  });
+
+  test("migrate state v2 cũ (pet còn Xu) → được reconcile sang Điểm", () => {
+    const s = migrateState({
+      stateVersion: STATE_VERSION,
+      rewards: [
+        { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 15, currency: "heroCoins", type: "pet_egg", value: "base" },
+        { id: "rp3", title: "Mua 🐉 Trứng Rồng Thần (Ấp rồng bay huyền thoại)", cost: 70, currency: "heroCoins", type: "pet_egg", value: "dragon" },
+      ],
+    });
+    const by = Object.fromEntries(s.rewards.map((r) => [r.id, r]));
+    expect(by.rp1.currency).toBe("points");
+    expect(by.rp3.currency).toBe("points");
+    expect(by.rp3.cost).toBe(300);
   });
 });

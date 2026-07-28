@@ -577,6 +577,10 @@ export default function MiningCavePage() {
                 <span>🐾</span>
                 <span>{t(`game.mine.petsTitle.${m}`, { name: charName, n: pets?.length || 0 })}</span>
               </h3>
+              {/* Pha E §6.2 — định vị pet = bài học chăm sóc, cho ăn đều bằng Điểm ⭐ */}
+              <p className="text-[11px] font-semibold text-forest-medium leading-snug">
+                {t("game.mine.petResponsibility")}
+              </p>
 
               {pets?.length === 0 ? (
                 <div className="text-center py-8 text-[11px] text-gray-400 font-bold uppercase tracking-wider select-none">

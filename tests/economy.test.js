@@ -327,12 +327,21 @@ describe("claimReward", () => {
     expect(result.error).toBe("SCREEN_WEEKLY_LIMIT");
   });
 
-  test("heroCoins reward deducts coins and adds pet egg", () => {
+  test("heroCoins reward (rp2 sói giữ Xu) deducts coins and adds pet egg", () => {
     const base = completeAllMandatory(freshState());
     const state = { ...base, heroCoins: 100 };
-    const { state: next, result } = claimReward(state, "rp1"); // base egg, 15 coins
+    const { state: next, result } = claimReward(state, "rp2"); // wolf egg, 15 Xu (Pha E: DUY NHẤT xu)
     expect(result.success).toBe(true);
     expect(next.heroCoins).toBe(85);
+    expect(next.inventory.eggs.wolf).toBe(1);
+  });
+
+  test("points reward (rp1 trứng thường Điểm ⭐) deducts points", () => {
+    const base = completeAllMandatory(freshState());
+    const state = { ...base, points: 100 };
+    const { state: next, result } = claimReward(state, "rp1"); // base egg, 60 Điểm
+    expect(result.success).toBe(true);
+    expect(next.points).toBe(40);
     expect(next.inventory.eggs.base).toBe(1);
   });
 
@@ -733,28 +742,28 @@ describe("streak freeze ❄️", () => {
     expect(next.streakFreezes).toBe(1);
   });
 
-  test("can buy freeze card with hero coins (rf1)", () => {
+  test("can buy freeze card with POINTS (rf1 — Pha E: thẻ đổi sang Điểm ⭐)", () => {
     const base = freshState({
-      heroCoins: 100,
+      points: 100,
       streakFreezes: 0,
       parentConfig: { ...freshState().parentConfig, requireAllMandatory: false },
     });
     const { state: next, result } = claimReward(base, "rf1");
     expect(result.success).toBe(true);
-    expect(next.heroCoins).toBe(70); // cost 30
+    expect(next.points).toBe(60); // cost 40
     expect(next.streakFreezes).toBe(1);
   });
 
   test("freeze inventory is capped at 3", () => {
     const base = freshState({
-      heroCoins: 500,
+      points: 500,
       streakFreezes: 3,
       parentConfig: { ...freshState().parentConfig, requireAllMandatory: false },
     });
     const { state: next, result } = claimReward(base, "rf1");
     expect(result.success).toBe(false);
     expect(result.error).toBe("FREEZE_CAP");
-    expect(next.heroCoins).toBe(500); // not charged
+    expect(next.points).toBe(500); // not charged
   });
 });
 

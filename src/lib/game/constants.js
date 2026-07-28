@@ -145,12 +145,15 @@ export const DEFAULT_REWARDS = [
   { id: "r2", title: "Đổi 45 phút chơi game / xem TV 🚀", cost: 80, currency: "points", type: "game_time", value: 45, parentApproved: false, rarity: "common" },
   { id: "r3", title: "Bố mẹ dẫn đi xem phim rạp cuối tuần 🍿", cost: 150, currency: "points", type: "perk", value: "movie_tickets", parentApproved: false, rarity: "rare" },
   { id: "r4", title: "Thẻ bài miễn làm 1 nhiệm vụ ngày 🎟️", cost: 100, currency: "points", type: "card", value: "skip_task", parentApproved: false, rarity: "epic" },
-  { id: "rf1", title: "❄️ Thẻ Đóng Băng Streak (nghỉ 1 ngày không mất lửa)", cost: 30, currency: "heroCoins", type: "streak_freeze", value: 1, parentApproved: false, rarity: "rare" },
-  { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 15, currency: "heroCoins", type: "pet_egg", value: "base", parentApproved: false, rarity: "common" },
-  { id: "rp2", title: "Mua 🐺 Trứng Sói Chiến (Ấp sói nguyên tố hiếm)", cost: 40, currency: "heroCoins", type: "pet_egg", value: "wolf", parentApproved: false, rarity: "rare" },
-  { id: "rp3", title: "Mua 🐉 Trứng Rồng Thần (Ấp rồng bay huyền thoại)", cost: 70, currency: "heroCoins", type: "pet_egg", value: "dragon", parentApproved: false, rarity: "legendary" },
-  { id: "rp4", title: "Mua 🧪 Thuốc ấp phép ngẫu nhiên (Lửa, băng, ma thuật)", cost: 20, currency: "heroCoins", type: "pet_potion_random", value: "random", parentApproved: false, rarity: "rare" },
-  { id: "rp5", title: "Mua 🥩 Combo Thức ăn Thần Kỳ (Thịt + Kẹo + Lá)", cost: 15, currency: "heroCoins", type: "pet_food_all", value: "all", parentApproved: false, rarity: "common" },
+  // Pha E — thẻ đóng băng & pet mua bằng ĐIỂM ⭐ (tiền game). Chăm pet = tiêu Điểm kiếm
+  // từ nhiệm vụ → vòng "làm việc tốt để nuôi bạn nhỏ", không tốn tiền thật (spec §6).
+  { id: "rf1", title: "❄️ Thẻ Đóng Băng Streak (nghỉ 1 ngày không mất lửa)", cost: 40, currency: "points", type: "streak_freeze", value: 1, parentApproved: false, rarity: "rare" },
+  { id: "rp1", title: "Mua 🥚 Trứng Thường (Ấp cáo, mèo, gấu trúc)", cost: 60, currency: "points", type: "pet_egg", value: "base", parentApproved: false, rarity: "common" },
+  // rp2 — DUY NHẤT loại mua bằng Xu 🪙 giá rẻ: con tự thưởng bằng tiền tiêu vặt (founder chọn 1–2 mục).
+  { id: "rp2", title: "Mua 🐺 Trứng Sói Chiến (dùng Xu tiêu vặt tự thưởng)", cost: 15, currency: "heroCoins", type: "pet_egg", value: "wolf", parentApproved: false, rarity: "rare" },
+  { id: "rp3", title: "Mua 🐉 Trứng Rồng Thần (Ấp rồng bay huyền thoại)", cost: 300, currency: "points", type: "pet_egg", value: "dragon", parentApproved: false, rarity: "legendary" },
+  { id: "rp4", title: "Mua 🧪 Thuốc ấp phép ngẫu nhiên (Lửa, băng, ma thuật)", cost: 80, currency: "points", type: "pet_potion_random", value: "random", parentApproved: false, rarity: "rare" },
+  { id: "rp5", title: "Mua 🥩 Combo Thức ăn Thần Kỳ (Thịt + Kẹo + Lá)", cost: 60, currency: "points", type: "pet_food_all", value: "all", parentApproved: false, rarity: "common" },
   { id: "r5", title: "Một ly kem tươi siêu to khổng lồ 🍨", cost: 20, currency: "heroCoins", type: "perk", value: "ice_cream", parentApproved: false, rarity: "common" },
   { id: "r6", title: "Bố mẹ dẫn đi xem phim rạp cuối tuần 🍿", cost: 80, currency: "heroCoins", type: "perk", value: "movie_night", parentApproved: false, rarity: "rare" },
   { id: "r7", title: "Một món đồ chơi tự chọn vừa phải 🧸", cost: 100, currency: "heroCoins", type: "perk", value: "small_toy", parentApproved: false, rarity: "epic" },
@@ -210,6 +213,38 @@ export function reconcileRewardsForAge(rewards, uiMode) {
   const existingIds = new Set(kept.map((r) => r.id));
   const add = TEEN_PERKS.filter((r) => !existingIds.has(r.id)).map((r) => ({ ...r }));
   return { rewards: [...kept, ...add], changed: true };
+}
+
+// Pha E §6 — pet/thẻ đổi từ Xu 🪙 sang Điểm ⭐ (rp2 giữ Xu rẻ). Nhận diện seed CHƯA sửa
+// qua title (cũ hoặc mới) để đổi sang default mới; parent sửa title → giữ nguyên (không đụng).
+const PET_REWARD_IDS = ["rf1", "rp1", "rp2", "rp3", "rp4", "rp5"];
+const PET_REWARD_DEF_BY_ID = new Map(
+  DEFAULT_REWARDS.filter((r) => PET_REWARD_IDS.includes(r.id)).map((r) => [r.id, r])
+);
+// Title mặc định LỊCH SỬ (trước Pha E) cho các mục đã đổi tên — để nhận ra seed cũ.
+const PET_REWARD_LEGACY_TITLES = {
+  rp2: ["Mua 🐺 Trứng Sói Chiến (Ấp sói nguyên tố hiếm)"],
+};
+
+/**
+ * One-time self-heal: đổi tiền tệ/giá pet & thẻ đóng băng sang chuẩn Pha E cho state cũ
+ * (mọi version). Chỉ động vào seed CHƯA bị sửa tên; quà custom/đổi tên → bảo toàn.
+ * @param {Array} rewards
+ * @returns {{ rewards: Array, changed: boolean }}
+ */
+export function reconcilePetRewardCurrency(rewards) {
+  if (!Array.isArray(rewards)) return { rewards, changed: false };
+  let changed = false;
+  const next = rewards.map((r) => {
+    const def = PET_REWARD_DEF_BY_ID.get(r.id);
+    if (!def) return r;
+    const knownTitles = [def.title, ...(PET_REWARD_LEGACY_TITLES[r.id] || [])];
+    if (!knownTitles.includes(r.title)) return r; // parent đã đổi tên → tôn trọng
+    if (r.currency === def.currency && r.cost === def.cost && r.title === def.title) return r;
+    changed = true;
+    return { ...r, title: def.title, currency: def.currency, cost: def.cost };
+  });
+  return { rewards: changed ? next : rewards, changed };
 }
 
 export const DEFAULT_INVENTORY = {
