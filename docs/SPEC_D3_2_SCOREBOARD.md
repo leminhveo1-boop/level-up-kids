@@ -5,7 +5,14 @@
 > Founder đã chốt (28/07) nghĩa **"đo theo nhóm"** = (a) theo nhóm **loại việc** + (b) **chuẩn nhóm-tuổi**
 > để **so con-với-chính-con theo thời gian**, **KHÔNG xếp hạng công khai giữa các trẻ**.
 >
-> DoD: *Spec khớp North Star + spec xu.* Code ở D3.3 (🟡 S). **Chưa code gì ở bước này.**
+> DoD: *Spec khớp North Star + spec xu.* Code ở D3.3 (🟡 S).
+>
+> **QUYẾT ĐỊNH ĐÃ CHỐT (founder, 28/07):**
+> - **Q1 — Số vùng = 5** (gộp Kết nối vào Giúp Đỡ, trùng đúng 5 chỉ số ⚔️ hero). Xem §2.
+> - **Q3 — Ngưỡng hiện = từ 8 tuổi.** Dưới 8t: ẩn hoàn toàn (chỉ pet/extinction). Xem §5, §8.
+>   *Lệch nhẹ spec-xu mục 13 (vốn ghi 6-8 extinction): hoà giải — ranh HIỂN THỊ dịch xuống 8t, nên
+>   tầng nội dung là **<8 ẩn · 8-11 "Độ bền Khiên" (game, khỏe lại được) · 12-13 thêm tự xem phong độ**.*
+> - Q2 (trung thực, không percentile bịa) là **ràng buộc**, không phải lựa chọn — giữ nguyên (P6).
 
 ---
 
@@ -101,7 +108,7 @@ Cho **mỗi vùng**:
 | **Xu hướng** `trend` | `effort` kỳ này vs kỳ trước → `up/flat/down/insufficient` | Trẻ 9+, phụ huynh | Down = lời nâng đỡ, không đổ lỗi |
 | **Tự khởi động** `selfStart` | Σ `importantDone` khi ngày đó `remindersNeeded=0` | Phụ huynh (North Star), teen summary | — |
 | **Đều đặn** `activeDays` | Số ngày trong kỳ có `done≥1` ở vùng | Trẻ 9+ ("giữ nhịp"), phụ huynh | Không streak-về-0 gây hoảng |
-| **Phong độ / Độ bền Khiên** `form` | Thước game bền: **tăng** theo `activeDays`, **chớm sụt** khi đứt nhịp, **kẹp sàn > 0** | Trẻ 9-11 (game, khỏe lại được), 12-13 (tự xem) | Không %, không về 0, không báo phụ huynh dạng điểm |
+| **Phong độ / Độ bền Khiên** `form` | Thước game bền: **tăng** theo `activeDays`, **chớm sụt** khi đứt nhịp, **kẹp sàn > 0** | Trẻ 8-11 (game, khỏe lại được), 12-13 (tự xem) | Không %, không về 0, không báo phụ huynh dạng điểm |
 
 **`form` (điểm giao then chốt với spec-xu mục 13):** hàm thuần, đầu vào = chuỗi `activeDays`/đứt-nhịp
 theo vùng; đầu ra = mức 0<`form`≤1 (hoặc 5 nấc icon Khiên). Quy tắc: mỗi ngày active +Δ, mỗi ngày đứt −Δ′
@@ -116,8 +123,9 @@ với **Δ′<Δ và có sàn** (không extinction cứng). Đây là thứ cơ 
 nhóm-tuổi" ở đây = **dải kỳ vọng phát triển do app/founder thiết kế**, đúng như [[value-gap-age-appropriate]],
 dùng để:
 
-1. **Chọn TẦNG hệ quả xu** (khớp spec-xu mục 13): **6-8t** extinction thuần, **ẩn scoreboard** (chỉ pet xìu);
-   **9-11t** hiện `form`/"Độ bền Khiên" (game, khỏe lại được); **12-13t** thêm "tự xem phong độ".
+1. **Chọn TẦNG hệ quả xu** (hoà giải spec-xu mục 13, founder chốt ranh 8t): **dưới 8t** extinction thuần,
+   **ẩn scoreboard** (chỉ pet xìu); **8-11t** hiện `form`/"Độ bền Khiên" (game, khỏe lại được);
+   **12-13t** thêm "tự xem phong độ".
 2. **Hiệu chỉnh mục tiêu/nhịp** theo Scaffolding Level (A0.4) + roadmap 12 tháng (§7.3): số vùng theo dõi
    tích cực, độ dài phiên, kỳ vọng cân bằng vùng — **để tránh quá/thiếu tải** (nối D3.5 `workload.js`).
 3. **Diễn ngôn tự-quy-chiếu**: "phù hợp lứa tuổi con", KHÔNG "hơn/kém bạn".
@@ -153,8 +161,8 @@ nỗ lực này. Scoreboard **không** biết gì về VNĐ/tỷ giá — tách 
 
 ## 8. Bề mặt UI (spec để D3.3 code — chưa dựng ở bước này)
 
-- **Trẻ 6-8t:** **ẩn** scoreboard (extinction/pet, tránh phán xét sớm). 
-- **Trẻ 9-11t:** radar "⚔️ 5 chỉ số" sẵn có → **chạm mở** "So với chính mình": mỗi vùng hiện `trend` (mũi tên),
+- **Trẻ dưới 8t:** **ẩn** scoreboard (extinction/pet, tránh phán xét sớm). 
+- **Trẻ 8-11t:** radar "⚔️ 5 chỉ số" sẵn có → **chạm mở** "So với chính mình": mỗi vùng hiện `trend` (mũi tên),
   `effort` (số việc), `activeDays` ("giữ nhịp N ngày"), `form` (nấc Khiên). **Không %.**
 - **Teen 12-13t:** như trên, gọn hơn (summary), thêm "tự xem phong độ".
 - **Phụ huynh (WeekTab):** thẻ "Cân bằng vùng năng lực" — vùng nào đang khỏe/đang lặng, để **gợi ý khích lệ**
@@ -163,12 +171,11 @@ nỗ lực này. Scoreboard **không** biết gì về VNĐ/tỷ giá — tách 
 
 ---
 
-## 9. Câu hỏi khó-đổi cần founder chốt trước khi code D3.3
+## 9. Câu hỏi khó-đổi — ĐÃ CHỐT (founder, 28/07)
 
-- **Q1 — Số vùng:** *(KN: 5 vùng, gộp Kết nối vào Giúp Đỡ — khớp radar sẵn có)* hay tách 6 vùng (Kết nối riêng)?
-- **Q2 — Chuẩn tuổi trung thực:** xác nhận "chuẩn nhóm-tuổi" là **dải kỳ vọng thiết kế** (không percentile thực
-  nghiệm, không "hơn X% bạn") — *(KN: đúng, đây là ràng buộc trung thực P6)*.
-- **Q3 — Tuổi hiện `form`:** *(KN: 9+ theo spec-xu mục 13)* — ẩn hoàn toàn dưới 9t đúng chứ?
+- **Q1 — Số vùng:** ✅ **5 vùng** (gộp Kết nối vào Giúp Đỡ — khớp radar sẵn có).
+- **Q2 — Chuẩn tuổi trung thực:** ✅ **dải kỳ vọng thiết kế** (không percentile thực nghiệm, không "hơn X% bạn") — ràng buộc P6.
+- **Q3 — Tuổi hiện `form`:** ✅ **từ 8 tuổi** (ẩn hoàn toàn dưới 8t; 8-11 game "Độ bền Khiên", 12-13 thêm tự xem phong độ).
 
 ---
 
@@ -177,6 +184,6 @@ nỗ lực này. Scoreboard **không** biết gì về VNĐ/tỷ giá — tách 
 1. `progress.js`+`scoreboard.js`: `groupSignals(tasks)`, `buildScoreboard(history, {uiMode, now})` — **thuần**, vitest.
 2. `economy.js closeDay`: ghi `groups` vào snapshot (additive); test đọc/ghi **tương thích ngược** (snapshot cũ thiếu `groups` không nổ).
 3. Số đo đúng ở `/demo` (demo.js seed `groups` cho vài ngày để phô).
-4. UI theo §8, **ẩn %**, **ẩn dưới 9t**; screenshot.
+4. UI theo §8, **ẩn %**, **ẩn dưới 8t**; screenshot.
 5. **Không** đường dẫn dữ liệu trẻ khác (test khẳng định 1-history).
 ```
