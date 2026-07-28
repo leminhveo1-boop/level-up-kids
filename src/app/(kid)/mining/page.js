@@ -119,15 +119,16 @@ export default function MiningCavePage() {
       const clickX = e.clientX - rect.left || 150;
       const clickY = e.clientY - rect.top || 150;
 
-      let styleColor = "text-coin font-black";
+      // Pha E — đào ra ĐIỂM ⭐ (tiền game), không phải xu. Màu forest cho điểm.
+      let styleColor = "text-forest-dark font-black";
       let prefix = "+";
-      if (result.lootType === "legendary") styleColor = "text-coin font-extrabold text-lg animate-bounce";
-      else if (result.lootType === "epic") styleColor = "text-coin font-black text-base";
-      else if (result.lootType === "rare") styleColor = "text-coin font-black";
+      if (result.lootType === "legendary") styleColor = "text-forest-dark font-extrabold text-lg animate-bounce";
+      else if (result.lootType === "epic") styleColor = "text-forest-dark font-black text-base";
+      else if (result.lootType === "rare") styleColor = "text-forest-dark font-black";
 
       const newFloatingText = {
         id: Date.now() + Math.random(),
-        text: `${prefix}${result.coinReward} 🪙 ${result.isCritical ? t("game.mine.crit") : ""}`,
+        text: `${prefix}${result.pointReward} ⭐ ${result.isCritical ? t("game.mine.crit") : ""}`,
         styleColor,
         x: clickX,
         y: clickY - 20,
@@ -137,11 +138,11 @@ export default function MiningCavePage() {
 
       // Log update
       if (result.lootType === "legendary") {
-        setCaveLog(t("game.mine.logLegendary", { name: charName, title: result.title, coins: result.coinReward }));
+        setCaveLog(t("game.mine.logLegendary", { name: charName, title: result.title, coins: result.pointReward }));
       } else if (result.lootType === "epic") {
-        setCaveLog(t("game.mine.logEpic", { title: result.title, coins: result.coinReward }));
+        setCaveLog(t("game.mine.logEpic", { title: result.title, coins: result.pointReward }));
       } else {
-        setCaveLog(t("game.mine.logCommon", { title: result.title, coins: result.coinReward }));
+        setCaveLog(t("game.mine.logCommon", { title: result.title, coins: result.pointReward }));
       }
 
       // Re-cleanup floating text after 1.5s
@@ -430,8 +431,9 @@ export default function MiningCavePage() {
                           <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border uppercase ${badgeStyle}`}>
                             {item.rarityText}
                           </span>
-                          <span className="text-xs font-black text-coin">
-                            {item.isMaterial ? "" : `+${item.coins} 🪙`}
+                          <span className="text-xs font-black text-forest-dark">
+                            {/* Pha E — đào ra Điểm ⭐; record cũ dùng `coins`, đọc points ?? coins */}
+                            {item.isMaterial ? "" : `+${item.points ?? item.coins ?? 0} ⭐`}
                           </span>
                         </div>
                       </div>

@@ -4,7 +4,7 @@
  * scales up each week, and defeating it unlocks a real loot chest.
  */
 
-import { BOSS_MAX_HP, BOSS_HP_SCALE_PER_CYCLE, BOSS_HP_SCALE_MAX_CYCLES, BOSS_LOOT_COIN_MIN, BOSS_LOOT_COIN_MAX, DEFAULT_PARENT_CONFIG } from "./constants";
+import { BOSS_MAX_HP, BOSS_HP_SCALE_PER_CYCLE, BOSS_HP_SCALE_MAX_CYCLES, BOSS_LOOT_COIN_MIN, BOSS_LOOT_COIN_MAX } from "./constants";
 
 const BOSS_NAMES = [
   "Thần Lười Biếng 😴",
@@ -57,9 +57,10 @@ export function advanceBossWeek(state, now = new Date()) {
   };
 }
 
-/** Roll the loot for a defeated boss's chest — deliberately more generous than mining. */
+/** Roll the loot for a defeated boss's chest — deliberately more generous than mining.
+ *  Pha E: boss thưởng ĐIỂM ⭐ (tiền game), KHÔNG ra xu (tiền thật chỉ từ lương — I4). */
 export function rollBossLoot(rng = Math.random) {
-  const coins = BOSS_LOOT_COIN_MIN + Math.floor(rng() * (BOSS_LOOT_COIN_MAX - BOSS_LOOT_COIN_MIN + 1));
+  const points = BOSS_LOOT_COIN_MIN + Math.floor(rng() * (BOSS_LOOT_COIN_MAX - BOSS_LOOT_COIN_MIN + 1));
 
   const eggRoll = rng();
   let egg = null;
@@ -67,7 +68,7 @@ export function rollBossLoot(rng = Math.random) {
   else if (eggRoll < 0.4) egg = "wolf";
   else if (eggRoll < 0.7) egg = "base";
 
-  return { coins, egg };
+  return { points, egg };
 }
 
 /**
@@ -80,7 +81,6 @@ export function openBossChest(state, rng = Math.random) {
   if (state.bossChestOpened) return { state, result: { success: false, error: "CHEST_ALREADY_OPENED" } };
 
   const loot = rollBossLoot(rng);
-  const maxCoins = state.parentConfig?.maxCoinBalance ?? DEFAULT_PARENT_CONFIG.maxCoinBalance;
   const inventory = loot.egg
     ? { ...state.inventory, eggs: { ...state.inventory.eggs, [loot.egg]: (state.inventory.eggs[loot.egg] || 0) + 1 } }
     : state.inventory;
@@ -88,7 +88,8 @@ export function openBossChest(state, rng = Math.random) {
   return {
     state: {
       ...state,
-      heroCoins: Math.min(maxCoins, state.heroCoins + loot.coins),
+      // Pha E — thưởng ĐIỂM ⭐, heroCoins bất biến (xu chỉ từ lương — I4)
+      points: (state.points || 0) + loot.points,
       inventory,
       bossChestOpened: true,
     },

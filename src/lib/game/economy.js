@@ -28,7 +28,6 @@ import {
   FOCUS_BONUS_RATIO,
   FADE_START,
   FADE_FLOOR,
-  DEFAULT_PARENT_CONFIG,
   COIN_RATE_VND,
 } from "./constants";
 import { advanceBossWeek } from "./boss";
@@ -523,7 +522,7 @@ export function mineTreasure(state, rng = Math.random) {
     const record = {
       id: makeId(),
       title,
-      coins: 0,
+      points: 0,
       rarity: lootType,
       rarityText,
       isCritical,
@@ -533,14 +532,14 @@ export function mineTreasure(state, rng = Math.random) {
 
     return {
       state: { ...baseState, inventory, miningHistory: pushHistory(record) },
-      result: { success: true, lootType, coinReward: 0, rarityText, title, isCritical, isMaterial: true },
+      result: { success: true, lootType, pointReward: 0, rarityText, title, isCritical, isMaterial: true },
     };
   }
 
-  // Coin mining
+  // Pha E — đào ra ĐIỂM ⭐ (tiền GAME), KHÔNG ra xu (tiền thật). Xu chỉ từ lương (I4).
   const rand = rng();
   let lootType = "common";
-  let coinReward = 1;
+  let pointReward = 1;
   let rarityText = "Thường ⚙️";
   let title = "⚙️ Mảnh Đá Nhỏ ⚙️";
 
@@ -555,28 +554,28 @@ export function mineTreasure(state, rng = Math.random) {
 
   if (rand < legendaryChance) {
     lootType = "legendary";
-    coinReward = Math.floor(rng() * 8) + 8;
+    pointReward = Math.floor(rng() * 8) + 8;
     rarityText = "Huyền Thoại ⚡";
     title = "🌟 RƯƠNG BÁU THẦN THOẠI 🌟";
   } else if (rand < legendaryChance + goldenChance) {
     lootType = "epic";
-    coinReward = Math.floor(rng() * 4) + 4;
+    pointReward = Math.floor(rng() * 4) + 4;
     rarityText = "Sử Thi 👑";
-    title = "👑 Hũ Xu Vàng Khổng Lồ 👑";
+    title = "👑 Hũ Điểm Vàng Khổng Lồ 👑";
   } else if (rand < legendaryChance + goldenChance + silverChance) {
     lootType = "rare";
-    coinReward = Math.floor(rng() * 2) + 2;
+    pointReward = Math.floor(rng() * 2) + 2;
     rarityText = "Hiếm 🔷";
     title = "🔷 Quặng Bạc Lấp Lánh 🔷";
   }
 
-  if (isCritical) coinReward *= 2;
+  if (isCritical) pointReward *= 2;
 
-  const maxCoins = state.parentConfig?.maxCoinBalance ?? DEFAULT_PARENT_CONFIG.maxCoinBalance;
+  // Điểm ⭐ không có trần kiếm (tiền game); cân bằng bằng năng lượng. KHÔNG đụng heroCoins (I4).
   const record = {
     id: makeId(),
     title,
-    coins: coinReward,
+    points: pointReward,
     rarity: lootType,
     rarityText,
     isCritical,
@@ -586,10 +585,10 @@ export function mineTreasure(state, rng = Math.random) {
   return {
     state: {
       ...baseState,
-      heroCoins: Math.min(maxCoins, state.heroCoins + coinReward),
+      points: (state.points || 0) + pointReward,
       miningHistory: pushHistory(record),
     },
-    result: { success: true, lootType, coinReward, rarityText, title, isCritical },
+    result: { success: true, lootType, pointReward, rarityText, title, isCritical },
   };
 }
 

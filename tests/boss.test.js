@@ -70,10 +70,10 @@ describe("advanceBossWeek", () => {
 });
 
 describe("rollBossLoot", () => {
-  test("rolls coins within the generous boss range", () => {
+  test("rolls POINTS within the generous boss range (Pha E: boss → Điểm ⭐)", () => {
     const loot = rollBossLoot(rngQueue(0, 0.99));
-    expect(loot.coins).toBeGreaterThanOrEqual(20);
-    expect(loot.coins).toBeLessThanOrEqual(40);
+    expect(loot.points).toBeGreaterThanOrEqual(20);
+    expect(loot.points).toBeLessThanOrEqual(40);
   });
 
   test("low roll grants a dragon egg", () => {
@@ -102,11 +102,12 @@ describe("openBossChest", () => {
     expect(result.error).toBe("CHEST_ALREADY_OPENED");
   });
 
-  test("credits real loot and locks the chest", () => {
-    const state = { ...createInitialState({ name: "Hero" }), bossDefeated: true, bossChestOpened: false, heroCoins: 0 };
+  test("credits real loot (Điểm ⭐) and locks the chest, heroCoins bất biến (I4)", () => {
+    const state = { ...createInitialState({ name: "Hero" }), bossDefeated: true, bossChestOpened: false, heroCoins: 500, points: 0 };
     const { state: next, result } = openBossChest(state, rngQueue(0.5, 0.05));
     expect(result.success).toBe(true);
-    expect(next.heroCoins).toBe(result.loot.coins);
+    expect(next.points).toBe(result.loot.points);
+    expect(next.heroCoins).toBe(500); // xu không đổi — boss không sinh tiền thật
     expect(next.bossChestOpened).toBe(true);
     expect(next.inventory.eggs.dragon).toBe(state.inventory.eggs.dragon + 1);
   });

@@ -390,7 +390,7 @@ export function GameProvider({ children }) {
       if (!result.success) return prev;
 
       playSound("mine");
-      if (result.coinReward > 0 && (result.isCritical || result.lootType !== "common")) {
+      if (result.pointReward > 0 && (result.isCritical || result.lootType !== "common")) {
         setTimeout(() => playSound("coin"), 80);
       }
       if (result.lootType === "legendary" && !result.isMaterial) {
@@ -472,7 +472,7 @@ export function GameProvider({ children }) {
       playSound("reward");
       fireConfetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ["#D97706", "#FBBF24", "#7C3AED"] });
       const eggText = result.loot.egg ? ` + 1 Trứng ${result.loot.egg === "dragon" ? "Rồng 🐉" : result.loot.egg === "wolf" ? "Sói 🐺" : "Thường 🥚"}` : "";
-      outcome = { success: true, loot: result.loot, message: `Nhận được ${result.loot.coins} 🪙${eggText}!` };
+      outcome = { success: true, loot: result.loot, message: `Nhận được ${result.loot.points} ⭐${eggText}!` };
       return next;
     });
     return outcome;

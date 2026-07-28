@@ -229,42 +229,40 @@ describe("mineTreasure", () => {
     expect(next.energy).toBe(0);
   });
 
-  test("consumes 1 energy and yields common coin on high rolls", () => {
+  test("consumes 1 energy and yields common POINT on high rolls (Pha E: đào → Điểm ⭐)", () => {
     const state = freshState({ energy: 10 });
     // rng: crit-check unused (no buffs), material 0.99 (no material), loot 0.99 (common)
     const { state: next, result } = mineTreasure(state, rngQueue(0.99));
     expect(next.energy).toBe(9);
     expect(result.success).toBe(true);
     expect(result.lootType).toBe("common");
-    expect(result.coinReward).toBe(1);
-    expect(next.heroCoins).toBe(1);
+    expect(result.pointReward).toBe(1);
+    expect(next.points).toBe(1);
     expect(next.miningHistory).toHaveLength(1);
   });
 
-  test("legendary drop grants 8-15 coins", () => {
+  test("legendary drop grants 8-15 POINTS", () => {
     const state = freshState({ energy: 10 });
     // material roll 0.99 → coins; loot rand 0.001 < legendaryChance 0.02; coin rng 0 → 8
     const { result } = mineTreasure(state, rngQueue(0.99, 0.001, 0));
     expect(result.lootType).toBe("legendary");
-    expect(result.coinReward).toBe(8);
+    expect(result.pointReward).toBe(8);
   });
 
-  test("hero coins respect parent maxCoinBalance cap", () => {
-    const state = freshState({
-      energy: 10,
-      heroCoins: 7000,
-      parentConfig: { ...freshState().parentConfig, maxCoinBalance: 7000 },
-    });
-    const { state: next } = mineTreasure(state, rngQueue(0.99));
-    expect(next.heroCoins).toBe(7000);
+  test("I4: đào mỏ KHÔNG BAO GIỜ đổi heroCoins (xu = tiền thật, chỉ từ lương)", () => {
+    const state = freshState({ energy: 10, heroCoins: 500, points: 0 });
+    const { state: next } = mineTreasure(state, rngQueue(0.99, 0.001, 0)); // legendary 8 điểm
+    expect(next.heroCoins).toBe(500); // bất biến
+    expect(next.points).toBe(8); // điểm tăng thay vì xu
   });
 
-  test("material drop adds inventory instead of coins", () => {
+  test("material drop adds inventory instead of points", () => {
     const state = freshState({ energy: 10 });
     // material roll 0.01 < 0.15 → material; materialRand 0.1 < 0.46 → food; food index rng 0 → meat
     const { state: next, result } = mineTreasure(state, rngQueue(0.01, 0.1, 0));
     expect(result.isMaterial).toBe(true);
     expect(next.inventory.foods.meat).toBe(1);
+    expect(next.points).toBe(0);
     expect(next.heroCoins).toBe(0);
   });
 
