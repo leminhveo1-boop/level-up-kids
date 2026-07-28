@@ -5,9 +5,11 @@ import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import { getAtRiskTasks } from "@/lib/game/habits";
 import { assessDailyWorkload } from "@/lib/game/workload";
-import { COIN_RATE_VND } from "@/lib/game/constants";
+import { COIN_RATE_VND, ALLOWANCE_PERK_SEEDS } from "@/lib/game/constants";
+import { budgetCoinsFor } from "@/lib/game/economy";
 import JourneySection from "@/features/parent/components/JourneySection";
 import TimetableSection from "@/features/parent/components/TimetableSection";
+import AllowanceCard from "@/features/parent/components/AllowanceCard";
 import Collapsible from "@/ui/Collapsible";
 import { Trash2, Plus, Gift, PackageOpen, Pencil, Check, X, Coffee } from "lucide-react";
 
@@ -63,8 +65,11 @@ export default function ManageTab() {
     setInventory,
     parentConfig,
     charName,
+    uiMode,
   } = useGame();
   const { t } = useLang();
+  const budgetCoins = budgetCoinsFor(parentConfig); // Pha E — >0 mới hiện ô Xu/task
+  const allowanceOn = budgetCoins > 0;
   const atRiskTasks = getAtRiskTasks(tasks);
   const workload = assessDailyWorkload(tasks); // D3.5 — cảnh báo mềm khi ngày quá đầy
 
@@ -82,6 +87,7 @@ export default function ManageTab() {
   const [taskVerify, setTaskVerify] = useState("trust");
   const [taskDuration, setTaskDuration] = useState(15);
   const [taskIsMandatory, setTaskIsMandatory] = useState(false);
+  const [taskCoin, setTaskCoin] = useState(0);
 
   const applyTemplate = (tpl) => {
     setTaskTitle(tpl.title);
@@ -95,9 +101,10 @@ export default function ManageTab() {
   const handleAddTask = (e) => {
     e.preventDefault();
     if (!taskTitle.trim()) return;
-    addCustomTask(taskTitle.trim(), taskExp, taskCategory, taskIsMandatory, taskExp, taskEnergy, taskVerify, taskDuration);
+    addCustomTask(taskTitle.trim(), taskExp, taskCategory, taskIsMandatory, taskExp, taskEnergy, taskVerify, taskDuration, taskCoin);
     setTaskTitle("");
     setTaskIsMandatory(false);
+    setTaskCoin(0);
     showFlash("Đã thêm nhiệm vụ mới! ✅");
   };
 
@@ -115,6 +122,7 @@ export default function ManageTab() {
       verifyType: tk.verifyType || "trust",
       durationMin: tk.durationMin || 15,
       isMandatory: !!tk.isMandatory,
+      coinReward: tk.coinReward || 0,
     });
   };
 
@@ -212,6 +220,9 @@ export default function ManageTab() {
 
       {/* 📅 Đợt 3: Thời khóa biểu — TKB lớp tự sinh nhiệm vụ học mỗi ngày (nối #2 sửa gợi ý) */}
       <TimetableSection showFlash={showFlash} />
+
+      {/* 💰 Pha E: Quỹ tiêu vặt — trần KIẾM xu + auto-chia quỹ vào nhiệm vụ */}
+      <AllowanceCard showFlash={showFlash} />
 
       {/* D4: at-risk tasks — gentle "make it tiny" nudge (Fogg) */}
       {atRiskTasks.length > 0 && (
@@ -337,6 +348,19 @@ export default function ManageTab() {
             )}
           </div>
 
+          {allowanceOn && (
+            <label className="text-scale-2xs font-bold text-gray-500 space-y-1 block">
+              <span>Xu tiêu vặt 🪙 (để 0 nếu việc này không quy ra tiền)</span>
+              <input
+                type="number"
+                value={taskCoin}
+                onChange={(e) => setTaskCoin(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-xs font-bold text-forest-dark focus:outline-none"
+                min={0}
+              />
+            </label>
+          )}
+
           <label className="flex items-center gap-2 text-scale-2xs font-bold text-gray-600 cursor-pointer min-h-tap">
             <input
               type="checkbox"
@@ -427,6 +451,18 @@ export default function ManageTab() {
                     </label>
                   )}
                 </div>
+                {allowanceOn && (
+                  <label className="text-scale-2xs font-bold text-gray-500 space-y-1 block">
+                    <span>Xu tiêu vặt 🪙</span>
+                    <input
+                      type="number"
+                      value={edit.coinReward}
+                      onChange={(e) => setEdit((s) => ({ ...s, coinReward: Math.max(0, parseInt(e.target.value) || 0) }))}
+                      className="w-full min-h-tap bg-white border border-sand rounded-xl px-2 text-scale-xs font-bold text-forest-dark focus:outline-none"
+                      min={0}
+                    />
+                  </label>
+                )}
                 <label className="flex items-center gap-2 text-scale-2xs font-bold text-gray-600 cursor-pointer min-h-tap">
                   <input
                     type="checkbox"
@@ -457,6 +493,7 @@ export default function ManageTab() {
               <div key={t.id} className={`border rounded-xl px-3 py-2 flex items-center gap-2 ${t.isMandatory ? "border-red-200 bg-red-50/20" : "border-sand"}`}>
                 <span className="text-scale-xs">{verifyBadge(t)}</span>
                 <span className="flex-grow text-scale-2xs font-bold text-forest-dark truncate">{t.title}</span>
+                {t.coinReward > 0 && <span className="text-scale-2xs text-coin font-black flex-shrink-0">+{t.coinReward}🪙</span>}
                 {t.isMandatory && <span className="text-scale-2xs text-terracotta font-black">🔴</span>}
                 <button
                   onClick={() => startEdit(t)}
@@ -560,6 +597,31 @@ export default function ManageTab() {
             <Plus size={16} /> Lưu phần thưởng
           </button>
         </form>
+
+        {/* Pha E §7 — gợi ý quà Xu theo tuổi: 1-chạm thêm vào cửa hàng (sửa giá sau) */}
+        {allowanceOn && (
+          <div className="mt-2.5 space-y-1.5">
+            <p className="text-scale-2xs font-bold text-gray-500">Gợi ý quà đổi bằng Xu 🪙 (chạm để thêm, chỉnh giá sau):</p>
+            <div className="flex flex-wrap gap-1.5">
+              {(ALLOWANCE_PERK_SEEDS[uiMode === "teen" ? "teen" : "kid"] || []).map((seed) => {
+                const cost = Math.max(1, Math.round(seed.vnd / coinRate));
+                return (
+                  <button
+                    key={seed.title}
+                    type="button"
+                    onClick={() => {
+                      addCustomReward(seed.title, cost, "perk", 20, "rare", "heroCoins");
+                      showFlash(`Đã thêm "${seed.title}" vào cửa hàng! 🎁`);
+                    }}
+                    className="min-h-tap bg-white border border-sand rounded-full px-3 text-scale-2xs font-bold text-forest-dark active:scale-95 transition-transform"
+                  >
+                    {seed.title} <span className="text-coin font-black">{cost}🪙</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         </Collapsible>
 
         <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">

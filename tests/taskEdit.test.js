@@ -138,6 +138,21 @@ describe("applyTaskEdit — sửa gợi ý nhiệm vụ (#2)", () => {
 
 // Clamp durationMin dùng chung với addCustomTask (GameState) — khoá contract min 1, mặc định 10.
 describe("toInt — clamp durationMin (dùng chung addCustomTask + applyTaskEdit)", () => {
+  test("Pha E — coinReward: đặt xu/task (≥0)", () => {
+    const r = applyTaskEdit(baseTask(), { coinReward: 7 });
+    expect(r.coinReward).toBe(7);
+  });
+
+  test("Pha E — coinReward âm/NaN → kẹp 0 (không bịa xu)", () => {
+    expect(applyTaskEdit(baseTask(), { coinReward: -3 }).coinReward).toBe(0);
+    expect(applyTaskEdit(baseTask(), { coinReward: "abc" }).coinReward).toBe(0);
+  });
+
+  test("Pha E — không truyền coinReward → giữ nguyên field cũ", () => {
+    const r = applyTaskEdit({ ...baseTask(), coinReward: 5 }, { title: "Khác" });
+    expect(r.coinReward).toBe(5);
+  });
+
   test("số hợp lệ → giữ nguyên", () => {
     expect(toInt(25, 1, 10)).toBe(25);
   });

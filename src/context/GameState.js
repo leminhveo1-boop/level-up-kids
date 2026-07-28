@@ -624,7 +624,7 @@ export function GameProvider({ children }) {
     `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
   const addCustomTask = useCallback(
-    (title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0, verifyType = "trust", durationMin = 0) => {
+    (title, expVal, category, isMandatory = false, pointsVal = 0, energyVal = 0, verifyType = "trust", durationMin = 0, coinReward = 0) => {
       setState((prev) => {
         if (!prev) return prev;
         const newTask = {
@@ -641,6 +641,7 @@ export function GameProvider({ children }) {
           isMandatory,
           verifyType,
           durationMin: verifyType === "focus" ? toInt(durationMin, 1, 10) : undefined,
+          coinReward: Math.max(0, parseInt(coinReward) || 0), // Pha E — xu tiêu vặt/task
         };
         return { ...prev, tasks: [...prev.tasks, newTask] };
       });
@@ -659,6 +660,17 @@ export function GameProvider({ children }) {
     setState((prev) =>
       prev
         ? { ...prev, tasks: prev.tasks.map((t) => (t.id === id ? applyTaskEdit(t, patch, CUSTOM_TASK_STAT_KEY_MAP) : t)) }
+        : prev
+    );
+    return { success: true };
+  }, []);
+
+  /** Pha E §4.5: áp gợi ý auto-chia quỹ — gán coinReward cho từng task (immutable). */
+  const applyAllowanceSplit = useCallback((splits) => {
+    const byId = new Map((splits || []).map((s) => [s.id, Math.max(0, parseInt(s.coinReward) || 0)]));
+    setState((prev) =>
+      prev
+        ? { ...prev, tasks: prev.tasks.map((t) => (byId.has(t.id) ? { ...t, coinReward: byId.get(t.id) } : t)) }
         : prev
     );
     return { success: true };
@@ -982,6 +994,7 @@ export function GameProvider({ children }) {
         addCustomTask,
         deleteTask,
         updateTask,
+        applyAllowanceSplit,
         splitTask,
         dismissAtRisk,
         deferTask,
@@ -1006,6 +1019,7 @@ export function GameProvider({ children }) {
         resetEntireGame,
         heroCoins: s.heroCoins,
         setHeroCoins: makeFieldSetter("heroCoins"),
+        allowance: s.allowance || { periodKey: "", earnedCoins: 0 }, // Pha E — trần kiếm xu chu kỳ
         coinRescaleNotice: s.coinRescaleNotice || false,
         clearCoinRescaleNotice: () => makeFieldSetter("coinRescaleNotice")(false),
         points: s.points,
@@ -1072,6 +1086,7 @@ export function GameProvider({ children }) {
       addCustomTask,
       deleteTask,
       updateTask,
+      applyAllowanceSplit,
       splitTask,
       dismissAtRisk,
       deferTask,

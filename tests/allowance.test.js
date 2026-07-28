@@ -3,6 +3,7 @@ import {
   computePeriodKey,
   rollAllowancePeriod,
   budgetCoinsFor,
+  suggestAllowanceSplit,
   completeTask,
   approveTask,
   approveAllPending,
@@ -184,6 +185,56 @@ describe("completeTask instant-approve (trust-autopilot) — cấp xu ngay", () 
     expect(res.state.heroCoins).toBe(7);
     expect(res.state.allowance.earnedCoins).toBe(7);
     expect(res.events.coinsGranted).toBe(7);
+  });
+});
+
+describe("§4.5 — suggestAllowanceSplit (auto-chia quỹ theo tỷ trọng điểm)", () => {
+  const tasks = [
+    { id: "a", points: 10 },
+    { id: "b", points: 20 },
+    { id: "c", points: 20 },
+  ]; // Σđiểm = 50 → Σtuần = 350
+
+  test("quỹ tuần: chia theo tỷ trọng, làm chăm cả tuần ≈ chạm trần", () => {
+    // 350.000đ/tuần → 350 xu/tuần. rate = 350/350 = 1 xu/điểm → nhưng clamp ≤ 20.
+    const cfg = { allowanceBudgetVnd: 350000, allowancePeriod: "week" };
+    const out = suggestAllowanceSplit(tasks, cfg);
+    const by = Object.fromEntries(out.map((o) => [o.id, o.coinReward]));
+    expect(by.a).toBe(10); // 10 điểm × 1
+    expect(by.b).toBe(20); // clamp trần 20 (20×1=20)
+    expect(by.c).toBe(20);
+  });
+
+  test("quỹ nhỏ hơn: rate <1, gợi ý xu tỉ lệ điểm", () => {
+    // 35.000đ/tuần → 35 xu/tuần. rate = 35/350 = 0.1 xu/điểm.
+    const cfg = { allowanceBudgetVnd: 35000, allowancePeriod: "week" };
+    const by = Object.fromEntries(suggestAllowanceSplit(tasks, cfg).map((o) => [o.id, o.coinReward]));
+    expect(by.a).toBe(1); // round(10×0.1)=1
+    expect(by.b).toBe(2); // round(20×0.1)=2
+    expect(by.c).toBe(2);
+  });
+
+  test("quỹ theo THÁNG quy về tuần (×12/52)", () => {
+    // 152.000đ/tháng → 152 xu/tháng → tuần ≈ 35.08 xu. rate ≈ 0.1 → giống case tuần 35k.
+    const cfg = { allowanceBudgetVnd: 152000, allowancePeriod: "month" };
+    const by = Object.fromEntries(suggestAllowanceSplit(tasks, cfg).map((o) => [o.id, o.coinReward]));
+    expect(by.a).toBe(1);
+    expect(by.b).toBe(2);
+  });
+
+  test("quỹ = 0 (chưa bật lương) → mọi gợi ý = 0", () => {
+    const out = suggestAllowanceSplit(tasks, { allowanceBudgetVnd: 0, allowancePeriod: "week" });
+    expect(out.every((o) => o.coinReward === 0)).toBe(true);
+  });
+
+  test("không task điểm (Σ=0) → không chia âm/NaN, trả 0", () => {
+    const out = suggestAllowanceSplit([{ id: "z", points: 0 }], { allowanceBudgetVnd: 100000 });
+    expect(out).toEqual([{ id: "z", coinReward: 0 }]);
+  });
+
+  test("clamp trần trên 20: 1 việc điểm cao + quỹ lớn không lố", () => {
+    const out = suggestAllowanceSplit([{ id: "big", points: 100 }], { allowanceBudgetVnd: 5000000, allowancePeriod: "week" });
+    expect(out[0].coinReward).toBe(20);
   });
 });
 

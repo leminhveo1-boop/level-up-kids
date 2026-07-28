@@ -74,6 +74,34 @@ export function budgetCoinsFor(parentConfig) {
   return Math.round(vnd / COIN_RATE_VND);
 }
 
+// §4.5 — 1 việc không lố quá (tránh 1 việc = 20k+); trần trên gợi ý xu/task.
+const SUGGEST_COIN_MAX = 20;
+
+/**
+ * §4.5 — Gợi ý xu/task để "làm chăm cả tuần ≈ chạm trần" (bố mẹ khỏi tính tay).
+ * Chia theo tỷ trọng điểm: rate = budgetTuần / (Σđiểm × 7); coin = clamp(round(điểm×rate),0,20).
+ * Thuần & tất định — KHÔNG ghi state, chỉ trả gợi ý để bố mẹ xem trước rồi áp.
+ * @param {Array<{id:string, points?:number, exp?:number}>} tasks nhiệm vụ thường-ngày
+ * @param {object} parentConfig cấu hình (đọc allowanceBudgetVnd + allowancePeriod)
+ * @returns {Array<{ id: string, coinReward: number }>}
+ */
+export function suggestAllowanceSplit(tasks, parentConfig) {
+  const list = Array.isArray(tasks) ? tasks : [];
+  const budgetCoins = budgetCoinsFor(parentConfig);
+  const period = parentConfig?.allowancePeriod || "week";
+  const budgetWeekCoins = period === "month" ? (budgetCoins * 12) / 52 : budgetCoins;
+  const pointsOf = (t) => Math.max(0, Math.floor(t.points ?? t.exp ?? 0));
+  const expectedWeeklyPoints = list.reduce((sum, t) => sum + pointsOf(t), 0) * 7;
+  if (budgetWeekCoins <= 0 || expectedWeeklyPoints <= 0) {
+    return list.map((t) => ({ id: t.id, coinReward: 0 }));
+  }
+  const rate = budgetWeekCoins / expectedWeeklyPoints;
+  return list.map((t) => ({
+    id: t.id,
+    coinReward: Math.min(SUGGEST_COIN_MAX, Math.max(0, Math.round(pointsOf(t) * rate))),
+  }));
+}
+
 /**
  * Lazy-reset trần kiếm khi sang chu kỳ mới (không cần cron). Cùng chu kỳ → nguyên trạng.
  * @param {object} state

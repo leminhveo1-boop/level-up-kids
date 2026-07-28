@@ -49,6 +49,9 @@ export function applyTaskEdit(task, patch, statKeyMap = TASK_STAT_KEY_MAP) {
 
   if (p.energy != null) next.energy = toInt(p.energy, 0, 0);
 
+  // Pha E — Xu tiêu vặt/task (bố mẹ đặt trực tiếp hoặc auto-chia quỹ). ≥0, không bịa.
+  if (p.coinReward != null) next.coinReward = toInt(p.coinReward, 0, 0);
+
   // verifyType đổi kèm quy tắc durationMin: chỉ "focus" mới có timer (khớp UI + constants).
   if (p.verifyType != null) {
     next.verifyType = p.verifyType;

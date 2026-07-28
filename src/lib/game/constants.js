@@ -173,6 +173,27 @@ const TEEN_PERKS = [
 
 const KID_PERK_IDS = ["r5", "r6", "r7", "r8"];
 
+// Pha E §7.2 — gợi ý quà Xu (đời thực) theo tuổi, có giá VNĐ mẫu. Bố mẹ 1-chạm
+// thêm vào cửa hàng rồi chỉnh giá tuỳ vùng miền. cost = round(vnd/1000). Không auto-ghi-đè.
+export const ALLOWANCE_PERK_SEEDS = {
+  kid: [
+    { title: "🧋 Một ly trà sữa", vnd: 25000 },
+    { title: "🍗 Phần gà rán", vnd: 40000 },
+    { title: "📚 Một cuốn truyện tranh", vnd: 25000 },
+    { title: "🛼 Đi chơi patin", vnd: 60000 },
+    { title: "📖 Đi nhà sách chọn 1 quyển", vnd: 50000 },
+    { title: "🍕 Một phần pizza", vnd: 90000 },
+    { title: "🍨 Ly kem tươi", vnd: 20000 },
+  ],
+  teen: [
+    { title: "☕ Cà phê với bạn", vnd: 40000 },
+    { title: "💵 Tiền tiêu vặt tự quản", vnd: 50000 },
+    { title: "🎧 Phụ kiện công nghệ tự chọn", vnd: 150000 },
+    { title: "🌙 Thức khuya thêm 1 tiếng cuối tuần", vnd: 50000 },
+    { title: "🎬 Vé xem phim rạp", vnd: 60000 },
+  ],
+};
+
 // Every default reward (kid + teen) by id — migration dùng để nhận diện "seed
 // mặc định CHƯA sửa" (id + title khớp) → thay bằng entry giá mới, thay vì rescale mù.
 export const ALL_DEFAULT_REWARDS = [...DEFAULT_REWARDS, ...TEEN_PERKS];
