@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameState";
 import { useLang } from "@/context/LanguageContext";
 import BottomNav from "@/ui/BottomNav";
+import AllowanceProgressKid from "@/features/kid/components/AllowanceProgressKid";
 import { ChevronLeft } from "lucide-react";
 
 export default function RewardsPage() {
@@ -182,6 +183,9 @@ export default function RewardsPage() {
             <span>{t("game.rw.tabCoins")}</span>
           </button>
         </div>
+
+        {/* Pha E — Quỹ của con: chỉ hiện ở tab Xu (nơi con nghĩ về tiền thật) */}
+        {rewardsTab === "heroCoins" && <AllowanceProgressKid />}
 
         {/* REWARDS STORE ITEMS LIST */}
         <div className="space-y-3">

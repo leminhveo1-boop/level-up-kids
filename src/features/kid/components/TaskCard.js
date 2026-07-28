@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLang } from "@/context/LanguageContext";
-import { Star, Clock, Trees, Sprout, LifeBuoy, RotateCcw } from "lucide-react";
+import { Star, Clock, Trees, Sprout, LifeBuoy, RotateCcw, Coins } from "lucide-react";
 import { stripEmoji } from "@/lib/text";
 import { rewardDoseFactor, REJECT_REASONS } from "@/lib/game/economy";
 import { rescueStatusLabel } from "@/lib/game/rescue";
@@ -80,8 +80,17 @@ export default function TaskCard({
         </span>
 
         {/* Reward — muted metadata, not a loud colored pill (single-accent rule) */}
-        <span className={`flex-shrink-0 flex items-center gap-1 text-scale-2xs font-bold select-none ${task.completed ? "text-gray-300" : pending ? "text-sky-dark" : "text-gray-400"}`}>
-          {pending ? <Clock size={14} /> : <>+{points} <Star size={13} className="text-amber" fill="currentColor" /></>}
+        <span className={`flex-shrink-0 flex items-center gap-1.5 text-scale-2xs font-bold select-none ${task.completed ? "text-gray-300" : pending ? "text-sky-dark" : "text-gray-400"}`}>
+          {pending ? <Clock size={14} /> : (
+            <>
+              <span className="flex items-center gap-1">+{points} <Star size={13} className="text-amber" fill="currentColor" /></span>
+              {task.coinReward > 0 && (
+                <span className={`flex items-center gap-0.5 ${task.completed ? "text-gray-300" : "text-coin"}`}>
+                  +{task.coinReward} <Coins size={13} fill="currentColor" />
+                </span>
+              )}
+            </>
+          )}
         </span>
       </div>
 
